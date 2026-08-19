@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 const PILLARS = [
   {
@@ -27,9 +27,8 @@ const PILLARS = [
 export default function Philosophy() {
   return (
     <section className="philosophy" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-11.svg"
-        aspect={973 / 850}
         distance={140}
         style={{ right: "-8%", bottom: "-10%", width: 420, opacity: 0.1 }}
       />

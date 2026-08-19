@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 const WHY = [
   {
@@ -31,9 +31,8 @@ const WHY = [
 export default function WhyRealNumbers() {
   return (
     <section className="why" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-12.svg"
-        aspect={990 / 872}
         distance={140}
         style={{ left: "-8%", top: "-14%", width: 420, opacity: 0.1 }}
       />

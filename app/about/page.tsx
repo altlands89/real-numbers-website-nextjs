@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ShatterComposition from "@/components/ShatterComposition";
+import CompositionDrift from "@/components/CompositionDrift";
 
 export const metadata: Metadata = {
   title: "About — Real Numbers",
@@ -34,7 +34,7 @@ export default function AboutPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
-        <ShatterComposition
+        <CompositionDrift
           src="/compositions/comp-1.svg"
           distance={150}
           style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
@@ -117,9 +117,8 @@ export default function AboutPage() {
           </div>
 
           <div className="prose-block" style={{ position: "relative" }}>
-            <ShatterComposition
+            <CompositionDrift
               src="/compositions/comp-15.svg"
-              aspect={970 / 856}
               distance={130}
               style={{ right: "-6%", top: "-4%", width: 340, opacity: 0.1 }}
             />

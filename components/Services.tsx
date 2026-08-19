@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 const SERVICES = [
   {
@@ -31,7 +31,7 @@ const SERVICES = [
 export default function Services() {
   return (
     <section className="services" id="expertise" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-4.svg"
         distance={130}
         style={{

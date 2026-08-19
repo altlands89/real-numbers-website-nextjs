@@ -1,11 +1,10 @@
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 export default function FinalCta() {
   return (
     <section className="final-cta hairline-grid" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-14.svg"
-        aspect={982 / 877}
         distance={150}
         style={{
           left: "-8%",

@@ -1,10 +1,10 @@
 import Image from "next/image";
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 export default function Moment() {
   return (
     <section className="moment" id="about" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-3.svg"
         distance={150}
         style={{

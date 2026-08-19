@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Faq from "@/components/Faq";
-import ShatterComposition from "@/components/ShatterComposition";
+import CompositionDrift from "@/components/CompositionDrift";
 
 export const metadata: Metadata = {
   title: "Questions Founders Ask — Real Numbers",
@@ -16,7 +16,7 @@ export default function QuestionsFoundersAskPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
-        <ShatterComposition
+        <CompositionDrift
           src="/compositions/comp-8.svg"
           distance={150}
           style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}

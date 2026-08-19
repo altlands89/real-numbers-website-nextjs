@@ -922,6 +922,12 @@ p { margin: 0; }
   will-change: transform, opacity;
   transform-origin: center;
 }
+.comp-drift {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+}
+.comp-drift svg path { will-change: transform; }
 .moment { overflow: hidden; }
 .moment .wrap { position: relative; z-index: 1; }
 .momentum { overflow: hidden; }

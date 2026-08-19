@@ -1,4 +1,4 @@
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 const STORIES = [
   {
@@ -30,9 +30,8 @@ const STORIES = [
 export default function Stories() {
   return (
     <section className="stories" id="use-cases" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-13.svg"
-        aspect={967 / 880}
         distance={140}
         style={{ right: "-8%", top: "-12%", width: 420, opacity: 0.1 }}
       />

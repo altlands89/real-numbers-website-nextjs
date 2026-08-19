@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ShatterComposition from "@/components/ShatterComposition";
+import CompositionDrift from "@/components/CompositionDrift";
 
 export const metadata: Metadata = {
   title: "Why Real Numbers",
@@ -38,7 +38,7 @@ export default function WhyRealNumbersPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
-        <ShatterComposition
+        <CompositionDrift
           src="/compositions/comp-2.svg"
           distance={150}
           style={{ left: "-8%", top: "-18%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}

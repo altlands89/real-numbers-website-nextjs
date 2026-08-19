@@ -1,4 +1,4 @@
-import ShatterComposition from "./ShatterComposition";
+import CompositionDrift from "./CompositionDrift";
 
 const BENEFITS = [
   "Teams plan with more confidence",
@@ -10,7 +10,7 @@ const BENEFITS = [
 export default function Momentum() {
   return (
     <section className="momentum hairline-grid" data-reveal>
-      <ShatterComposition
+      <CompositionDrift
         src="/compositions/comp-5.svg"
         distance={150}
         style={{
