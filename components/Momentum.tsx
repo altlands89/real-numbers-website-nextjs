@@ -7,7 +7,7 @@ const BENEFITS = [
 
 export default function Momentum() {
   return (
-    <section className="momentum">
+    <section className="momentum hairline-grid">
       <div className="wrap momentum-grid">
         <div>
           <span className="eyebrow" style={{ color: "var(--offwhite)" }}>

@@ -18,7 +18,7 @@ export default function FinalCta() {
   }
 
   return (
-    <section className="final-cta" id="contact">
+    <section className="final-cta hairline-grid" id="contact">
       <div className="wrap final-grid">
         <div>
           <span className="eyebrow">Let&apos;s Talk</span>

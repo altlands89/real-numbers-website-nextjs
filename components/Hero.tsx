@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="hero on-dark" id="top">
+    <section className="hero on-dark hairline-grid" id="top">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/img/numcomp.svg"
