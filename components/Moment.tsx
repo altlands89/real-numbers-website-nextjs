@@ -1,8 +1,19 @@
 import Image from "next/image";
+import CompositionParallax from "./CompositionParallax";
 
 export default function Moment() {
   return (
     <section className="moment" id="about" data-reveal>
+      <CompositionParallax
+        src="/compositions/comp-3.svg"
+        speed={0.14}
+        style={{
+          left: "-8%",
+          top: "-10%",
+          width: 420,
+          opacity: 0.07,
+        }}
+      />
       <div className="wrap moment-grid">
         <div>
           <span className="eyebrow">Where Finance Becomes Leadership</span>

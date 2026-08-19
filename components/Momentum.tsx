@@ -1,3 +1,5 @@
+import CompositionParallax from "./CompositionParallax";
+
 const BENEFITS = [
   "Teams plan with more confidence",
   "Investment decisions carry stronger conviction",
@@ -8,6 +10,17 @@ const BENEFITS = [
 export default function Momentum() {
   return (
     <section className="momentum hairline-grid" data-reveal>
+      <CompositionParallax
+        src="/compositions/comp-5.svg"
+        speed={0.12}
+        style={{
+          right: "-10%",
+          bottom: "-14%",
+          width: 460,
+          opacity: 0.09,
+          filter: "invert(1) brightness(1.9)",
+        }}
+      />
       <div className="wrap momentum-grid">
         <div>
           <span className="eyebrow" style={{ color: "var(--offwhite)" }}>

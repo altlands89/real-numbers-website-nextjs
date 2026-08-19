@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import CompositionParallax from "@/components/CompositionParallax";
 
 export const metadata: Metadata = {
   title: "Contact — Real Numbers",
@@ -14,6 +15,11 @@ export default function ContactPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
+        <CompositionParallax
+          src="/compositions/comp-9.svg"
+          speed={0.13}
+          style={{ left: "-8%", top: "-16%", width: 400, opacity: 0.08, filter: "invert(1) brightness(1.9)" }}
+        />
         <div className="wrap">
           <span className="eyebrow">Contact</span>
           <h1>Every meaningful partnership starts with a conversation.</h1>

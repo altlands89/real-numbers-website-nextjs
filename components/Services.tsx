@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CompositionParallax from "./CompositionParallax";
 
 const SERVICES = [
   {
@@ -30,6 +31,16 @@ const SERVICES = [
 export default function Services() {
   return (
     <section className="services" id="expertise" data-reveal>
+      <CompositionParallax
+        src="/compositions/comp-4.svg"
+        speed={0.1}
+        style={{
+          right: "-6%",
+          top: "-6%",
+          width: 340,
+          opacity: 0.06,
+        }}
+      />
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Our Expertise</span>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CompositionParallax from "@/components/CompositionParallax";
 
 export const metadata: Metadata = {
   title: "About — Real Numbers",
@@ -33,6 +34,11 @@ export default function AboutPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
+        <CompositionParallax
+          src="/compositions/comp-1.svg"
+          speed={0.13}
+          style={{ right: "-8%", top: "-14%", width: 400, opacity: 0.08, filter: "invert(1) brightness(1.9)" }}
+        />
         <div className="wrap">
           <span className="eyebrow">About Real Numbers</span>
           <h1>
