@@ -1028,6 +1028,80 @@ p { margin: 0; }
 .why-grid.detailed { grid-template-columns: repeat(2, 1fr); gap: 1px; }
 .why-grid.detailed .why-item { padding: var(--space-600); }
 
+/* =========================== PHOTOGRAPHY: FIXED-COVER SECTIONS =========================== */
+.bg-photo {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--offwhite);
+}
+.bg-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(23, 27, 41, 0.9) 0%, rgba(23, 27, 41, 0.8) 55%, rgba(23, 27, 41, 0.92) 100%);
+}
+.bg-photo.bg-photo--light::after {
+  background: linear-gradient(180deg, rgba(36, 30, 28, 0.82) 0%, rgba(36, 30, 28, 0.72) 55%, rgba(36, 30, 28, 0.86) 100%);
+}
+@media (max-width: 900px) {
+  .bg-photo { background-attachment: scroll; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-photo { background-attachment: scroll; }
+}
+
+/* =========================== PHOTOGRAPHY: ATMOSPHERE IMAGES =========================== */
+.atmosphere-photo {
+  position: relative;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--stone);
+  aspect-ratio: 4/3;
+  margin-top: var(--space-600);
+}
+.atmosphere-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--editorial) var(--ease); }
+.atmosphere-photo:hover img { transform: scale(1.02); }
+.atmosphere-photo .tag {
+  position: absolute;
+  left: 20px; bottom: 20px;
+  background: rgba(36, 30, 28, 0.86);
+  color: var(--offwhite);
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.atmosphere-photo .tag::before {
+  content: "";
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red);
+}
+
+/* Small floating photo card, used to accent hero sections */
+.hero-photo-card {
+  position: absolute;
+  right: 6%;
+  bottom: 7%;
+  width: 300px;
+  aspect-ratio: 4/5;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+  z-index: 1;
+}
+.hero-photo-card img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 1080px) {
+  .hero-photo-card { display: none; }
+}
+
 @media (max-width: 900px) {
   .leadership-grid,
   .principles-list,

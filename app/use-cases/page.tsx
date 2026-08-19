@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CompositionDrift from "@/components/CompositionDrift";
@@ -68,6 +69,15 @@ export default function UseCasesPage() {
 
       <section className="prose-section" data-reveal>
         <div className="wrap">
+          <div className="atmosphere-photo" style={{ marginTop: 0, marginBottom: "var(--space-600)" }}>
+            <Image
+              src="/img/photography/usecases-atmosphere.jpg"
+              alt="A team working through a growth decision"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+            <span className="tag">Every stage looks different</span>
+          </div>
           <p style={{ fontWeight: 600, opacity: 0.85 }}>
             Some of the situations that typically bring companies to Real
             Numbers:

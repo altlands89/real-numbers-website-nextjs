@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CompositionDrift from "@/components/CompositionDrift";
@@ -77,6 +78,15 @@ export default function AboutPage() {
               Our role was never just to explain what happened. It&apos;s to
               help leadership understand what comes next.
             </p>
+            <div className="atmosphere-photo">
+              <Image
+                src="/img/photography/about-atmosphere.jpg"
+                alt="Inside a Real Numbers strategy session"
+                fill
+                style={{ objectFit: "cover" }}
+              />
+              <span className="tag">Where the conversations happen</span>
+            </div>
           </div>
 
           <div className="prose-block">

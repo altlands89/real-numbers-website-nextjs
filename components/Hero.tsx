@@ -41,6 +41,10 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      <div className="hero-photo-card">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/img/photography/home-hero-atmosphere.jpg" alt="Walking into Real Numbers" />
+      </div>
     </section>
   );
 }

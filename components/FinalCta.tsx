@@ -2,7 +2,11 @@ import CompositionDrift from "./CompositionDrift";
 
 export default function FinalCta() {
   return (
-    <section className="final-cta hairline-grid" data-reveal>
+    <section
+      className="final-cta bg-photo"
+      data-reveal
+      style={{ backgroundImage: "url(/img/photography/home-final-cta.jpg)" }}
+    >
       <CompositionDrift
         src="/compositions/comp-14.svg"
         distance={150}

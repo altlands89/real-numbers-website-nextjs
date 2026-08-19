@@ -9,7 +9,11 @@ const BENEFITS = [
 
 export default function Momentum() {
   return (
-    <section className="momentum hairline-grid" data-reveal>
+    <section
+      className="momentum bg-photo"
+      data-reveal
+      style={{ backgroundImage: "url(/img/photography/home-momentum.jpg)" }}
+    >
       <CompositionDrift
         src="/compositions/comp-5.svg"
         distance={150}

@@ -37,7 +37,10 @@ export default function WhyRealNumbersPage() {
     <>
       <Header />
 
-      <section className="page-hero hairline-grid">
+      <section
+        className="page-hero bg-photo"
+        style={{ backgroundImage: "url(/img/photography/why-hero.jpg)" }}
+      >
         <CompositionDrift
           src="/compositions/comp-2.svg"
           distance={150}

@@ -145,6 +145,15 @@ export default function OurExpertisePage() {
               four providers each holding a piece of a picture no one sees
               whole.
             </p>
+            <div className="atmosphere-photo">
+              <Image
+                src="/img/photography/expertise-atmosphere.jpg"
+                alt="A financial model in progress"
+                fill
+                style={{ objectFit: "cover" }}
+              />
+              <span className="tag">The work behind the clarity</span>
+            </div>
           </div>
         </div>
       </section>

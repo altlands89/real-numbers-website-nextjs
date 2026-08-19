@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Faq from "@/components/Faq";
@@ -32,6 +33,14 @@ export default function QuestionsFoundersAskPage() {
 
       <section className="prose-section" data-reveal>
         <div className="wrap">
+          <div className="atmosphere-photo" style={{ marginTop: 0, marginBottom: "var(--space-600)", aspectRatio: "21/9" }}>
+            <Image
+              src="/img/photography/faq-atmosphere.jpg"
+              alt="A quiet corner of the Real Numbers office"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </div>
           <Faq />
         </div>
       </section>

@@ -101,7 +101,10 @@ export default function TeamPage() {
     <>
       <Header />
 
-      <section className="page-hero hairline-grid">
+      <section
+        className="page-hero bg-photo"
+        style={{ backgroundImage: "url(/img/photography/team-hero.jpg)" }}
+      >
         <CompositionDrift
           src="/compositions/comp-4.svg"
           distance={90}
