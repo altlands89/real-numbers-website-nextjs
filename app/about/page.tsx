@@ -165,6 +165,13 @@ export default function AboutPage() {
               professional depth, the other makes sure it reaches the people
               who need it.
             </p>
+            <a
+              href="/team"
+              className="link-arrow"
+              style={{ marginTop: "var(--space-500)", display: "inline-flex" }}
+            >
+              Meet the full team →
+            </a>
           </div>
         </div>
       </section>

@@ -23,6 +23,9 @@ export default function Header() {
           <a href="/about" onClick={() => setOpen(false)}>
             About
           </a>
+          <a href="/team" onClick={() => setOpen(false)}>
+            Our Team
+          </a>
           <a href="/why-real-numbers" onClick={() => setOpen(false)}>
             Why Real Numbers
           </a>

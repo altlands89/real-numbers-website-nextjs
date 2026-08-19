@@ -27,6 +27,9 @@ export default function Footer() {
                 <a href="/about">About</a>
               </li>
               <li>
+                <a href="/team">Our Team</a>
+              </li>
+              <li>
                 <a href="/why-real-numbers">Why Real Numbers</a>
               </li>
               <li>
