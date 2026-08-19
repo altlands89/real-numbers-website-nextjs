@@ -7,7 +7,7 @@ const BENEFITS = [
 
 export default function Momentum() {
   return (
-    <section className="momentum hairline-grid">
+    <section className="momentum hairline-grid" data-reveal>
       <div className="wrap momentum-grid">
         <div>
           <span className="eyebrow" style={{ color: "var(--offwhite)" }}>
@@ -36,6 +36,10 @@ export default function Momentum() {
               </li>
             ))}
           </ul>
+          <p className="momentum-closing">
+            That&apos;s the actual return on financial clarity. Not better
+            spreadsheets. Better leadership.
+          </p>
         </div>
       </div>
     </section>

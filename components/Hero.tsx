@@ -35,7 +35,7 @@ export default function Hero() {
             <a href="#contact" className="btn btn-primary">
               Let&apos;s Talk
             </a>
-            <a href="#expertise" className="link-arrow">
+            <a href="/our-expertise" className="link-arrow">
               Explore Our Expertise →
             </a>
           </div>

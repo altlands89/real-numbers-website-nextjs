@@ -29,7 +29,7 @@ const WHY = [
 
 export default function WhyRealNumbers() {
   return (
-    <section className="why">
+    <section className="why" data-reveal>
       <div className="wrap">
         <div className="why-top">
           <div>
@@ -45,7 +45,7 @@ export default function WhyRealNumbers() {
               skill. It&apos;s about who you&apos;ll rely on when the
               decisions get bigger and growth stops being theoretical.
             </p>
-            <a href="#why" className="link-arrow">
+            <a href="/why-real-numbers" className="link-arrow">
               See why companies choose us →
             </a>
           </div>

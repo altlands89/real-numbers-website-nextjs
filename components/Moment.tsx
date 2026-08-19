@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Moment() {
   return (
-    <section className="moment" id="about">
+    <section className="moment" id="about" data-reveal>
       <div className="wrap moment-grid">
         <div>
           <span className="eyebrow">Where Finance Becomes Leadership</span>

@@ -25,7 +25,7 @@ const PILLARS = [
 
 export default function Philosophy() {
   return (
-    <section className="philosophy">
+    <section className="philosophy" data-reveal>
       <div className="wrap">
         <div className="philosophy-top">
           <div>
@@ -38,10 +38,19 @@ export default function Philosophy() {
           <p className="lede">
             Financial information isn&apos;t an end in itself. Its job is to
             show leadership reality clearly enough to spot opportunity,
-            manage risk, and move forward with conviction. Real clarity moves
-            businesses faster, plans them better, and grows them stronger.
+            manage risk, and move forward with conviction.
+          </p>
+          <p className="lede" style={{ marginTop: 16 }}>
+            So we don&apos;t measure our value by the reports we produce —
+            we measure it by the decisions they make possible. Real clarity
+            moves businesses faster, plans them better, and grows them
+            stronger.
           </p>
         </div>
+
+        <h3 className="pillars-kicker">
+          Every important decision starts with a number
+        </h3>
 
         <div className="pillars">
           {PILLARS.map((p) => (
@@ -56,7 +65,7 @@ export default function Philosophy() {
         </div>
 
         <div className="philosophy-cta">
-          <a href="#about" className="btn btn-outline-dark">
+          <a href="/about" className="btn btn-outline-dark">
             More About Us
           </a>
         </div>

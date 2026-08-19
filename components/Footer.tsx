@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="wrap">
         <div className="footer-top">
           <div className="footer-brand">
-            <a href="#top" className="logo">
+            <a href="/" className="logo">
               <Image
                 src="/img/logo-offwhite.svg"
                 alt="Real Numbers"
@@ -24,16 +24,16 @@ export default function Footer() {
             <h4>Company</h4>
             <ul>
               <li>
-                <a href="#about">About</a>
+                <a href="/about">About</a>
               </li>
               <li>
-                <a href="#why">Why Real Numbers</a>
+                <a href="/why-real-numbers">Why Real Numbers</a>
               </li>
               <li>
-                <a href="#expertise">Our Expertise</a>
+                <a href="/our-expertise">Our Expertise</a>
               </li>
               <li>
-                <a href="#use-cases">Use Cases</a>
+                <a href="/use-cases">Use Cases</a>
               </li>
             </ul>
           </div>
@@ -41,13 +41,13 @@ export default function Footer() {
             <h4>Get in Touch</h4>
             <ul>
               <li>
-                <a href="#faq">Questions Founders Ask</a>
+                <a href="/questions-founders-ask">Questions Founders Ask</a>
               </li>
               <li>
-                <a href="#contact">Contact</a>
+                <a href="/contact">Contact</a>
               </li>
               <li>
-                <a href="#contact">Let&apos;s Talk</a>
+                <a href="/contact">Let&apos;s Talk</a>
               </li>
             </ul>
           </div>

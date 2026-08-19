@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { tasaOrbiter } from "./fonts";
+import ScrollReveal from "@/components/ScrollReveal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={tasaOrbiter.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ScrollReveal />
+      </body>
     </html>
   );
 }

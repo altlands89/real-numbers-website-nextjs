@@ -5,31 +5,31 @@ const SERVICES = [
     num: "01",
     icon: "/icons/finops.svg",
     title: "Financial Operations",
-    text: "The foundations every growing business depends on — bookkeeping, payroll, financial statements, and the controls that keep the business accurate and compliant.",
+    text: "The foundations every growing business depends on.",
   },
   {
     num: "02",
     icon: "/icons/stratfin.svg",
     title: "Strategic Finance",
-    text: "Turning data into business decisions — fractional CFO support, budgeting, forecasting, and board reporting that earns trust.",
+    text: "Turning data into business decisions.",
   },
   {
     num: "03",
     icon: "/icons/fundraising.svg",
     title: "Fundraising & Growth",
-    text: "Preparing for investment, expansion, and what's next — financial models, investor materials, and due diligence support.",
+    text: "Preparing for investment, expansion, and what's next.",
   },
   {
     num: "04",
     icon: "/icons/bizperf.svg",
     title: "Business Performance",
-    text: "The visibility that drives smarter decisions — performance dashboards, profitability analysis, and cash runway monitoring.",
+    text: "The visibility that drives smarter decisions.",
   },
 ];
 
 export default function Services() {
   return (
-    <section className="services" id="expertise">
+    <section className="services" id="expertise" data-reveal>
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Our Expertise</span>
@@ -50,7 +50,7 @@ export default function Services() {
               </div>
               <h3>{s.title}</h3>
               <p>{s.text}</p>
-              <a href="#expertise" className="service-link">
+              <a href="/our-expertise" className="service-link">
                 Learn more →
               </a>
             </div>
@@ -58,7 +58,7 @@ export default function Services() {
         </div>
 
         <div className="services-cta">
-          <a href="#expertise" className="btn btn-outline-dark">
+          <a href="/our-expertise" className="btn btn-outline-dark">
             Explore Our Expertise
           </a>
         </div>

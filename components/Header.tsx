@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className={`site-header${open ? " open" : ""}`} id="siteHeader">
       <div className="wrap">
-        <a href="#top" className="logo" aria-label="Real Numbers home">
+        <a href="/" className="logo" aria-label="Real Numbers home">
           <Image
             src="/img/logo-offwhite.svg"
             alt="Real Numbers"
@@ -20,24 +20,27 @@ export default function Header() {
           />
         </a>
         <nav className="nav-links" aria-label="Primary">
-          <a href="#about" onClick={() => setOpen(false)}>
+          <a href="/about" onClick={() => setOpen(false)}>
             About
           </a>
-          <a href="#expertise" onClick={() => setOpen(false)}>
+          <a href="/why-real-numbers" onClick={() => setOpen(false)}>
+            Why Real Numbers
+          </a>
+          <a href="/our-expertise" onClick={() => setOpen(false)}>
             Our Expertise
           </a>
-          <a href="#use-cases" onClick={() => setOpen(false)}>
+          <a href="/use-cases" onClick={() => setOpen(false)}>
             Use Cases
           </a>
-          <a href="#faq" onClick={() => setOpen(false)}>
+          <a href="/questions-founders-ask" onClick={() => setOpen(false)}>
             Q&amp;A
           </a>
-          <a href="#contact" onClick={() => setOpen(false)}>
+          <a href="/contact" onClick={() => setOpen(false)}>
             Contact
           </a>
         </nav>
         <div className="nav-cta">
-          <a href="#contact" className="btn btn-primary">
+          <a href="/contact" className="btn btn-primary">
             Let&apos;s Talk
           </a>
           <button
