@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CompositionParallax from "@/components/CompositionParallax";
+import ShatterComposition from "@/components/ShatterComposition";
 
 export const metadata: Metadata = {
   title: "Our Expertise — Real Numbers",
@@ -90,10 +90,10 @@ export default function OurExpertisePage() {
       <Header />
 
       <section className="page-hero hairline-grid">
-        <CompositionParallax
+        <ShatterComposition
           src="/compositions/comp-6.svg"
-          speed={0.13}
-          style={{ right: "-8%", top: "-14%", width: 400, opacity: 0.08, filter: "invert(1) brightness(1.9)" }}
+          distance={150}
+          style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
         />
         <div className="wrap">
           <span className="eyebrow">Our Expertise</span>

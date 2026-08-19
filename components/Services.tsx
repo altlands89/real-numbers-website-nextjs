@@ -1,5 +1,5 @@
 import Image from "next/image";
-import CompositionParallax from "./CompositionParallax";
+import ShatterComposition from "./ShatterComposition";
 
 const SERVICES = [
   {
@@ -31,14 +31,14 @@ const SERVICES = [
 export default function Services() {
   return (
     <section className="services" id="expertise" data-reveal>
-      <CompositionParallax
+      <ShatterComposition
         src="/compositions/comp-4.svg"
-        speed={0.1}
+        distance={130}
         style={{
           right: "-6%",
           top: "-6%",
-          width: 340,
-          opacity: 0.06,
+          width: 380,
+          opacity: 0.11,
         }}
       />
       <div className="wrap">

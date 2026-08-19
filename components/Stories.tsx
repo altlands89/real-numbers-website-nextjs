@@ -1,3 +1,5 @@
+import ShatterComposition from "./ShatterComposition";
+
 const STORIES = [
   {
     quote:
@@ -28,6 +30,12 @@ const STORIES = [
 export default function Stories() {
   return (
     <section className="stories" id="use-cases" data-reveal>
+      <ShatterComposition
+        src="/compositions/comp-13.svg"
+        aspect={967 / 880}
+        distance={140}
+        style={{ right: "-8%", top: "-12%", width: 420, opacity: 0.1 }}
+      />
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Client Stories</span>

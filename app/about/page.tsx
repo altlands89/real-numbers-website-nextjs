@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CompositionParallax from "@/components/CompositionParallax";
+import ShatterComposition from "@/components/ShatterComposition";
 
 export const metadata: Metadata = {
   title: "About — Real Numbers",
@@ -34,10 +34,10 @@ export default function AboutPage() {
       <Header />
 
       <section className="page-hero hairline-grid">
-        <CompositionParallax
+        <ShatterComposition
           src="/compositions/comp-1.svg"
-          speed={0.13}
-          style={{ right: "-8%", top: "-14%", width: 400, opacity: 0.08, filter: "invert(1) brightness(1.9)" }}
+          distance={150}
+          style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
         />
         <div className="wrap">
           <span className="eyebrow">About Real Numbers</span>
@@ -116,9 +116,15 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="prose-block">
-            <h2>Leadership</h2>
-            <div className="leadership-grid">
+          <div className="prose-block" style={{ position: "relative" }}>
+            <ShatterComposition
+              src="/compositions/comp-15.svg"
+              aspect={970 / 856}
+              distance={130}
+              style={{ right: "-6%", top: "-4%", width: 340, opacity: 0.1 }}
+            />
+            <h2 style={{ position: "relative", zIndex: 1 }}>Leadership</h2>
+            <div className="leadership-grid" style={{ position: "relative", zIndex: 1 }}>
               <div className="leadership-card">
                 <h3>Eran Dor</h3>
                 <span className="role">Founder &amp; CEO</span>

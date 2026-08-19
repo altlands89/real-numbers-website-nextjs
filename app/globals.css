@@ -910,6 +910,18 @@ p { margin: 0; }
   will-change: transform;
   z-index: 0;
 }
+.comp-shatter {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.comp-shatter-tile {
+  position: absolute;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+  transform-origin: center;
+}
 .moment { overflow: hidden; }
 .moment .wrap { position: relative; z-index: 1; }
 .momentum { overflow: hidden; }
@@ -919,6 +931,14 @@ p { margin: 0; }
 .final-cta .wrap { position: relative; z-index: 1; }
 .prose-section { overflow: hidden; }
 .prose-section .wrap { position: relative; z-index: 1; }
+.trust { overflow: hidden; }
+.trust .wrap { position: relative; z-index: 1; }
+.philosophy { overflow: hidden; }
+.philosophy .wrap { position: relative; z-index: 1; }
+.why { overflow: hidden; }
+.why .wrap { position: relative; z-index: 1; }
+.stories { overflow: hidden; }
+.stories .wrap { position: relative; z-index: 1; }
 
 /* Scroll reveal */
 [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity var(--editorial) var(--ease), transform var(--editorial) var(--ease); }

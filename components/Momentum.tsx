@@ -1,4 +1,4 @@
-import CompositionParallax from "./CompositionParallax";
+import ShatterComposition from "./ShatterComposition";
 
 const BENEFITS = [
   "Teams plan with more confidence",
@@ -10,14 +10,14 @@ const BENEFITS = [
 export default function Momentum() {
   return (
     <section className="momentum hairline-grid" data-reveal>
-      <CompositionParallax
+      <ShatterComposition
         src="/compositions/comp-5.svg"
-        speed={0.12}
+        distance={150}
         style={{
           right: "-10%",
-          bottom: "-14%",
-          width: 460,
-          opacity: 0.09,
+          bottom: "-16%",
+          width: 480,
+          opacity: 0.14,
           filter: "invert(1) brightness(1.9)",
         }}
       />

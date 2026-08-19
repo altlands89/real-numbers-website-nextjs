@@ -1,17 +1,17 @@
 import Image from "next/image";
-import CompositionParallax from "./CompositionParallax";
+import ShatterComposition from "./ShatterComposition";
 
 export default function Moment() {
   return (
     <section className="moment" id="about" data-reveal>
-      <CompositionParallax
+      <ShatterComposition
         src="/compositions/comp-3.svg"
-        speed={0.14}
+        distance={150}
         style={{
-          left: "-8%",
-          top: "-10%",
-          width: 420,
-          opacity: 0.07,
+          left: "-10%",
+          top: "-12%",
+          width: 460,
+          opacity: 0.12,
         }}
       />
       <div className="wrap moment-grid">

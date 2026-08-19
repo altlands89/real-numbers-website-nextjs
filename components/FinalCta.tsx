@@ -1,6 +1,20 @@
+import ShatterComposition from "./ShatterComposition";
+
 export default function FinalCta() {
   return (
     <section className="final-cta hairline-grid" data-reveal>
+      <ShatterComposition
+        src="/compositions/comp-14.svg"
+        aspect={982 / 877}
+        distance={150}
+        style={{
+          left: "-8%",
+          bottom: "-16%",
+          width: 440,
+          opacity: 0.13,
+          filter: "invert(1) brightness(1.9)",
+        }}
+      />
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Let&apos;s Talk</span>
