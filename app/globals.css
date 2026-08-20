@@ -934,6 +934,17 @@ p { margin: 0; }
 }
 .comp-drift svg path { will-change: transform; }
 
+.comp-interactive {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+.comp-interactive svg path { will-change: transform; }
+@media (max-width: 1080px) {
+  .hero-composition { display: none; }
+}
+
 /* Team page */
 .team-leaders {
   display: grid;

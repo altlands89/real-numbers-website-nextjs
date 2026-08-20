@@ -1,3 +1,5 @@
+import CompositionInteractive from "./CompositionInteractive";
+
 export default function Hero() {
   return (
     <section className="hero on-dark hairline-grid" id="top">
@@ -41,10 +43,20 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="hero-photo-card">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/img/photography/home-hero-atmosphere.jpg" alt="Walking into Real Numbers" />
-      </div>
+      <CompositionInteractive
+        src="/compositions/comp-5.svg"
+        scrollDistance={70}
+        mouseDistance={46}
+        className="hero-composition"
+        style={{
+          right: "0%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "clamp(380px, 36vw, 640px)",
+          opacity: 0.9,
+          filter: "invert(1) brightness(1.9)",
+        }}
+      />
     </section>
   );
 }
