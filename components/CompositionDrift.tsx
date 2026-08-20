@@ -38,6 +38,7 @@ export default function CompositionDrift({
   const current = useRef(0);
   const active = useRef(true);
   const rafId = useRef<number>();
+  const startTime = useRef<number | null>(null);
 
   // Fetch and parse the composition once — each path becomes an independently
   // driftable digit instead of an arbitrary grid tile.
@@ -93,8 +94,11 @@ export default function CompositionDrift({
       target.current = Math.max(-1, Math.min(1, dist));
     }
 
-    function tick() {
+    function tick(now: number) {
       if (active.current || reduce) {
+        if (startTime.current === null) startTime.current = now;
+        const elapsed = (now - startTime.current) / 1000;
+
         // Slow, heavily-damped easing toward the scroll target — deliberately gentle.
         current.current += (target.current - current.current) * 0.045;
         const p = reduce ? 0 : current.current;
@@ -109,8 +113,26 @@ export default function CompositionDrift({
           const speed = 0.5 + Math.abs(hash(i, 6)) * 0.7;
           const primary = p * distance * sign * speed;
           const secondary = p * distance * 0.2 * hash(i, 7);
-          const tx = horizontal ? primary : secondary;
-          const ty = horizontal ? secondary : primary;
+          const scrollX = horizontal ? primary : secondary;
+          const scrollY = horizontal ? secondary : primary;
+
+          // Gentle continuous ambient sway — a slow, per-digit lissajous
+          // drift so the piece feels alive even at rest, not just while
+          // scrolling. Small amplitude, long period, never in sync across digits.
+          let swayX = 0;
+          let swayY = 0;
+          if (!reduce) {
+            const ampX = 6 + Math.abs(hash(i, 20)) * 10;
+            const ampY = 6 + Math.abs(hash(i, 21)) * 10;
+            const freqX = 0.035 + Math.abs(hash(i, 22)) * 0.045;
+            const freqY = 0.03 + Math.abs(hash(i, 24)) * 0.045;
+            const phase = hash(i, 23) * Math.PI * 2;
+            swayX = Math.sin(elapsed * freqX * Math.PI * 2 + phase) * ampX;
+            swayY = Math.cos(elapsed * freqY * Math.PI * 2 + phase * 1.3) * ampY;
+          }
+
+          const tx = scrollX + swayX;
+          const ty = scrollY + swayY;
           el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(
             1
           )}px)`;

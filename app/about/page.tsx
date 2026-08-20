@@ -37,8 +37,8 @@ export default function AboutPage() {
       <section className="page-hero hairline-grid">
         <CompositionDrift
           src="/compositions/comp-1.svg"
-          distance={150}
-          style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
+          distance={170}
+          style={{ right: "-12%", top: "-20%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
         />
         <div className="wrap">
           <span className="eyebrow">About Real Numbers</span>
@@ -129,8 +129,8 @@ export default function AboutPage() {
           <div className="prose-block" style={{ position: "relative" }}>
             <CompositionDrift
               src="/compositions/comp-15.svg"
-              distance={130}
-              style={{ right: "-6%", top: "-4%", width: 340, opacity: 0.1 }}
+              distance={150}
+              style={{ right: "-10%", top: "-6%", width: 480, opacity: 0.18 }}
             />
             <h2 style={{ position: "relative", zIndex: 1 }}>Leadership</h2>
             <div className="leadership-grid" style={{ position: "relative", zIndex: 1 }}>

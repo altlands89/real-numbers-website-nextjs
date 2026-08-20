@@ -33,8 +33,8 @@ export default function WhyRealNumbers() {
     <section className="why" data-reveal>
       <CompositionDrift
         src="/compositions/comp-12.svg"
-        distance={140}
-        style={{ left: "-8%", top: "-14%", width: 420, opacity: 0.1 }}
+        distance={160}
+        style={{ left: "-12%", top: "-18%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">
         <div className="why-top">

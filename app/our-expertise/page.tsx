@@ -92,8 +92,8 @@ export default function OurExpertisePage() {
       <section className="page-hero hairline-grid">
         <CompositionDrift
           src="/compositions/comp-6.svg"
-          distance={150}
-          style={{ right: "-8%", top: "-16%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
+          distance={170}
+          style={{ right: "-12%", top: "-20%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
         />
         <div className="wrap">
           <span className="eyebrow">Our Expertise</span>

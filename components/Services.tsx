@@ -33,12 +33,12 @@ export default function Services() {
     <section className="services" id="expertise" data-reveal>
       <CompositionDrift
         src="/compositions/comp-4.svg"
-        distance={130}
+        distance={150}
         style={{
-          right: "-6%",
-          top: "-6%",
-          width: 380,
-          opacity: 0.11,
+          right: "-10%",
+          top: "-9%",
+          width: 530,
+          opacity: 0.19,
         }}
       />
       <div className="wrap">

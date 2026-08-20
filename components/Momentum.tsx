@@ -16,12 +16,12 @@ export default function Momentum() {
     >
       <CompositionDrift
         src="/compositions/comp-5.svg"
-        distance={150}
+        distance={170}
         style={{
-          right: "-10%",
-          bottom: "-16%",
-          width: 480,
-          opacity: 0.14,
+          right: "-14%",
+          bottom: "-20%",
+          width: 670,
+          opacity: 0.22,
           filter: "invert(1) brightness(1.9)",
         }}
       />

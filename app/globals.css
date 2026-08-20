@@ -298,15 +298,21 @@ p { margin: 0; }
 .nav-toggle {
   display: none;
   flex-direction: column;
+  justify-content: center;
   gap: 5px;
   background: none;
   border: none;
-  padding: 8px;
+  padding: 10px;
+  width: 44px;
+  height: 44px;
 }
 .nav-toggle span {
   width: 24px; height: 2px; background: var(--offwhite); display: block;
   transition: transform var(--standard) var(--ease), opacity var(--standard) var(--ease);
 }
+.site-header.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.site-header.open .nav-toggle span:nth-child(2) { opacity: 0; }
+.site-header.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* =========================== HERO =========================== */
 .hero {
@@ -694,6 +700,22 @@ p { margin: 0; }
   .why-grid { grid-template-columns: 1fr; }
   .hero-cta { flex-direction: column; align-items: flex-start; }
   .logo-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---- Mobile polish: tighter first-fold, calmer background art ---- */
+@media (max-width: 640px) {
+  .hero { padding: var(--space-700) 0 var(--space-600); }
+  .page-hero { padding: var(--space-700) 0 var(--space-500); }
+  .section-head { margin-bottom: var(--space-600); }
+
+  /* Ambient watermark compositions read as clutter at phone width —
+     scale and dim them down without touching each instance's inline
+     values (which set the desktop-tuned size/opacity per section). */
+  .comp-drift {
+    transform: scale(0.62);
+    transform-origin: center;
+    opacity: 0.11 !important;
+  }
 }
 
 /* =========================== HOME: MISC ADDITIONS =========================== */

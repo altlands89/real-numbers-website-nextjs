@@ -6,12 +6,12 @@ export default function Moment() {
     <section className="moment" id="about" data-reveal>
       <CompositionDrift
         src="/compositions/comp-3.svg"
-        distance={150}
+        distance={172}
         style={{
-          left: "-10%",
-          top: "-12%",
-          width: 460,
-          opacity: 0.12,
+          left: "-14%",
+          top: "-16%",
+          width: 640,
+          opacity: 0.2,
         }}
       />
       <div className="wrap moment-grid">

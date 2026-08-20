@@ -20,8 +20,8 @@ export default function ContactPage() {
       >
         <CompositionDrift
           src="/compositions/comp-9.svg"
-          distance={150}
-          style={{ left: "-8%", top: "-18%", width: 440, opacity: 0.14, filter: "invert(1) brightness(1.9)" }}
+          distance={170}
+          style={{ left: "-12%", top: "-22%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
         />
         <div className="wrap">
           <span className="eyebrow">Contact</span>

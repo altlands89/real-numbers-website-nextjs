@@ -32,8 +32,8 @@ export default function Stories() {
     <section className="stories" id="use-cases" data-reveal>
       <CompositionDrift
         src="/compositions/comp-13.svg"
-        distance={140}
-        style={{ right: "-8%", top: "-12%", width: 420, opacity: 0.1 }}
+        distance={160}
+        style={{ right: "-12%", top: "-16%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">
         <div className="section-head center">

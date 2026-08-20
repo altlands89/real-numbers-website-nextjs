@@ -29,8 +29,8 @@ export default function Philosophy() {
     <section className="philosophy" data-reveal>
       <CompositionDrift
         src="/compositions/comp-11.svg"
-        distance={140}
-        style={{ right: "-8%", bottom: "-10%", width: 420, opacity: 0.1 }}
+        distance={160}
+        style={{ right: "-12%", bottom: "-14%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">
         <div className="philosophy-top">

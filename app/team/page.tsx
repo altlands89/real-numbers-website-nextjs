@@ -107,12 +107,12 @@ export default function TeamPage() {
       >
         <CompositionDrift
           src="/compositions/comp-4.svg"
-          distance={90}
+          distance={110}
           style={{
-            right: "-8%",
-            top: "-16%",
-            width: 440,
-            opacity: 0.14,
+            right: "-12%",
+            top: "-20%",
+            width: 620,
+            opacity: 0.22,
             filter: "invert(1) brightness(1.9)",
           }}
         />

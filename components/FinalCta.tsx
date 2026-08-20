@@ -9,12 +9,12 @@ export default function FinalCta() {
     >
       <CompositionDrift
         src="/compositions/comp-14.svg"
-        distance={150}
+        distance={170}
         style={{
-          left: "-8%",
-          bottom: "-16%",
-          width: 440,
-          opacity: 0.13,
+          left: "-12%",
+          bottom: "-20%",
+          width: 620,
+          opacity: 0.21,
           filter: "invert(1) brightness(1.9)",
         }}
       />
