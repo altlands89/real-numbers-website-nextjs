@@ -1,5 +1,13 @@
 import CompositionDrift from "./CompositionDrift";
 
+const LOGOS = [
+  { src: "/img/logos/mccann.png", alt: "McCann" },
+  { src: "/img/logos/fix.png", alt: "Fix" },
+  { src: "/img/logos/dominos.png", alt: "Domino's" },
+  { src: "/img/logos/asus.png", alt: "ASUS" },
+  { src: "/img/logos/yes.png", alt: "yes" },
+];
+
 export default function TrustStrip() {
   return (
     <section className="trust">
@@ -13,11 +21,11 @@ export default function TrustStrip() {
           Trusted by founders and CEOs building the next generation of
           technology and growth companies
         </p>
-        <div className="logo-row" aria-hidden="true">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div className="logo-chip" key={i}>
-              <span className="dot"></span>
-              <span className="bar"></span>
+        <div className="logo-row">
+          {LOGOS.map((l) => (
+            <div className="logo-chip" key={l.alt}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={l.src} alt={l.alt} className="logo-mark" />
             </div>
           ))}
         </div>
