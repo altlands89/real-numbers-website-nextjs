@@ -57,8 +57,8 @@
   --space-900: 96px;
   --space-1000: 128px;
 
-  /* ---- Section rhythm: 140px on desktop, fluid below ---- */
-  --section-y: clamp(72px, 9vw, 140px);
+  /* ---- Section rhythm: 160px on desktop, fluid below ---- */
+  --section-y: clamp(72px, 10vw, 160px);
 
   --radius: var(--radius-card); /* legacy alias used below */
   font-size: 16px;
@@ -105,17 +105,19 @@ section { position: relative; }
   .wrap { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
 }
 
-/* ---- Label / Upper — 12/16, +12% tracking, 600 ---- */
+/* ---- Label / Upper — 12/16, +14% tracking, 700, in-color (not
+   dimmed) — a confident technical label, not a muted caption ---- */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   font-size: 0.75rem;
   line-height: 1.333;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  opacity: 0.72;
+  color: var(--red);
+  opacity: 1;
 }
 .eyebrow::before {
   content: "";
@@ -126,7 +128,8 @@ section { position: relative; }
   transform: rotate(45deg);
   border-radius: 2px;
 }
-.on-dark .eyebrow { color: var(--offwhite); }
+.on-dark .eyebrow { color: var(--clay); }
+.on-dark .eyebrow::before { background: var(--clay); }
 
 h1, h2, h3, h4 {
   font-family: var(--font-tasa), sans-serif;
@@ -134,19 +137,21 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
-/* Display / XL — hero master line only: 96/88%, -3% tracking, 800 */
+/* Display / XL — hero master line only: tight leading, tight
+   tracking, near-maximum confidence for a one-to-two-line statement */
 h1 {
-  font-size: clamp(2.75rem, 4.2vw + 1.4rem, 6rem);
-  line-height: 0.88;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.75rem, 4.6vw + 1.4rem, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
   font-weight: 800;
 }
 
-/* Heading / 02 — section headlines: 52/52 (1.0), -2% tracking, 700 */
+/* Heading / 02 — section headlines: leading closed to 100%,
+   tracking tightened for the same declarative, spec-sheet feel */
 h2 {
-  font-size: clamp(2rem, 1.6vw + 1.6rem, 3.25rem);
-  line-height: 1.03;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.1rem, 1.8vw + 1.6rem, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.028em;
   font-weight: 700;
 }
 
@@ -155,7 +160,7 @@ h2 {
 h3 {
   font-size: clamp(1.15rem, 0.4vw + 1.05rem, 1.35rem);
   line-height: 1.15;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.016em;
   font-weight: 700;
 }
 
