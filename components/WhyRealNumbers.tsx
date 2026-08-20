@@ -40,7 +40,7 @@ export default function WhyRealNumbers() {
         <div className="why-top">
           <div>
             <span className="eyebrow">Why Real Numbers</span>
-            <h2>
+            <h2 data-reveal className="reveal-heading">
               More than financial expertise. A trusted partner for the
               moments that matter most.
             </h2>

@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Faq from "@/components/Faq";
 import CompositionDrift from "@/components/CompositionDrift";
+import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
   title: "Questions Founders Ask — Real Numbers",
@@ -24,7 +25,7 @@ export default function QuestionsFoundersAskPage() {
         />
         <div className="wrap">
           <span className="eyebrow">Questions Founders Ask</span>
-          <h1>
+          <h1 data-reveal className="reveal-heading">
             Honest answers to the questions we hear most, before we start
             working together.
           </h1>
@@ -32,15 +33,24 @@ export default function QuestionsFoundersAskPage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-15.svg"
+          distance={140}
+          style={{ right: "-10%", top: "-8%", width: 500, opacity: 0.14 }}
+        />
         <div className="wrap">
-          <div className="atmosphere-photo" style={{ marginTop: 0, marginBottom: "var(--space-600)", aspectRatio: "21/9" }}>
+          <Parallax
+            className="atmosphere-photo"
+            strength={22}
+            style={{ marginTop: 0, marginBottom: "var(--space-600)", aspectRatio: "21/9" }}
+          >
             <Image
               src="/img/photography/faq-atmosphere.jpg"
               alt="A quiet corner of the Real Numbers office"
               fill
               style={{ objectFit: "cover" }}
             />
-          </div>
+          </Parallax>
           <Faq />
         </div>
       </section>

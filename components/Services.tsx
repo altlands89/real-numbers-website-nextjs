@@ -44,7 +44,9 @@ export default function Services() {
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Our Expertise</span>
-          <h2>The right expertise for every stage of growth</h2>
+          <h2 data-reveal className="reveal-heading">
+            The right expertise for every stage of growth
+          </h2>
           <p className="lede" style={{ marginLeft: "auto", marginRight: "auto" }}>
             As businesses evolve, so do their financial needs. Our integrated
             approach combines operational precision with strategic

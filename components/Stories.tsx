@@ -38,7 +38,7 @@ export default function Stories() {
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Client Stories</span>
-          <h2>
+          <h2 data-reveal className="reveal-heading">
             Reports were never the point. The confidence leaders gain from
             them is.
           </h2>

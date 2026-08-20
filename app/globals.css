@@ -1066,6 +1066,35 @@ p { margin: 0; }
 [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity var(--editorial) var(--ease), transform var(--editorial) var(--ease); }
 [data-reveal].is-visible { opacity: 1; transform: none; }
 
+/* Headlines get their own smaller, slightly-delayed entrance so they
+   settle a beat after the section around them, rather than moving as
+   one rigid block. */
+[data-reveal].reveal-heading {
+  transform: translateY(16px);
+  transition-delay: 90ms;
+}
+
+/* =========================== PRELOADER =========================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--offwhite);
+  opacity: 1;
+  transition: opacity var(--editorial) var(--ease);
+}
+.preloader-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.preloader-mark {
+  width: clamp(180px, 26vw, 320px);
+  height: auto;
+}
+
 .why-grid.detailed { grid-template-columns: repeat(2, 1fr); gap: 1px; }
 .why-grid.detailed .why-item { padding: var(--space-600); }
 

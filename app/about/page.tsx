@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CompositionDrift from "@/components/CompositionDrift";
+import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
   title: "About — Real Numbers",
@@ -42,7 +43,7 @@ export default function AboutPage() {
         />
         <div className="wrap">
           <span className="eyebrow">About Real Numbers</span>
-          <h1>
+          <h1 data-reveal className="reveal-heading">
             We believe every growing company deserves a financial partner it
             can actually trust.
           </h1>
@@ -59,7 +60,7 @@ export default function AboutPage() {
       <section className="prose-section" data-reveal>
         <div className="wrap">
           <div className="prose-block">
-            <h2>Our Story</h2>
+            <h2 data-reveal className="reveal-heading">Our Story</h2>
             <p>
               Every business reaches a point where instinct alone stops being
               enough. Growth brings new opportunity and greater complexity in
@@ -78,7 +79,7 @@ export default function AboutPage() {
               Our role was never just to explain what happened. It&apos;s to
               help leadership understand what comes next.
             </p>
-            <div className="atmosphere-photo">
+            <Parallax className="atmosphere-photo" strength={26}>
               <Image
                 src="/img/photography/about-atmosphere.jpg"
                 alt="Inside a Real Numbers strategy session"
@@ -86,7 +87,7 @@ export default function AboutPage() {
                 style={{ objectFit: "cover" }}
               />
               <span className="tag">Where the conversations happen</span>
-            </div>
+            </Parallax>
           </div>
 
           <div className="prose-block">

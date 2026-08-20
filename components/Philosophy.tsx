@@ -36,7 +36,7 @@ export default function Philosophy() {
         <div className="philosophy-top">
           <div>
             <span className="eyebrow">Our Philosophy</span>
-            <h2>
+            <h2 data-reveal className="reveal-heading">
               We don&apos;t manage numbers. We help leaders make better
               decisions.
             </h2>

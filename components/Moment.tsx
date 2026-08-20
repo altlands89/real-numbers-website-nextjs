@@ -1,5 +1,6 @@
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
+import Parallax from "./Parallax";
 
 export default function Moment() {
   return (
@@ -17,7 +18,9 @@ export default function Moment() {
       <div className="wrap moment-grid">
         <div>
           <span className="eyebrow">Where Finance Becomes Leadership</span>
-          <h2>The point every growing company reaches</h2>
+          <h2 data-reveal className="reveal-heading">
+            The point every growing company reaches
+          </h2>
           <div className="moment-copy">
             <p>
               There&apos;s a familiar moment: staring at a dashboard the
@@ -38,7 +41,7 @@ export default function Moment() {
             </p>
           </div>
         </div>
-        <div className="moment-visual">
+        <Parallax className="moment-visual" strength={30}>
           <Image
             src="/img/masked-zero.png"
             alt="Founder reviewing financials on a laptop"
@@ -46,7 +49,7 @@ export default function Moment() {
             style={{ objectFit: "cover" }}
           />
           <span className="tag">Clarity, in practice</span>
-        </div>
+        </Parallax>
       </div>
     </section>
   );

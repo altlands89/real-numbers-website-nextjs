@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CompositionDrift from "@/components/CompositionDrift";
+import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
   title: "Use Cases — Real Numbers",
@@ -53,7 +54,7 @@ export default function UseCasesPage() {
         />
         <div className="wrap">
           <span className="eyebrow">Use Cases</span>
-          <h1>
+          <h1 data-reveal className="reveal-heading">
             Different companies. Different challenges. One trusted financial
             partner.
           </h1>
@@ -68,8 +69,17 @@ export default function UseCasesPage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-13.svg"
+          distance={140}
+          style={{ left: "-10%", bottom: "-10%", width: 500, opacity: 0.14 }}
+        />
         <div className="wrap">
-          <div className="atmosphere-photo" style={{ marginTop: 0, marginBottom: "var(--space-600)" }}>
+          <Parallax
+            className="atmosphere-photo"
+            strength={26}
+            style={{ marginTop: 0, marginBottom: "var(--space-600)" }}
+          >
             <Image
               src="/img/photography/usecases-atmosphere.jpg"
               alt="A team working through a growth decision"
@@ -77,7 +87,7 @@ export default function UseCasesPage() {
               style={{ objectFit: "cover" }}
             />
             <span className="tag">Every stage looks different</span>
-          </div>
+          </Parallax>
           <p style={{ fontWeight: 600, opacity: 0.85 }}>
             Some of the situations that typically bring companies to Real
             Numbers:

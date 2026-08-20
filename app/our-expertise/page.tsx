@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CompositionDrift from "@/components/CompositionDrift";
+import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
   title: "Our Expertise — Real Numbers",
@@ -97,7 +98,9 @@ export default function OurExpertisePage() {
         />
         <div className="wrap">
           <span className="eyebrow">Our Expertise</span>
-          <h1>The right expertise at every stage of growth.</h1>
+          <h1 data-reveal className="reveal-heading">
+            The right expertise at every stage of growth.
+          </h1>
           <p className="lede">
             Every growing business hits a different financial challenge at a
             different moment — stronger operations, strategic leadership in
@@ -113,6 +116,11 @@ export default function OurExpertisePage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-3.svg"
+          distance={140}
+          style={{ left: "-10%", top: "-8%", width: 500, opacity: 0.14 }}
+        />
         <div className="wrap">
           {AREAS.map((a, i) => (
             <div
@@ -137,7 +145,7 @@ export default function OurExpertisePage() {
           ))}
 
           <div className="prose-block">
-            <h2>One integrated financial partnership</h2>
+            <h2 data-reveal className="reveal-heading">One integrated financial partnership</h2>
             <p>
               Each area creates value alone. Together, they&apos;re one
               connected financial framework supporting leadership at every
@@ -145,7 +153,7 @@ export default function OurExpertisePage() {
               four providers each holding a piece of a picture no one sees
               whole.
             </p>
-            <div className="atmosphere-photo">
+            <Parallax className="atmosphere-photo" strength={26}>
               <Image
                 src="/img/photography/expertise-atmosphere.jpg"
                 alt="A financial model in progress"
@@ -153,7 +161,7 @@ export default function OurExpertisePage() {
                 style={{ objectFit: "cover" }}
               />
               <span className="tag">The work behind the clarity</span>
-            </div>
+            </Parallax>
           </div>
         </div>
       </section>

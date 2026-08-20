@@ -15,7 +15,9 @@ export default function Hero() {
           <span className="eyebrow">
             Real Numbers · Financial Partner for Growth Companies
           </span>
-          <h1>Real Numbers. Real Clarity. Real Confidence.</h1>
+          <h1 data-reveal className="reveal-heading">
+            Real Numbers. Real Clarity. Real Confidence.
+          </h1>
           <p className="sub">
             Every great business decision begins with knowing where you
             really stand.

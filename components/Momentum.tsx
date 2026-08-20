@@ -30,7 +30,9 @@ export default function Momentum() {
           <span className="eyebrow" style={{ color: "var(--offwhite)" }}>
             Real Clarity, Real Momentum
           </span>
-          <h2>The cost of finding out too late</h2>
+          <h2 data-reveal className="reveal-heading">
+            The cost of finding out too late
+          </h2>
           <div className="momentum-copy">
             <p>
               The companies that struggle rarely lack ambition. More often,

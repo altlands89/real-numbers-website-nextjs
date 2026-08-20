@@ -48,7 +48,7 @@ export default function WhyRealNumbersPage() {
         />
         <div className="wrap">
           <span className="eyebrow">Why Real Numbers</span>
-          <h1>
+          <h1 data-reveal className="reveal-heading">
             Financial leadership was never really about numbers. It&apos;s
             about helping leaders make better decisions.
           </h1>
@@ -95,6 +95,11 @@ export default function WhyRealNumbersPage() {
       </section>
 
       <section className="why" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-9.svg"
+          distance={140}
+          style={{ right: "-10%", bottom: "-16%", width: 520, opacity: 0.16 }}
+        />
         <div className="wrap">
           <div className="why-grid detailed">
             {VALUE_PROPS.map((v) => (
@@ -109,9 +114,14 @@ export default function WhyRealNumbersPage() {
       </section>
 
       <section className="prose-section on-stone" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-12.svg"
+          distance={130}
+          style={{ left: "-8%", bottom: "-10%", width: 460, opacity: 0.13 }}
+        />
         <div className="wrap">
           <div className="prose-block" style={{ marginTop: 0, borderTop: "none", paddingTop: 0 }}>
-            <h2>What makes the partnership different</h2>
+            <h2 data-reveal className="reveal-heading">What makes the partnership different</h2>
             <p>
               Clarity changes what happens next: decisions move faster,
               communication gets stronger, planning gets more accurate,

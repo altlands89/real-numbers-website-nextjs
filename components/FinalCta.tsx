@@ -9,19 +9,22 @@ export default function FinalCta() {
     >
       <CompositionDrift
         src="/compositions/comp-14.svg"
-        distance={170}
+        distance={140}
         style={{
-          left: "-12%",
-          bottom: "-20%",
-          width: 620,
-          opacity: 0.21,
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "min(760px, 70vw)",
+          opacity: 0.14,
           filter: "invert(1) brightness(1.9)",
         }}
       />
       <div className="wrap">
         <div className="section-head center">
           <span className="eyebrow">Let&apos;s Talk</span>
-          <h2>Better businesses are built on better decisions.</h2>
+          <h2 data-reveal className="reveal-heading">
+            Better businesses are built on better decisions.
+          </h2>
           <p className="lede" style={{ marginLeft: "auto", marginRight: "auto" }}>
             If you&apos;re looking for a financial partner who brings
             clarity, perspective, and long-term commitment to your leadership

@@ -25,7 +25,9 @@ export default function ContactPage() {
         />
         <div className="wrap">
           <span className="eyebrow">Contact</span>
-          <h1>Every meaningful partnership starts with a conversation.</h1>
+          <h1 data-reveal className="reveal-heading">
+            Every meaningful partnership starts with a conversation.
+          </h1>
           <p className="lede">
             Whether you&apos;re preparing for growth, raising capital,
             building stronger foundations, or just looking for more clarity
@@ -43,6 +45,11 @@ export default function ContactPage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-1.svg"
+          distance={140}
+          style={{ right: "-10%", bottom: "-12%", width: 500, opacity: 0.14 }}
+        />
         <div className="wrap">
           <ContactForm />
 

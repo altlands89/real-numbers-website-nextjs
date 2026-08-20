@@ -118,7 +118,9 @@ export default function TeamPage() {
         />
         <div className="wrap">
           <span className="eyebrow">Our Team</span>
-          <h1>The people behind Real Numbers.</h1>
+          <h1 data-reveal className="reveal-heading">
+            The people behind Real Numbers.
+          </h1>
           <p className="lede">
             Every model, every board deck, every late-night answer to an
             urgent question — it comes from this team.
@@ -127,9 +129,14 @@ export default function TeamPage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-2.svg"
+          distance={140}
+          style={{ right: "-10%", top: "-6%", width: 500, opacity: 0.14 }}
+        />
         <div className="wrap">
           <div className="prose-block" style={{ marginTop: 0, borderTop: "none", paddingTop: 0 }}>
-            <h2>Leadership</h2>
+            <h2 data-reveal className="reveal-heading">Leadership</h2>
             <div className="team-leaders">
               {LEADERSHIP.map((p) => (
                 <div className="team-leader-card" key={p.name}>
@@ -150,7 +157,7 @@ export default function TeamPage() {
           </div>
 
           <div className="prose-block">
-            <h2>The Team</h2>
+            <h2 data-reveal className="reveal-heading">The Team</h2>
             <div className="team-grid">
               {TEAM.map((p, i) => (
                 <div className="team-card" key={p.name}>
