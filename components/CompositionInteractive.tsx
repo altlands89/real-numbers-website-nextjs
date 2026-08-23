@@ -134,14 +134,14 @@ export default function CompositionInteractive({
           const mouseX = mx * mouseDistance * depth * (hash(i, 11 + seed) >= 0 ? 1 : -1);
           const mouseY = my * mouseDistance * depth * (hash(i, 13 + seed) >= 0 ? 1 : -1);
 
-          // Subtle tilt tied to cursor position and per-path depth, so the
-          // piece feels like it's turning toward the cursor, not just sliding.
-          const rotDepth = 0.4 + Math.abs(hash(i, 15 + seed)) * 0.6;
-          const rot = mx * rotDepth * 5 * (hash(i, 17 + seed) >= 0 ? 1 : -1);
+          // Digits stay at their original angle — cursor proximity subtly
+          // grows/shrinks each one instead of tilting it.
+          const scaleDepth = 0.4 + Math.abs(hash(i, 15 + seed)) * 0.6;
+          const scale = 1 + Math.abs(mx) * scaleDepth * 0.05;
 
           const tx = scrollX + mouseX;
           const ty = scrollY + mouseY;
-          el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) rotate(${rot.toFixed(2)}deg)`;
+          el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
         });
       }
       rafId.current = requestAnimationFrame(tick);

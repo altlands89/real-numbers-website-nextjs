@@ -1,6 +1,20 @@
+import CompositionDrift from "./CompositionDrift";
+
 export default function HeroContext() {
   return (
     <section className="hero-context on-dark hairline-grid" data-reveal>
+      <CompositionDrift
+        src="/compositions/comp-16.svg"
+        distance={130}
+        seed={10}
+        style={{
+          left: "-10%",
+          bottom: "-40%",
+          width: 520,
+          opacity: 0.14,
+          filter: "invert(1) brightness(1.9)",
+        }}
+      />
       <div className="wrap">
         <div className="hero-context-grid">
           <p data-reveal style={{ transitionDelay: "0ms" }}>

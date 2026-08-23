@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
+import NumberBadge from "./NumberBadge";
 
 const SERVICES = [
   {
@@ -69,7 +70,7 @@ export default function Services() {
               data-reveal
               style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <span className="num">{s.num}</span>
+              <NumberBadge value={s.num} className="num" />
               <div className="icon-badge">
                 <Image src={s.icon} alt="" width={22} height={22} />
               </div>

@@ -520,15 +520,16 @@ p { margin: 0; }
 .pillar-tile:hover { transform: translateY(-8px); }
 .pillar-tile:nth-child(odd) { background: var(--blue); }
 .pillar-tile:nth-child(even) { background: var(--red); }
+.number-badge { display: inline-flex; align-items: center; gap: 2px; }
+.number-badge-digit { height: 100%; width: auto; display: block; }
+
 .pillar-tile .tile-num {
   position: absolute;
-  right: 20px; top: 4px;
-  font-family: var(--font-tasa), sans-serif;
-  font-weight: 800;
-  font-size: 4.4rem;
-  opacity: 0.14;
-  line-height: 1;
+  right: 20px; top: 10px;
+  height: 62px;
+  opacity: 0.16;
 }
+.pillar-tile .tile-num .number-badge-digit { filter: brightness(0) invert(1); }
 .pillar-tile .pillar-tile-icon {
   width: 46px; height: 46px;
   margin-bottom: var(--space-600);
@@ -639,16 +640,13 @@ p { margin: 0; }
   flex-direction: column;
 }
 .service-card .num {
-  font-family: var(--font-tasa), sans-serif;
-  font-weight: 800;
-  font-size: 4.2rem;
-  letter-spacing: -0.02em;
   position: absolute;
   right: 24px;
-  top: 6px;
-  opacity: 0.07;
-  line-height: 1;
+  top: 12px;
+  height: 60px;
+  opacity: 0.09;
 }
+.service-card .num .number-badge-digit { filter: brightness(0) invert(1); }
 .service-card .icon-badge {
   width: 50px; height: 50px;
   border-radius: 50%;
@@ -1151,7 +1149,7 @@ p { margin: 0; }
   pointer-events: none;
   user-select: none;
 }
-.comp-drift svg path { will-change: transform; }
+.comp-drift svg path { will-change: transform; transform-box: fill-box; transform-origin: center; }
 /* Paths drift beyond their own viewBox at the edges of their sway/scroll
    range — without this, the SVG's default overflow:hidden clips them
    mid-stroke, which reads as the shape breaking apart. The section
@@ -1165,7 +1163,7 @@ p { margin: 0; }
   user-select: none;
   z-index: 1;
 }
-.comp-interactive svg path { will-change: transform; }
+.comp-interactive svg path { will-change: transform; transform-box: fill-box; transform-origin: center; }
 .comp-interactive svg { overflow: visible; }
 
 /* Team page */

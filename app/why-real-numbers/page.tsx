@@ -67,6 +67,12 @@ export default function WhyRealNumbersPage() {
       </section>
 
       <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-18.svg"
+          distance={120}
+          seed={41}
+          style={{ right: "-10%", top: "-14%", width: 440, opacity: 0.13 }}
+        />
         <div className="wrap">
           <div className="prose-block">
             <h2>Why companies choose us</h2>
@@ -137,6 +143,19 @@ export default function WhyRealNumbersPage() {
       </section>
 
       <section className="final-cta hairline-grid" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-17.svg"
+          distance={130}
+          seed={42}
+          style={{
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "min(700px, 64vw)",
+            opacity: 0.14,
+            filter: "invert(1) brightness(1.9)",
+          }}
+        />
         <div className="wrap">
           <div className="section-head center">
             <h2>Better financial decisions begin with better conversations.</h2>

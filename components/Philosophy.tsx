@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
+import NumberBadge from "./NumberBadge";
 
 const PILLARS = [
   {
@@ -74,7 +75,7 @@ export default function Philosophy() {
                 data-reveal
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <span className="tile-num">0{i + 1}</span>
+                <NumberBadge value={`0${i + 1}`} className="tile-num" />
                 <Image
                   className="pillar-tile-icon"
                   src={p.icon}

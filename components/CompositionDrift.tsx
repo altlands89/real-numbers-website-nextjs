@@ -126,7 +126,7 @@ export default function CompositionDrift({
           // scrolling. Small amplitude, long period, never in sync across digits.
           let swayX = 0;
           let swayY = 0;
-          let rot = 0;
+          let scale = 1;
           if (!reduce) {
             const ampX = 6 + Math.abs(hash(i, 20 + seed)) * 10;
             const ampY = 6 + Math.abs(hash(i, 21 + seed)) * 10;
@@ -136,19 +136,20 @@ export default function CompositionDrift({
             swayX = Math.sin(elapsed * freqX * Math.PI * 2 + phase) * ampX;
             swayY = Math.cos(elapsed * freqY * Math.PI * 2 + phase * 1.3) * ampY;
 
-            // Small independent rotational drift so pieces don't just
-            // slide — each path settles into its own gentle tilt.
-            const rotAmp = 1.5 + Math.abs(hash(i, 30 + seed)) * 3.5;
-            const rotFreq = 0.02 + Math.abs(hash(i, 31 + seed)) * 0.03;
-            const rotPhase = hash(i, 32 + seed) * Math.PI * 2;
-            rot = Math.sin(elapsed * rotFreq * Math.PI * 2 + rotPhase) * rotAmp;
+            // Digits stay at their original angle (rotating a numeral can
+            // read as a different digit) — vary size instead, a slow
+            // per-path breathing scale so the piece still feels alive.
+            const scaleAmp = 0.02 + Math.abs(hash(i, 30 + seed)) * 0.035;
+            const scaleFreq = 0.02 + Math.abs(hash(i, 31 + seed)) * 0.03;
+            const scalePhase = hash(i, 32 + seed) * Math.PI * 2;
+            scale = 1 + Math.sin(elapsed * scaleFreq * Math.PI * 2 + scalePhase) * scaleAmp;
           }
 
           const tx = scrollX + swayX;
           const ty = scrollY + swayY;
           el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(
             1
-          )}px) rotate(${rot.toFixed(2)}deg)`;
+          )}px) scale(${scale.toFixed(3)})`;
         });
       }
       rafId.current = requestAnimationFrame(tick);
