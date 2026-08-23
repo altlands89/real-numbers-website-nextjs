@@ -30,7 +30,7 @@
 
   /* ---- Layout: 1280px container / 12-8-4 columns / 64-32-20 gutters ---- */
   --max: 1280px;
-  --gutter: 2em;
+  --gutter: 6px;
   --gutter-tablet: 32px;
   --gutter-mobile: 20px;
 
@@ -265,7 +265,7 @@ p { margin: 0; }
 }
 .logo { display: flex; align-items: center; gap: 10px; transition: transform var(--standard) var(--ease); }
 .logo:hover { transform: scale(1.035); }
-.logo img { height: 20px; width: auto; }
+.logo img { height: 16px; width: auto; }
 
 .nav-links {
   display: flex;
@@ -331,7 +331,7 @@ p { margin: 0; }
   opacity: 0.045;
   pointer-events: none;
 }
-.hero-inner { max-width: 760px; position: relative; z-index: 2; }
+.hero-inner { max-width: 840px; position: relative; z-index: 2; }
 .hero .sub {
   margin-top: var(--space-500);
   font-size: clamp(1.1rem, 1.8vw, 1.35rem);
@@ -343,6 +343,30 @@ p { margin: 0; }
 }
 .hero .body-copy { margin-top: var(--space-500); display: flex; flex-direction: column; gap: var(--space-400); max-width: 56ch; }
 .hero .body-copy p { opacity: 0.72; font-size: 1rem; line-height: 1.625; }
+
+/* =========================== HERO CONTEXT (split from hero) =========================== */
+.hero-context {
+  background: var(--black);
+  color: var(--offwhite);
+  padding: var(--space-700) 0 var(--space-800);
+  overflow: hidden;
+}
+.hero-context .wrap { position: relative; z-index: 1; }
+.hero-context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-800);
+}
+.hero-context-grid p {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  opacity: 0.72;
+  max-width: 48ch;
+}
+@media (max-width: 900px) {
+  .hero-context { padding: var(--space-600) 0 var(--space-700); }
+  .hero-context-grid { grid-template-columns: 1fr; gap: var(--space-500); }
+}
 .hero-cta {
   margin-top: var(--space-700);
   display: flex;
@@ -520,6 +544,27 @@ p { margin: 0; }
   .pillars-rail { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
   .pillar-tile { width: 76vw; }
 }
+/* All four tiles fit comfortably within the page width on desktop, so
+   there's nothing to scroll — drop the full-bleed rail and just center
+   them as a normal row, and hide the (now pointless) dots. Mobile/
+   tablet keep the scrollable rail. */
+@media (min-width: 1025px) {
+  .pillars-rail-wrap {
+    width: auto;
+    position: static;
+    left: auto;
+    right: auto;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .pillars-rail {
+    overflow-x: visible;
+    scroll-snap-type: none;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 
 .philosophy-cta { margin-top: var(--space-700); display: flex; justify-content: center; }
 
@@ -549,6 +594,9 @@ p { margin: 0; }
 .services-dots { display: none; }
 @media (max-width: 1024px) {
   .services-dots { display: flex; }
+}
+@media (min-width: 1025px) {
+  .pillars-dots { display: none; }
 }
 
 /* =========================== ATMOSPHERE BREAK =========================== */
@@ -1213,16 +1261,24 @@ p { margin: 0; }
 .stories .wrap { position: relative; z-index: 1; }
 
 /* Scroll reveal */
-[data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity var(--editorial) var(--ease), transform var(--editorial) var(--ease); }
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+  transition: opacity var(--editorial) var(--ease), transform var(--editorial) var(--ease);
+}
 [data-reveal].is-visible { opacity: 1; transform: none; }
 
 /* Headlines get their own smaller, slightly-delayed entrance so they
    settle a beat after the section around them, rather than moving as
    one rigid block. */
 [data-reveal].reveal-heading {
-  transform: translateY(16px);
+  transform: translateY(16px) scale(0.99);
   transition-delay: 90ms;
 }
+/* Same specificity as [data-reveal].is-visible above, so without this
+   the heading's own transform would win by source order and the
+   headline would stay permanently offset instead of settling flush. */
+[data-reveal].reveal-heading.is-visible { transform: none; }
 
 /* =========================== PRELOADER =========================== */
 .preloader {

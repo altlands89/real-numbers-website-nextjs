@@ -88,7 +88,7 @@ export default function Philosophy() {
             ))}
           </div>
         </div>
-        <ScrollDots railRef={railRef} count={PILLARS.length} />
+        <ScrollDots railRef={railRef} count={PILLARS.length} className="pillars-dots" />
 
         <div className="philosophy-cta">
           <a href="/about" className="btn btn-outline-dark">

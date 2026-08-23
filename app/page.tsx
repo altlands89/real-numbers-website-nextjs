@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import HeroContext from "@/components/HeroContext";
 import TrustStrip from "@/components/TrustStrip";
 import Moment from "@/components/Moment";
 import Atmosphere from "@/components/Atmosphere";
@@ -16,6 +17,7 @@ export default function Home() {
     <>
       <Header />
       <Hero />
+      <HeroContext />
       <TrustStrip />
       <Moment />
       <Atmosphere />

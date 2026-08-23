@@ -15,7 +15,7 @@ export default function Header() {
             alt="Real Numbers"
             width={140}
             height={20}
-            style={{ height: 20, width: "auto" }}
+            style={{ height: 16, width: "auto" }}
             priority
           />
         </a>
