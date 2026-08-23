@@ -34,6 +34,7 @@ export default function Services() {
       <CompositionDrift
         src="/compositions/comp-4.svg"
         distance={150}
+        seed={5}
         style={{
           right: "-10%",
           top: "-9%",

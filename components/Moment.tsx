@@ -8,6 +8,7 @@ export default function Moment() {
       <CompositionDrift
         src="/compositions/comp-3.svg"
         distance={172}
+        seed={3}
         style={{
           left: "-14%",
           top: "-16%",

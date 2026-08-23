@@ -49,6 +49,7 @@ export default function Hero() {
         src="/compositions/comp-5.svg"
         scrollDistance={70}
         mouseDistance={46}
+        seed={1}
         className="hero-composition"
         style={{
           right: "0%",

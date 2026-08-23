@@ -15,6 +15,10 @@ interface CompositionDriftProps {
   className?: string;
   /** Max drift distance for the fastest-moving digit, in px. Kept gentle by design. */
   distance?: number;
+  /** Offsets the per-path hash so different instances of the same
+   *  composition (or different comps with the same path count) don't
+   *  all drift/sway in lockstep — each section gets its own motion feel. */
+  seed?: number;
 }
 
 // Deterministic pseudo-random in [-1, 1], stable across renders.
@@ -28,6 +32,7 @@ export default function CompositionDrift({
   style,
   className,
   distance = 90,
+  seed = 0,
 }: CompositionDriftProps) {
   const [viewBox, setViewBox] = useState("0 0 1200 1200");
   const [aspect, setAspect] = useState(1);
@@ -109,10 +114,10 @@ export default function CompositionDrift({
           // speed and direction, so the composition drifts apart unevenly
           // and re-settles into its original form near the center.
           const horizontal = i % 2 === 0;
-          const sign = hash(i, 5) >= 0 ? 1 : -1;
-          const speed = 0.5 + Math.abs(hash(i, 6)) * 0.7;
+          const sign = hash(i, 5 + seed) >= 0 ? 1 : -1;
+          const speed = 0.5 + Math.abs(hash(i, 6 + seed)) * 0.7;
           const primary = p * distance * sign * speed;
-          const secondary = p * distance * 0.2 * hash(i, 7);
+          const secondary = p * distance * 0.2 * hash(i, 7 + seed);
           const scrollX = horizontal ? primary : secondary;
           const scrollY = horizontal ? secondary : primary;
 
@@ -121,21 +126,29 @@ export default function CompositionDrift({
           // scrolling. Small amplitude, long period, never in sync across digits.
           let swayX = 0;
           let swayY = 0;
+          let rot = 0;
           if (!reduce) {
-            const ampX = 6 + Math.abs(hash(i, 20)) * 10;
-            const ampY = 6 + Math.abs(hash(i, 21)) * 10;
-            const freqX = 0.035 + Math.abs(hash(i, 22)) * 0.045;
-            const freqY = 0.03 + Math.abs(hash(i, 24)) * 0.045;
-            const phase = hash(i, 23) * Math.PI * 2;
+            const ampX = 6 + Math.abs(hash(i, 20 + seed)) * 10;
+            const ampY = 6 + Math.abs(hash(i, 21 + seed)) * 10;
+            const freqX = 0.035 + Math.abs(hash(i, 22 + seed)) * 0.045;
+            const freqY = 0.03 + Math.abs(hash(i, 24 + seed)) * 0.045;
+            const phase = hash(i, 23 + seed) * Math.PI * 2;
             swayX = Math.sin(elapsed * freqX * Math.PI * 2 + phase) * ampX;
             swayY = Math.cos(elapsed * freqY * Math.PI * 2 + phase * 1.3) * ampY;
+
+            // Small independent rotational drift so pieces don't just
+            // slide — each path settles into its own gentle tilt.
+            const rotAmp = 1.5 + Math.abs(hash(i, 30 + seed)) * 3.5;
+            const rotFreq = 0.02 + Math.abs(hash(i, 31 + seed)) * 0.03;
+            const rotPhase = hash(i, 32 + seed) * Math.PI * 2;
+            rot = Math.sin(elapsed * rotFreq * Math.PI * 2 + rotPhase) * rotAmp;
           }
 
           const tx = scrollX + swayX;
           const ty = scrollY + swayY;
           el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(
             1
-          )}px)`;
+          )}px) rotate(${rot.toFixed(2)}deg)`;
         });
       }
       rafId.current = requestAnimationFrame(tick);
@@ -152,7 +165,7 @@ export default function CompositionDrift({
       window.removeEventListener("resize", measure);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [paths, distance]);
+  }, [paths, distance, seed]);
 
   return (
     <div

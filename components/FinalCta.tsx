@@ -10,6 +10,7 @@ export default function FinalCta() {
       <CompositionDrift
         src="/compositions/comp-14.svg"
         distance={140}
+        seed={9}
         style={{
           left: "50%",
           top: "50%",

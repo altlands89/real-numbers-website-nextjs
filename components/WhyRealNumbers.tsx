@@ -34,6 +34,7 @@ export default function WhyRealNumbers() {
       <CompositionDrift
         src="/compositions/comp-12.svg"
         distance={160}
+        seed={7}
         style={{ left: "-12%", top: "-18%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">

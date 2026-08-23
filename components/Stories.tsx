@@ -33,6 +33,7 @@ export default function Stories() {
       <CompositionDrift
         src="/compositions/comp-13.svg"
         distance={160}
+        seed={8}
         style={{ right: "-12%", top: "-16%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">

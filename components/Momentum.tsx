@@ -17,6 +17,7 @@ export default function Momentum() {
       <CompositionDrift
         src="/compositions/comp-5.svg"
         distance={170}
+        seed={6}
         style={{
           right: "-14%",
           bottom: "-20%",

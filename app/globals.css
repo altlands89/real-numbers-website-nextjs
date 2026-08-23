@@ -30,7 +30,7 @@
 
   /* ---- Layout: 1280px container / 12-8-4 columns / 64-32-20 gutters ---- */
   --max: 1280px;
-  --gutter: 64px;
+  --gutter: 2em;
   --gutter-tablet: 32px;
   --gutter-mobile: 20px;
 
@@ -707,7 +707,7 @@ p { margin: 0; }
 }
 .final-cta .wrap { position: relative; z-index: 1; }
 .final-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-800); align-items: center; }
-.final-cta h2 { margin-top: var(--space-400); max-width: 14ch; }
+.final-cta h2 { margin-top: var(--space-400); max-width: 14ch; margin-left: auto; margin-right: auto; }
 .final-cta .lede { color: var(--offwhite); opacity: 0.7; margin-top: var(--space-500); }
 .final-cta .closing-line { margin-top: var(--space-500); font-weight: 600; font-size: 1.1rem; }
 .final-cta .btn-primary { margin-top: var(--space-600); }
@@ -1063,6 +1063,12 @@ p { margin: 0; }
   user-select: none;
 }
 .comp-drift svg path { will-change: transform; }
+/* Paths drift beyond their own viewBox at the edges of their sway/scroll
+   range — without this, the SVG's default overflow:hidden clips them
+   mid-stroke, which reads as the shape breaking apart. The section
+   wrapper's own overflow:hidden still keeps drift from spilling into
+   neighboring sections. */
+.comp-drift svg { overflow: visible; }
 
 .comp-interactive {
   position: absolute;
@@ -1071,6 +1077,7 @@ p { margin: 0; }
   z-index: 1;
 }
 .comp-interactive svg path { will-change: transform; }
+.comp-interactive svg { overflow: visible; }
 @media (max-width: 1080px) {
   .hero-composition { display: none; }
 }

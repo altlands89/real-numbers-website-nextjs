@@ -30,6 +30,7 @@ export default function Philosophy() {
       <CompositionDrift
         src="/compositions/comp-11.svg"
         distance={160}
+        seed={4}
         style={{ right: "-12%", bottom: "-14%", width: 590, opacity: 0.18 }}
       />
       <div className="wrap">

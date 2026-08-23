@@ -14,6 +14,7 @@ export default function TrustStrip() {
       <CompositionDrift
         src="/compositions/comp-10.svg"
         distance={140}
+        seed={2}
         style={{ left: "-10%", top: "-50%", width: 420, opacity: 0.17 }}
       />
       <div className="wrap">

@@ -17,6 +17,9 @@ interface CompositionInteractiveProps {
   scrollDistance?: number;
   /** How far paths shift in response to cursor position (px) */
   mouseDistance?: number;
+  /** Offsets the per-path hash so this instance doesn't move in lockstep
+   *  with other compositions built from the same math. */
+  seed?: number;
 }
 
 function hash(i: number, salt: number) {
@@ -36,6 +39,7 @@ export default function CompositionInteractive({
   className,
   scrollDistance = 70,
   mouseDistance = 46,
+  seed = 0,
 }: CompositionInteractiveProps) {
   const [viewBox, setViewBox] = useState("0 0 1200 1200");
   const [aspect, setAspect] = useState(1);
@@ -119,20 +123,25 @@ export default function CompositionInteractive({
         pathRefs.current.forEach((el, i) => {
           if (!el) return;
           const horizontal = i % 2 === 0;
-          const sSign = hash(i, 5) >= 0 ? 1 : -1;
-          const sSpeed = 0.5 + Math.abs(hash(i, 6)) * 0.7;
+          const sSign = hash(i, 5 + seed) >= 0 ? 1 : -1;
+          const sSpeed = 0.5 + Math.abs(hash(i, 6 + seed)) * 0.7;
           const scrollPrimary = sp * scrollDistance * sSign * sSpeed;
-          const scrollSecondary = sp * scrollDistance * 0.2 * hash(i, 7);
+          const scrollSecondary = sp * scrollDistance * 0.2 * hash(i, 7 + seed);
           const scrollX = horizontal ? scrollPrimary : scrollSecondary;
           const scrollY = horizontal ? scrollSecondary : scrollPrimary;
 
-          const depth = 0.35 + Math.abs(hash(i, 9)) * 0.85;
-          const mouseX = mx * mouseDistance * depth * (hash(i, 11) >= 0 ? 1 : -1);
-          const mouseY = my * mouseDistance * depth * (hash(i, 13) >= 0 ? 1 : -1);
+          const depth = 0.35 + Math.abs(hash(i, 9 + seed)) * 0.85;
+          const mouseX = mx * mouseDistance * depth * (hash(i, 11 + seed) >= 0 ? 1 : -1);
+          const mouseY = my * mouseDistance * depth * (hash(i, 13 + seed) >= 0 ? 1 : -1);
+
+          // Subtle tilt tied to cursor position and per-path depth, so the
+          // piece feels like it's turning toward the cursor, not just sliding.
+          const rotDepth = 0.4 + Math.abs(hash(i, 15 + seed)) * 0.6;
+          const rot = mx * rotDepth * 5 * (hash(i, 17 + seed) >= 0 ? 1 : -1);
 
           const tx = scrollX + mouseX;
           const ty = scrollY + mouseY;
-          el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
+          el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) rotate(${rot.toFixed(2)}deg)`;
         });
       }
       rafId.current = requestAnimationFrame(tick);
@@ -151,7 +160,7 @@ export default function CompositionInteractive({
       window.removeEventListener("pointermove", handlePointerMove);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [paths, scrollDistance, mouseDistance]);
+  }, [paths, scrollDistance, mouseDistance, seed]);
 
   return (
     <div
