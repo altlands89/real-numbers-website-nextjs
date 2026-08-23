@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
+import ScrollDots from "./ScrollDots";
 
 const SERVICES = [
   {
@@ -29,6 +33,8 @@ const SERVICES = [
 ];
 
 export default function Services() {
+  const railRef = useRef<HTMLDivElement>(null);
+
   return (
     <section className="services" id="expertise" data-reveal>
       <CompositionDrift
@@ -55,7 +61,7 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="services-grid">
+        <div className="services-grid" ref={railRef}>
           {SERVICES.map((s, i) => (
             <div
               className="service-card"
@@ -75,6 +81,7 @@ export default function Services() {
             </div>
           ))}
         </div>
+        <ScrollDots railRef={railRef} count={SERVICES.length} className="services-dots" />
 
         <div className="services-cta">
           <a href="/our-expertise" className="btn btn-outline-dark">

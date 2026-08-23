@@ -1,4 +1,8 @@
+"use client";
+
+import { useRef } from "react";
 import CompositionDrift from "./CompositionDrift";
+import ScrollDots from "./ScrollDots";
 
 const STORIES = [
   {
@@ -28,6 +32,8 @@ const STORIES = [
 ];
 
 export default function Stories() {
+  const railRef = useRef<HTMLDivElement>(null);
+
   return (
     <section className="stories" id="use-cases" data-reveal>
       <CompositionDrift
@@ -45,7 +51,7 @@ export default function Stories() {
           </h2>
         </div>
         <div className="stories-grid-wrap">
-          <div className="stories-grid">
+          <div className="stories-grid" ref={railRef}>
             {STORIES.map((s, i) => (
               <div
                 className="story-card"
@@ -63,6 +69,7 @@ export default function Stories() {
             ))}
           </div>
         </div>
+        <ScrollDots railRef={railRef} count={STORIES.length} />
       </div>
     </section>
   );

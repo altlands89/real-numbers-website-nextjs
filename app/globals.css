@@ -523,6 +523,34 @@ p { margin: 0; }
 
 .philosophy-cta { margin-top: var(--space-700); display: flex; justify-content: center; }
 
+/* Dot pagination for horizontal-scroll rails */
+.scroll-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-500);
+}
+.scroll-dot {
+  appearance: none;
+  border: none;
+  padding: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line-dark);
+  cursor: pointer;
+  transition: width var(--fast) var(--ease), background var(--fast) var(--ease), opacity var(--fast) var(--ease);
+}
+.scroll-dot:hover { opacity: 0.75; }
+.scroll-dot.active { width: 24px; background: var(--red); }
+.on-dark .scroll-dot { background: var(--line); }
+.on-dark .scroll-dot.active { background: var(--clay); }
+.services-dots { display: none; }
+@media (max-width: 1024px) {
+  .services-dots { display: flex; }
+}
+
 /* =========================== ATMOSPHERE BREAK =========================== */
 .atmosphere-break {
   padding: var(--space-900) 0;
@@ -821,6 +849,19 @@ p { margin: 0; }
     transform-origin: center;
     opacity: 0.11 !important;
   }
+
+  /* The hero's interactive composition used to be hidden outright below
+     1080px. Instead of removing it, ground it as a soft background
+     accent behind the copy — same "scale + dim, never hide" treatment
+     every other composition on the site gets at phone width. */
+  .hero-composition {
+    top: auto !important;
+    bottom: -8% !important;
+    right: -12% !important;
+    transform: none !important;
+    width: clamp(240px, 68vw, 420px) !important;
+    opacity: 0.22 !important;
+  }
 }
 
 /* =========================== HOME: MISC ADDITIONS =========================== */
@@ -1078,9 +1119,6 @@ p { margin: 0; }
 }
 .comp-interactive svg path { will-change: transform; }
 .comp-interactive svg { overflow: visible; }
-@media (max-width: 1080px) {
-  .hero-composition { display: none; }
-}
 
 /* Team page */
 .team-leaders {

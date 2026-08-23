@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
+import ScrollDots from "./ScrollDots";
 
 const PILLARS = [
   {
@@ -25,6 +29,8 @@ const PILLARS = [
 ];
 
 export default function Philosophy() {
+  const railRef = useRef<HTMLDivElement>(null);
+
   return (
     <section className="philosophy" data-reveal>
       <CompositionDrift
@@ -60,7 +66,7 @@ export default function Philosophy() {
         </h3>
 
         <div className="pillars-rail-wrap">
-          <div className="pillars-rail">
+          <div className="pillars-rail" ref={railRef}>
             {PILLARS.map((p, i) => (
               <div
                 className="pillar-tile"
@@ -82,6 +88,7 @@ export default function Philosophy() {
             ))}
           </div>
         </div>
+        <ScrollDots railRef={railRef} count={PILLARS.length} />
 
         <div className="philosophy-cta">
           <a href="/about" className="btn btn-outline-dark">
