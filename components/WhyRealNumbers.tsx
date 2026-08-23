@@ -58,8 +58,13 @@ export default function WhyRealNumbers() {
         </div>
 
         <div className="why-grid">
-          {WHY.map((w) => (
-            <div className="why-item" key={w.title}>
+          {WHY.map((w, i) => (
+            <div
+              className="why-item"
+              key={w.title}
+              data-reveal
+              style={{ transitionDelay: `${i * 80}ms` }}
+            >
               <div className="pillar-icon" style={{ background: w.bg }}>
                 <Image src={w.icon} alt="" width={22} height={22} />
               </div>

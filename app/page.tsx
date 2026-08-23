@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
 import Moment from "@/components/Moment";
+import Atmosphere from "@/components/Atmosphere";
 import Philosophy from "@/components/Philosophy";
 import Services from "@/components/Services";
 import Momentum from "@/components/Momentum";
@@ -17,6 +18,7 @@ export default function Home() {
       <Hero />
       <TrustStrip />
       <Moment />
+      <Atmosphere />
       <Philosophy />
       <Services />
       <Momentum />

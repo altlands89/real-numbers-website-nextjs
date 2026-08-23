@@ -55,8 +55,13 @@ export default function Services() {
         </div>
 
         <div className="services-grid">
-          {SERVICES.map((s) => (
-            <div className="service-card" key={s.num}>
+          {SERVICES.map((s, i) => (
+            <div
+              className="service-card"
+              key={s.num}
+              data-reveal
+              style={{ transitionDelay: `${i * 80}ms` }}
+            >
               <span className="num">{s.num}</span>
               <div className="icon-badge">
                 <Image src={s.icon} alt="" width={22} height={22} />

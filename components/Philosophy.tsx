@@ -58,16 +58,28 @@ export default function Philosophy() {
           Every important decision starts with a number
         </h3>
 
-        <div className="pillars">
-          {PILLARS.map((p) => (
-            <div className="pillar" key={p.title}>
-              <div className="pillar-icon">
-                <Image src={p.icon} alt="" width={22} height={22} />
+        <div className="pillars-rail-wrap">
+          <div className="pillars-rail">
+            {PILLARS.map((p, i) => (
+              <div
+                className="pillar-tile"
+                key={p.title}
+                data-reveal
+                style={{ transitionDelay: `${i * 80}ms` }}
+              >
+                <span className="tile-num">0{i + 1}</span>
+                <Image
+                  className="pillar-tile-icon"
+                  src={p.icon}
+                  alt=""
+                  width={46}
+                  height={46}
+                />
+                <h3>{p.title}</h3>
+                <p>{p.text}</p>
               </div>
-              <h3>{p.title}</h3>
-              <p>{p.text}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="philosophy-cta">

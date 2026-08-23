@@ -49,8 +49,8 @@ export default function Momentum() {
             benefits:
           </p>
           <ul className="momentum-list">
-            {BENEFITS.map((b) => (
-              <li key={b}>
+            {BENEFITS.map((b, i) => (
+              <li key={b} data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
                 <span className="mark">✓</span> {b}
               </li>
             ))}

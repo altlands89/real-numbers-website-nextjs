@@ -43,17 +43,24 @@ export default function Stories() {
             them is.
           </h2>
         </div>
-        <div className="stories-grid">
-          {STORIES.map((s) => (
-            <div className="story-card" key={s.name}>
-              <span className="story-quote-mark">&quot;</span>
-              <p className="story-text">{s.quote}</p>
-              <p className="attribution">
-                — {s.name}
-                {s.role ? `, ${s.role}` : ""}
-              </p>
-            </div>
-          ))}
+        <div className="stories-grid-wrap">
+          <div className="stories-grid">
+            {STORIES.map((s, i) => (
+              <div
+                className="story-card"
+                key={s.name}
+                data-reveal
+                style={{ transitionDelay: `${i * 80}ms` }}
+              >
+                <span className="story-quote-mark">&quot;</span>
+                <p className="story-text">{s.quote}</p>
+                <p className="attribution">
+                  — {s.name}
+                  {s.role ? `, ${s.role}` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

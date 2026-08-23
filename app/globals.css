@@ -448,19 +448,6 @@ p { margin: 0; }
 }
 .philosophy-top h2 { margin-top: var(--space-400); }
 .philosophy-top .lede { margin-top: 0; }
-.pillars {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-500);
-}
-.pillar {
-  background: var(--offwhite);
-  border: 1px solid var(--line-dark);
-  border-radius: var(--radius-card);
-  padding: var(--space-600) var(--space-500);
-  transition: transform var(--standard) var(--ease), border-color var(--standard) var(--ease);
-}
-.pillar:hover { transform: translateY(-6px); border-color: rgba(36,30,28,0.3); }
 .pillar-icon {
   width: 52px; height: 52px;
   border-radius: 50%;
@@ -469,13 +456,93 @@ p { margin: 0; }
   transition: transform var(--fast) var(--ease);
 }
 .pillar-icon img { width: 22px; height: 22px; transition: transform var(--fast) var(--ease); }
-.pillar:hover .pillar-icon img { transform: scale(1.08); }
-.pillar:nth-child(odd) .pillar-icon { background: var(--blue); }
-.pillar:nth-child(even) .pillar-icon { background: var(--red); }
-.pillar h3 { margin-bottom: var(--space-200); }
-.pillar p { font-size: 0.92rem; opacity: 0.7; line-height: 1.5; }
+
+/* Pillars as a horizontal-scroll rail of bold color tiles — deliberately
+   louder and more graphic than the Why-grid cards below it, so the two
+   "four things" sections don't read as the same component twice. */
+.pillars-rail-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+.pillars-rail {
+  display: flex;
+  gap: var(--space-500);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px var(--gutter) var(--space-500);
+  scrollbar-width: none;
+}
+.pillars-rail::-webkit-scrollbar { display: none; }
+.pillar-tile {
+  flex: 0 0 auto;
+  width: clamp(230px, 22vw, 300px);
+  scroll-snap-align: start;
+  border-radius: var(--radius-card);
+  padding: var(--space-600) var(--space-500);
+  color: var(--offwhite);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--standard) var(--ease);
+}
+.pillar-tile:hover { transform: translateY(-8px); }
+.pillar-tile:nth-child(odd) { background: var(--blue); }
+.pillar-tile:nth-child(even) { background: var(--red); }
+.pillar-tile .tile-num {
+  position: absolute;
+  right: 20px; top: 4px;
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 800;
+  font-size: 4.4rem;
+  opacity: 0.14;
+  line-height: 1;
+}
+.pillar-tile .pillar-tile-icon {
+  width: 46px; height: 46px;
+  margin-bottom: var(--space-600);
+  opacity: 0.95;
+  position: relative; z-index: 1;
+}
+.pillar-tile h3 { color: var(--offwhite); font-size: 1.3rem; margin-bottom: var(--space-200); position: relative; z-index: 1; }
+.pillar-tile p { opacity: 0.82; font-size: 0.92rem; line-height: 1.5; position: relative; z-index: 1; }
+@media (max-width: 1024px) {
+  .pillars-rail { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
+}
+@media (max-width: 640px) {
+  .pillars-rail { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
+  .pillar-tile { width: 76vw; }
+}
 
 .philosophy-cta { margin-top: var(--space-700); display: flex; justify-content: center; }
+
+/* =========================== ATMOSPHERE BREAK =========================== */
+.atmosphere-break {
+  padding: var(--space-900) 0;
+  min-height: 44vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+.atmosphere-break .wrap { position: relative; z-index: 1; }
+.atmosphere-line {
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 2.2vw + 1rem, 2.8rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+  margin: 0 auto;
+}
 
 /* =========================== SERVICES =========================== */
 .services { padding: var(--section-y) 0; background: var(--offwhite); }
@@ -580,14 +647,37 @@ p { margin: 0; }
 
 /* =========================== TESTIMONIALS =========================== */
 .stories { padding: var(--section-y) 0; background: var(--stone); }
-.stories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-500); }
+/* Testimonials as a swipeable horizontal-scroll rail — the client asked
+   for occasional side-scroll moments, and it keeps four full quotes from
+   turning into one very long mobile stack. */
+.stories-grid-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+.stories-grid {
+  display: flex;
+  gap: var(--space-500);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px var(--gutter) var(--space-500);
+  scrollbar-width: none;
+}
+.stories-grid::-webkit-scrollbar { display: none; }
 .story-card {
   background: var(--offwhite);
   border: 1px solid var(--line-dark);
   border-radius: var(--radius-card);
   padding: var(--space-600) var(--space-600);
   display: flex; flex-direction: column; gap: var(--space-500);
-  min-height: 220px;
+  min-height: 260px;
+  flex: 0 0 auto;
+  width: min(420px, 82vw);
+  scroll-snap-align: start;
 }
 .story-quote-mark {
   font-family: var(--font-tasa), sans-serif;
@@ -597,8 +687,15 @@ p { margin: 0; }
   line-height: 1;
   opacity: 0.55;
 }
+.story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
 .story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; }
+@media (max-width: 1024px) {
+  .stories-grid { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
+}
+@media (max-width: 640px) {
+  .stories-grid { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
+}
 
 /* =========================== FINAL CTA =========================== */
 .final-cta {
@@ -684,10 +781,19 @@ p { margin: 0; }
 
   .moment-grid, .philosophy-top, .momentum-grid, .why-top, .final-grid { grid-template-columns: 1fr; }
   .moment-visual { order: -1; max-width: 420px; }
-  .pillars { grid-template-columns: repeat(2, 1fr); }
-  .services-grid { grid-template-columns: 1fr; }
+  .services-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+    gap: var(--space-500);
+    padding: 4px var(--gutter-tablet) var(--space-300);
+    margin: 0 calc(var(--gutter-tablet) * -1);
+    scrollbar-width: none;
+  }
+  .services-grid::-webkit-scrollbar { display: none; }
+  .service-card { flex: 0 0 auto; width: min(420px, 82vw); scroll-snap-align: start; min-height: 260px; }
   .why-grid { grid-template-columns: repeat(2, 1fr); }
-  .stories-grid { grid-template-columns: 1fr; }
   .logo-row { grid-template-columns: repeat(3, 1fr); }
   .momentum-list { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; gap: var(--space-600); }
@@ -696,7 +802,6 @@ p { margin: 0; }
 }
 
 @media (max-width: 560px) {
-  .pillars { grid-template-columns: 1fr; }
   .why-grid { grid-template-columns: 1fr; }
   .hero-cta { flex-direction: column; align-items: flex-start; }
   .logo-row { grid-template-columns: repeat(2, 1fr); }
