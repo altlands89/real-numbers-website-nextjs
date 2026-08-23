@@ -4,7 +4,9 @@ Next.js 14 (App Router + TypeScript) marketing site for Real Numbers, an account
 
 ## Status
 
-All 9 pages built and content-complete (Home, About, Why Real Numbers, Our Expertise, Use Cases, Questions Founders Ask, Team, Contact, plus layout/nav/footer). `npm run build` verified clean on every change so far. Repo is on GitHub, `master` branch, working tree clean as of the last session — check `git log --oneline -10` for the latest commits.
+All 9 pages built and content-complete (Home, About, Why Real Numbers, Our Expertise, Use Cases, Questions Founders Ask, Team, Contact, plus layout/nav/footer). `npm run build` verified clean on every change so far. Repo is on GitHub (`altlands89/real-numbers-website-nextjs`), `master` branch, working tree clean as of the last session — check `git log --oneline -10` for the latest commits.
+
+**Live site**: https://real-numbers-website-nextjs.vercel.app/ — deployed on Vercel, auto-deploys on every push to `master`. Confirmed live and rendering correctly.
 
 Brand colors: black `#241E1C`, off-white `#F0EFE8`, red `#B85840`, blue `#353E5B`. Font: TASA Orbiter (self-hosted via `next/font/local`).
 
