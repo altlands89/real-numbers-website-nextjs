@@ -8,6 +8,7 @@ import Philosophy from "@/components/Philosophy";
 import Services from "@/components/Services";
 import Momentum from "@/components/Momentum";
 import WhyRealNumbers from "@/components/WhyRealNumbers";
+import BrandMotion from "@/components/BrandMotion";
 import Stories from "@/components/Stories";
 import FinalCta from "@/components/FinalCta";
 import Footer from "@/components/Footer";
@@ -25,6 +26,7 @@ export default function Home() {
       <Services />
       <Momentum />
       <WhyRealNumbers />
+      <BrandMotion />
       <Stories />
       <FinalCta />
       <Footer />

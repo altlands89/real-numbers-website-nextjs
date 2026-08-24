@@ -1341,8 +1341,24 @@ p { margin: 0; }
   aspect-ratio: 4/3;
   margin-top: var(--space-600);
 }
-.atmosphere-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--editorial) var(--ease); }
-.atmosphere-photo:hover img { transform: scale(1.02); }
+.atmosphere-photo img,
+.atmosphere-photo video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--editorial) var(--ease); }
+.atmosphere-photo:hover img,
+.atmosphere-photo:hover video { transform: scale(1.02); }
+
+/* =========================== BRAND MOTION =========================== */
+.brand-motion { padding: var(--section-y) 0; background: var(--black); overflow: hidden; }
+.brand-motion .wrap { position: relative; z-index: 1; }
+.brand-motion .section-head h2 { color: var(--offwhite); }
+.brand-motion-video {
+  max-width: 620px;
+  margin: var(--space-700) auto 0;
+  aspect-ratio: 1/1;
+  background: var(--red);
+}
+@media (max-width: 640px) {
+  .brand-motion-video { max-width: 84vw; margin-top: var(--space-600); }
+}
 .atmosphere-photo .tag {
   position: absolute;
   left: 20px; bottom: 20px;
