@@ -316,8 +316,8 @@ p { margin: 0; }
 
 /* =========================== HERO =========================== */
 .hero {
-  background: var(--blue);
-  color: var(--offwhite);
+  background: var(--offwhite);
+  color: var(--black);
   padding: var(--space-900) 0 var(--space-800);
   overflow: hidden;
 }
@@ -374,7 +374,7 @@ p { margin: 0; }
   gap: 30px;
   flex-wrap: wrap;
 }
-.hero-cta .link-arrow { color: var(--offwhite); }
+.hero-cta .link-arrow { color: var(--black); }
 
 /* =========================== TRUST STRIP =========================== */
 .trust {

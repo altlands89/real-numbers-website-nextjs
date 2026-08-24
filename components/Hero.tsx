@@ -2,7 +2,7 @@ import CompositionInteractive from "./CompositionInteractive";
 
 export default function Hero() {
   return (
-    <section className="hero on-dark hairline-grid" id="top">
+    <section className="hero hairline-grid" id="top">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/img/numcomp.svg"
@@ -48,7 +48,6 @@ export default function Hero() {
           transform: "translateY(-50%)",
           width: "clamp(420px, 40vw, 720px)",
           opacity: 0.9,
-          filter: "invert(1) brightness(1.9)",
         }}
       />
     </section>
