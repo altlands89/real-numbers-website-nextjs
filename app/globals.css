@@ -318,7 +318,7 @@ p { margin: 0; }
 .hero {
   background: var(--offwhite);
   color: var(--black);
-  padding: var(--space-900) 0 var(--space-800);
+  padding: var(--space-900) 0 var(--space-1000);
   overflow: hidden;
 }
 .hero .wrap { position: relative; }
@@ -357,20 +357,20 @@ p { margin: 0; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 240px;
+  margin-top: 170px;
 }
 .hero-context-visual {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 400px;
+  width: 300px;
   transform: translate(-50%, -50%);
   z-index: 5;
 }
 .hero-context-visual img { width: 100%; height: 100%; object-fit: contain; display: block; }
 @media (max-width: 640px) {
-  .hero-context-visual { width: 240px; }
-  .hero-context-stack { margin-top: 110px; }
+  .hero-context-visual { width: 220px; }
+  .hero-context-stack { margin-top: 130px; }
 }
 .hero-context-text {
   display: flex;
