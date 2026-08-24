@@ -16,7 +16,7 @@ export default function HeroContext() {
         }}
       />
       <div className="wrap">
-        <div className="hero-context-grid">
+        <div className="hero-context-stack">
           <div className="hero-context-visual" data-reveal>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

@@ -352,29 +352,31 @@ p { margin: 0; }
   overflow: hidden;
 }
 .hero-context .wrap { position: relative; z-index: 1; }
-.hero-context-grid {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--space-800);
+.hero-context-stack {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
 }
 .hero-context-visual {
-  width: 100%;
+  width: 200px;
   aspect-ratio: 1/1;
-  position: relative;
+  margin-bottom: var(--space-600);
 }
 .hero-context-visual img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .hero-context-text { display: flex; flex-direction: column; gap: var(--space-500); }
-.hero-context-grid p {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  opacity: 0.72;
-  max-width: 48ch;
+.hero-context-text p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  letter-spacing: -0.005em;
+  opacity: 0.78;
 }
 @media (max-width: 900px) {
   .hero-context { padding: var(--space-600) 0 var(--space-700); }
-  .hero-context-grid { grid-template-columns: 1fr; gap: var(--space-500); }
-  .hero-context-visual { max-width: 220px; margin: 0 auto; }
+  .hero-context-visual { width: 170px; }
+  .hero-context-text p { font-size: 1.05rem; }
 }
 .hero-cta {
   margin-top: var(--space-700);
