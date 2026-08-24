@@ -149,7 +149,7 @@ h1 {
 /* Heading / 02 — section headlines: leading closed to 100%,
    tracking tightened for the same declarative, spec-sheet feel */
 h2 {
-  font-size: clamp(2.1rem, 1.8vw + 1.6rem, 3.5rem);
+  font-size: clamp(2.3rem, 2vw + 1.75rem, 3.85rem);
   line-height: 1;
   letter-spacing: -0.028em;
   font-weight: 700;
@@ -629,7 +629,11 @@ p { margin: 0; }
 }
 
 /* =========================== SERVICES =========================== */
-.services { padding: var(--section-y) 0; background: var(--offwhite); }
+.services {
+  padding: var(--space-800) 0 var(--section-y);
+  background: var(--offwhite);
+  border-top: 1px solid var(--line-dark);
+}
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -691,7 +695,12 @@ p { margin: 0; }
 .services-cta { margin-top: var(--space-700); display: flex; justify-content: center; }
 
 /* =========================== TEAM MOMENT (photo cluster) =========================== */
-.team-moment { padding: var(--section-y) 0; background: var(--offwhite); overflow: hidden; }
+.team-moment {
+  padding: var(--space-800) 0 var(--section-y);
+  background: var(--offwhite);
+  border-top: 1px solid var(--line-dark);
+  overflow: hidden;
+}
 .team-moment .wrap { position: relative; z-index: 1; }
 .team-moment-cluster {
   display: flex;
