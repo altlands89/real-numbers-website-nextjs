@@ -418,12 +418,16 @@ p { margin: 0; }
 }
 .trust p {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   opacity: 0.55;
-  max-width: 640px;
+  max-width: 920px;
+  white-space: nowrap;
   margin: 0 auto var(--space-600);
+}
+@media (max-width: 900px) {
+  .trust p { white-space: normal; font-size: 0.95rem; max-width: 520px; }
 }
 .logo-row {
   display: grid;
