@@ -15,15 +15,15 @@ export default function HeroContext() {
           filter: "invert(1) brightness(1.9)",
         }}
       />
+      <div className="hero-context-visual">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/img/masked/masked-11.png"
+          alt="Colleagues walking through the office"
+        />
+      </div>
       <div className="wrap">
         <div className="hero-context-stack">
-          <div className="hero-context-visual" data-reveal>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/img/masked/masked-11.png"
-              alt="Colleagues walking through the office"
-            />
-          </div>
           <div className="hero-context-text">
             <p data-reveal style={{ transitionDelay: "0ms" }}>
               Growth brings opportunity — and uncertainty, in equal measure.

@@ -349,7 +349,7 @@ p { margin: 0; }
   background: var(--black);
   color: var(--offwhite);
   padding: var(--space-700) 0 var(--space-800);
-  overflow: hidden;
+  position: relative;
 }
 .hero-context .wrap { position: relative; z-index: 1; }
 .hero-context-stack {
@@ -357,13 +357,21 @@ p { margin: 0; }
   flex-direction: column;
   align-items: center;
   text-align: center;
+  margin-top: 240px;
 }
 .hero-context-visual {
-  width: 200px;
-  aspect-ratio: 1/1;
-  margin-bottom: var(--space-600);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 400px;
+  transform: translate(-50%, -50%);
+  z-index: 5;
 }
 .hero-context-visual img { width: 100%; height: 100%; object-fit: contain; display: block; }
+@media (max-width: 640px) {
+  .hero-context-visual { width: 240px; }
+  .hero-context-stack { margin-top: 110px; }
+}
 .hero-context-text {
   display: flex;
   flex-direction: column;
