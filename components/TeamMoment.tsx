@@ -1,3 +1,5 @@
+import Parallax from "./Parallax";
+
 export default function TeamMoment() {
   return (
     <section className="team-moment" data-reveal>
@@ -10,24 +12,30 @@ export default function TeamMoment() {
         </div>
         <div className="team-moment-cluster">
           <div className="team-moment-photo team-moment-photo--a" data-reveal>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/masked/masked-2.png" alt="" />
+            <Parallax strength={26} style={{ width: "100%", height: "100%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/masked/masked-11.png" alt="" />
+            </Parallax>
           </div>
           <div
             className="team-moment-photo team-moment-photo--b"
             data-reveal
             style={{ transitionDelay: "90ms" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/masked/masked-9.png" alt="" />
+            <Parallax strength={42} style={{ width: "100%", height: "100%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/masked/masked-19.png" alt="" />
+            </Parallax>
           </div>
           <div
             className="team-moment-photo team-moment-photo--c"
             data-reveal
             style={{ transitionDelay: "180ms" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/masked/masked-6.png" alt="" />
+            <Parallax strength={16} style={{ width: "100%", height: "100%" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/masked/masked-20.png" alt="" />
+            </Parallax>
           </div>
         </div>
       </div>
