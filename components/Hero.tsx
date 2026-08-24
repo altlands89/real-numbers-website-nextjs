@@ -16,7 +16,11 @@ export default function Hero() {
             Real Numbers · Financial Partner for Growth Companies
           </span>
           <h1 data-reveal className="reveal-heading">
-            Real Numbers. Real Clarity. Real Confidence.
+            Real Numbers.
+            <br />
+            Real Clarity.
+            <br />
+            Real Confidence.
           </h1>
           <p className="sub">
             Every great business decision begins with knowing where you

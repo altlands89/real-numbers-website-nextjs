@@ -316,7 +316,7 @@ p { margin: 0; }
 
 /* =========================== HERO =========================== */
 .hero {
-  background: var(--black);
+  background: var(--blue);
   color: var(--offwhite);
   padding: var(--space-900) 0 var(--space-800);
   overflow: hidden;
@@ -462,7 +462,7 @@ p { margin: 0; }
 }
 
 /* =========================== PHILOSOPHY =========================== */
-.philosophy { padding: var(--section-y) 0; background: var(--stone); }
+.philosophy { padding: var(--section-y) 0; background: var(--offwhite); }
 .philosophy-top {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -530,17 +530,11 @@ p { margin: 0; }
 .pillar-tile .tile-num {
   position: absolute;
   right: 20px; top: 10px;
-  height: 62px;
-  opacity: 0.16;
+  height: 82px;
+  opacity: 0.42;
 }
 .pillar-tile .tile-num .number-badge-digit { filter: brightness(0) invert(1); }
-.pillar-tile .pillar-tile-icon {
-  width: 46px; height: 46px;
-  margin-bottom: var(--space-600);
-  opacity: 0.95;
-  position: relative; z-index: 1;
-}
-.pillar-tile h3 { color: var(--offwhite); font-size: 1.3rem; margin-bottom: var(--space-200); position: relative; z-index: 1; }
+.pillar-tile h3 { color: var(--offwhite); font-size: 1.7rem; margin-bottom: var(--space-200); position: relative; z-index: 1; }
 .pillar-tile p { opacity: 0.82; font-size: 0.92rem; line-height: 1.5; position: relative; z-index: 1; }
 @media (max-width: 1024px) {
   .pillars-rail { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }

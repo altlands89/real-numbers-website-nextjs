@@ -1,29 +1,24 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
 import NumberBadge from "./NumberBadge";
 
 const PILLARS = [
   {
-    icon: "/icons/clarity.svg",
     title: "Clarity",
     text: "Know where your business really stands.",
   },
   {
-    icon: "/icons/confidence.svg",
     title: "Confidence",
     text: "Decide on insight, not assumption.",
   },
   {
-    icon: "/icons/growth.svg",
     title: "Growth",
     text: "Build financial foundations that scale with your ambition.",
   },
   {
-    icon: "/icons/visibility.svg",
     title: "Visibility",
     text: "See the full picture before your next move.",
   },
@@ -76,13 +71,6 @@ export default function Philosophy() {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <NumberBadge value={`0${i + 1}`} className="tile-num" />
-                <Image
-                  className="pillar-tile-icon"
-                  src={p.icon}
-                  alt=""
-                  width={46}
-                  height={46}
-                />
                 <h3>{p.title}</h3>
                 <p>{p.text}</p>
               </div>
