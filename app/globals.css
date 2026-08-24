@@ -364,10 +364,21 @@ p { margin: 0; }
   top: 0;
   left: 50%;
   width: 300px;
+  aspect-ratio: 1/1;
   transform: translate(-50%, -50%);
   z-index: 5;
 }
-.hero-context-visual img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.hero-context-gallery-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+}
+.hero-context-gallery-img.is-active { opacity: 1; }
 @media (max-width: 640px) {
   .hero-context-visual { width: 220px; }
   .hero-context-stack { margin-top: 130px; }

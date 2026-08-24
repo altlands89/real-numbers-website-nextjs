@@ -1,4 +1,5 @@
 import CompositionDrift from "./CompositionDrift";
+import HeroContextGallery from "./HeroContextGallery";
 
 export default function HeroContext() {
   return (
@@ -15,13 +16,7 @@ export default function HeroContext() {
           filter: "invert(1) brightness(1.9)",
         }}
       />
-      <div className="hero-context-visual">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/img/masked/masked-11.png"
-          alt="Colleagues walking through the office"
-        />
-      </div>
+      <HeroContextGallery />
       <div className="wrap">
         <div className="hero-context-stack">
           <div className="hero-context-text">
