@@ -136,6 +136,12 @@ export default function OurExpertisePage() {
               {a.paras.map((p) => (
                 <p key={p}>{p}</p>
               ))}
+              {i === 0 && (
+                <div className="prose-mask-photo align-right">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/img/masked/masked-7.png" alt="" />
+                </div>
+              )}
               <div className="key-services">
                 {a.services.map((s) => (
                   <span key={s}>{s}</span>

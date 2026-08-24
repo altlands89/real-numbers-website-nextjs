@@ -17,17 +17,26 @@ export default function HeroContext() {
       />
       <div className="wrap">
         <div className="hero-context-grid">
-          <p data-reveal style={{ transitionDelay: "0ms" }}>
-            Growth brings opportunity — and uncertainty, in equal measure.
-            More people, more capital, more decisions that will define what
-            the business becomes.
-          </p>
-          <p data-reveal style={{ transitionDelay: "90ms" }}>
-            We help founders and leadership teams trade uncertainty for
-            clarity — combining financial precision with strategic thinking
-            to give leaders the insight and confidence to decide well, at
-            every stage.
-          </p>
+          <div className="hero-context-visual" data-reveal>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/img/masked/masked-11.png"
+              alt="Colleagues walking through the office"
+            />
+          </div>
+          <div className="hero-context-text">
+            <p data-reveal style={{ transitionDelay: "0ms" }}>
+              Growth brings opportunity — and uncertainty, in equal measure.
+              More people, more capital, more decisions that will define what
+              the business becomes.
+            </p>
+            <p data-reveal style={{ transitionDelay: "90ms" }}>
+              We help founders and leadership teams trade uncertainty for
+              clarity — combining financial precision with strategic thinking
+              to give leaders the insight and confidence to decide well, at
+              every stage.
+            </p>
+          </div>
         </div>
       </div>
     </section>

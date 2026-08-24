@@ -6,6 +6,7 @@ import Moment from "@/components/Moment";
 import Atmosphere from "@/components/Atmosphere";
 import Philosophy from "@/components/Philosophy";
 import Services from "@/components/Services";
+import TeamMoment from "@/components/TeamMoment";
 import Momentum from "@/components/Momentum";
 import WhyRealNumbers from "@/components/WhyRealNumbers";
 import BrandMotion from "@/components/BrandMotion";
@@ -24,6 +25,7 @@ export default function Home() {
       <Atmosphere />
       <Philosophy />
       <Services />
+      <TeamMoment />
       <Momentum />
       <WhyRealNumbers />
       <BrandMotion />

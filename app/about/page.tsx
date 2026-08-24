@@ -96,6 +96,10 @@ export default function AboutPage() {
               Every company has numbers. Not every company has clarity. Four
               principles guide how we work.
             </p>
+            <div className="prose-mask-photo align-right">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/masked/masked-13.png" alt="" />
+            </div>
             <div className="principles-list">
               {PRINCIPLES.map((p) => (
                 <div className="principle" key={p.lead}>
@@ -125,6 +129,10 @@ export default function AboutPage() {
               Whatever the challenge, the purpose stays the same — clarity
               and confidence to move forward.
             </p>
+            <div className="prose-mask-photo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/masked/masked-3.png" alt="" />
+            </div>
           </div>
 
           <div className="prose-block" style={{ position: "relative" }}>

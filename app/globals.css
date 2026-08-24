@@ -354,9 +354,17 @@ p { margin: 0; }
 .hero-context .wrap { position: relative; z-index: 1; }
 .hero-context-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 280px 1fr;
   gap: var(--space-800);
+  align-items: center;
 }
+.hero-context-visual {
+  width: 100%;
+  aspect-ratio: 1/1;
+  position: relative;
+}
+.hero-context-visual img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.hero-context-text { display: flex; flex-direction: column; gap: var(--space-500); }
 .hero-context-grid p {
   font-size: 1.05rem;
   line-height: 1.65;
@@ -366,6 +374,7 @@ p { margin: 0; }
 @media (max-width: 900px) {
   .hero-context { padding: var(--space-600) 0 var(--space-700); }
   .hero-context-grid { grid-template-columns: 1fr; gap: var(--space-500); }
+  .hero-context-visual { max-width: 220px; margin: 0 auto; }
 }
 .hero-cta {
   margin-top: var(--space-700);
@@ -681,6 +690,34 @@ p { margin: 0; }
 
 .services-cta { margin-top: var(--space-700); display: flex; justify-content: center; }
 
+/* =========================== TEAM MOMENT (photo cluster) =========================== */
+.team-moment { padding: var(--section-y) 0; background: var(--offwhite); overflow: hidden; }
+.team-moment .wrap { position: relative; z-index: 1; }
+.team-moment-cluster {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-600);
+  margin-top: var(--space-800);
+}
+.team-moment-photo { aspect-ratio: 1/1; transition: transform var(--standard) var(--ease); }
+.team-moment-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.team-moment-photo:hover { transform: translateY(-6px); }
+.team-moment-photo--a { width: 300px; align-self: flex-end; }
+.team-moment-photo--b { width: 250px; align-self: flex-start; }
+.team-moment-photo--c { width: 270px; align-self: center; }
+@media (max-width: 900px) {
+  .team-moment-cluster { gap: var(--space-500); margin-top: var(--space-600); }
+  .team-moment-photo--a { width: 42vw; }
+  .team-moment-photo--b { width: 36vw; }
+  .team-moment-photo--c { width: 38vw; }
+}
+@media (max-width: 560px) {
+  .team-moment-photo--a { width: 60vw; }
+  .team-moment-photo--b, .team-moment-photo--c { width: 46vw; }
+}
+
 /* =========================== VALUE / REAL CLARITY =========================== */
 .momentum { padding: var(--section-y) 0; background: var(--blue); color: var(--offwhite); }
 .momentum-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: var(--space-800); }
@@ -961,6 +998,14 @@ p { margin: 0; }
   padding-top: var(--space-800);
 }
 .prose-section.on-stone { background: var(--stone); }
+
+.prose-mask-photo {
+  width: 220px;
+  aspect-ratio: 1/1;
+  margin: var(--space-600) 0;
+}
+.prose-mask-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.prose-mask-photo.align-right { margin-left: auto; }
 
 /* Leadership (About) */
 .leadership-grid {
