@@ -543,7 +543,7 @@ p { margin: 0; }
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   padding: 4px var(--gutter) var(--space-500);
   scrollbar-width: none;
 }
@@ -818,7 +818,7 @@ p { margin: 0; }
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   padding: 4px var(--gutter) var(--space-500);
   scrollbar-width: none;
 }
@@ -939,7 +939,6 @@ p { margin: 0; }
     gap: 22px;
     overflow-y: auto;
   }
-  .site-header.open .nav-cta .btn-primary { display: inline-flex; }
 
   .moment-grid, .philosophy-top, .momentum-grid, .why-top, .final-grid { grid-template-columns: 1fr; }
   .moment-visual { order: -1; max-width: 420px; }
@@ -950,7 +949,7 @@ p { margin: 0; }
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
     gap: var(--space-500);
     padding: 4px var(--gutter-tablet) var(--space-300);
     margin: 0 calc(var(--gutter-tablet) * -1);
