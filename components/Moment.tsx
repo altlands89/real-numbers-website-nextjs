@@ -44,10 +44,10 @@ export default function Moment() {
         </div>
         <Parallax className="moment-visual" strength={30}>
           <Image
-            src="/img/masked-zero.png"
-            alt="Founder reviewing financials on a laptop"
+            src="/img/photography/moment-lobby.jpg"
+            alt="Walking into the Real Numbers office"
             fill
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "cover", objectPosition: "84% center" }}
           />
           <span className="tag">Clarity, in practice</span>
         </Parallax>
