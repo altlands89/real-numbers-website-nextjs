@@ -1026,9 +1026,16 @@ p { margin: 0; }
   padding: var(--space-800) 0 var(--space-700);
   overflow: hidden;
 }
-.page-hero .wrap { max-width: 880px; position: relative; z-index: 2; }
+/* Full container width, same as the header and the homepage hero — the
+   880px cap this used to have wasn't just narrower, it also recentered
+   the block instead of keeping it flush with the header logo's left
+   edge (the way .hero-inner sits flush inside the homepage's full wrap).
+   The heading itself carries the reading-width cap instead, matching
+   .hero-inner's 840px on the homepage. */
+.page-hero .wrap { max-width: var(--max); position: relative; z-index: 2; }
 .page-hero h1 {
   color: var(--offwhite);
+  max-width: 840px;
   font-size: clamp(2.25rem, 3vw + 1.2rem, 4rem);
   line-height: 0.98;
   letter-spacing: -0.02em;
