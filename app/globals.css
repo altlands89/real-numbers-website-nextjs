@@ -1852,7 +1852,7 @@ p { margin: 0; }
   letter-spacing: -0.01em;
   line-height: 1;
 }
-.v2-decode-text span { transition: color 0.05s linear; }
+.v2-decode-text span { transition: color 0.16s ease-out; }
 
 /* ---- Stats (giant digit-glyph numerals) ---- */
 .v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }

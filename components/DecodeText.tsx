@@ -61,11 +61,36 @@ export default function DecodeText() {
 
     let cancelled = false;
     const timeouts: number[] = [];
-    const intervals: number[] = [];
-    const clearAll = () => {
-      timeouts.forEach(clearTimeout);
-      intervals.forEach(clearInterval);
-    };
+    const clearAll = () => timeouts.forEach(clearTimeout);
+
+    // Each character spins through random glyphs like an odometer reel,
+    // easing from a quick flicker into a slow, settling crawl rather than
+    // ticking at a constant (and much more jittery) rate.
+    function animateChar(i: number, finalChar: string, onSettled: () => void) {
+      const duration = 1100 + Math.random() * 2600;
+      const start = performance.now();
+
+      function tick() {
+        if (cancelled) return;
+        const elapsed = performance.now() - start;
+        if (elapsed >= duration) {
+          onSettled();
+          return;
+        }
+        setChars((prev) => {
+          const next = [...prev];
+          next[i] = { char: randChar(), color: randColor() };
+          return next;
+        });
+        const progress = elapsed / duration;
+        const delay = 60 + Math.pow(progress, 2) * 260;
+        const id = window.setTimeout(tick, delay);
+        timeouts.push(id);
+      }
+      tick();
+
+      return duration;
+    }
 
     function runCycle() {
       if (cancelled) return;
@@ -74,27 +99,14 @@ export default function DecodeText() {
       let maxSettle = 0;
       FINAL.split("").forEach((finalChar, i) => {
         if (finalChar === " ") return;
-        const settleAt = 500 + Math.random() * 1800;
-        maxSettle = Math.max(maxSettle, settleAt);
-
-        const intervalId = window.setInterval(() => {
-          setChars((prev) => {
-            const next = [...prev];
-            next[i] = { char: randChar(), color: randColor() };
-            return next;
-          });
-        }, 45 + Math.random() * 45);
-        intervals.push(intervalId);
-
-        const stopId = window.setTimeout(() => {
-          clearInterval(intervalId);
+        const duration = animateChar(i, finalChar, () => {
           setChars((prev) => {
             const next = [...prev];
             next[i] = { char: finalChar, color: SETTLED_COLOR };
             return next;
           });
-        }, settleAt);
-        timeouts.push(stopId);
+        });
+        maxSettle = Math.max(maxSettle, duration);
       });
 
       const loopId = window.setTimeout(runCycle, maxSettle + HOLD_MS);
