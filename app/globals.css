@@ -1650,6 +1650,8 @@ p { margin: 0; }
   align-items: center;
   justify-content: center;
   gap: var(--space-700);
+  padding: 130px var(--gutter) var(--space-700);
+  overflow-y: auto;
   z-index: 99;
 }
 .v2-header.open .v2-header-menu nav {
