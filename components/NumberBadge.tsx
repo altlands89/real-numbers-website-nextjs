@@ -4,12 +4,14 @@ interface NumberBadgeProps {
   value: string;
   className?: string;
   style?: CSSProperties;
+  /** Use the solid-filled digit glyphs instead of the hollow outlines. */
+  solid?: boolean;
 }
 
 /** Renders a numeral string using the brand's hand-drawn digit outlines
  *  instead of typography — used as a graphic accent wherever the site
  *  shows a number (card indices, stats), not just as text. */
-export default function NumberBadge({ value, className, style }: NumberBadgeProps) {
+export default function NumberBadge({ value, className, style, solid }: NumberBadgeProps) {
   return (
     <span
       className={`number-badge${className ? ` ${className}` : ""}`}
@@ -21,7 +23,7 @@ export default function NumberBadge({ value, className, style }: NumberBadgeProp
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={i}
-            src={`/img/digits/digit-${d}.svg`}
+            src={`/img/digits/digit-${solid ? "solid-" : ""}${d}.svg`}
             alt=""
             className="number-badge-digit"
           />

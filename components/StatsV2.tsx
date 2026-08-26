@@ -1,20 +1,20 @@
 import Image from "next/image";
-import NumberBadge from "./NumberBadge";
+import CounterBadge from "./CounterBadge";
 
 const STATS = [
   {
     label: "Founded.",
-    value: "2016",
+    value: 2016,
     photo: "/img/photography/home-momentum.jpg",
   },
   {
     label: "People on the team.",
-    value: "12",
+    value: 12,
     photo: "/img/photography/expertise-atmosphere.jpg",
   },
   {
     label: "Connected areas of expertise.",
-    value: "4",
+    value: 4,
     photo: "/img/photography/usecases-atmosphere.jpg",
   },
 ];
@@ -30,7 +30,7 @@ export default function StatsV2() {
           {STATS.map((s) => (
             <div className="v2-stat-row" key={s.label} data-reveal>
               <span className="v2-stat-label">{s.label}</span>
-              <NumberBadge value={s.value} className="v2-stat-number" />
+              <CounterBadge value={s.value} className="v2-stat-number" />
               <div className="v2-stat-photo">
                 <Image src={s.photo} alt="" fill style={{ objectFit: "cover" }} />
               </div>

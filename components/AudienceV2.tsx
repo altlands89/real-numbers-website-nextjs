@@ -1,23 +1,28 @@
+import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import PillWord from "./PillWord";
 
 const AREAS = [
   {
+    icon: "/icons/finops.svg",
     title: "Financial Operations",
     text: "The foundations every growing business depends on — bookkeeping, payroll, compliance, and control.",
     href: "/our-expertise",
   },
   {
+    icon: "/icons/stratfin.svg",
     title: "Strategic Finance",
     text: "Turning financial information into business direction — budgeting, forecasting, and board-ready reporting.",
     href: "/our-expertise",
   },
   {
+    icon: "/icons/fundraising.svg",
     title: "Fundraising & Growth",
     text: "Building the credibility investors expect to see, long before the first pitch deck opens.",
     href: "/our-expertise",
   },
   {
+    icon: "/icons/bizperf.svg",
     title: "Business Performance",
     text: "Dashboards, profitability analysis, and executive insight that turn data into decisions.",
     href: "/our-expertise",
@@ -52,6 +57,9 @@ export default function AudienceV2() {
               data-reveal
               style={{ transitionDelay: `${i * 80}ms` }}
             >
+              <div className="v2-audience-icon">
+                <Image src={a.icon} alt="" width={22} height={22} />
+              </div>
               <h3>{a.title}</h3>
               <p>{a.text}</p>
             </a>

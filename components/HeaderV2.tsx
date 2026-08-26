@@ -18,7 +18,7 @@ export default function HeaderV2() {
       <div className="v2-header-bar">
         <a href="/" className="logo" aria-label="Real Numbers home">
           <Image
-            src="/img/logo-offwhite.svg"
+            src="/img/logo-black.svg"
             alt="Real Numbers"
             width={140}
             height={20}

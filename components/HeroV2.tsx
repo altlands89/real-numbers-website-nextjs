@@ -1,6 +1,15 @@
-import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import PillWord from "./PillWord";
+import PhotoSlideshow from "./PhotoSlideshow";
+
+const FEATURE_IMAGES = [
+  "/img/photography/team-hero.jpg",
+  "/img/photography/about-atmosphere.jpg",
+  "/img/photography/faq-atmosphere.jpg",
+  "/img/photography/home-final-cta.jpg",
+  "/img/photography/contact-hero.jpg",
+  "/img/photography/why-hero.jpg",
+];
 
 const LOGOS = [
   { src: "/img/logos/mccann.png", alt: "McCann" },
@@ -65,12 +74,7 @@ export default function HeroV2() {
 
       <div className="wrap">
         <div className="v2-photo-feature" data-reveal>
-          <Image
-            src="/img/photography/team-hero.jpg"
-            alt="The Real Numbers team"
-            fill
-            style={{ objectFit: "cover" }}
-          />
+          <PhotoSlideshow images={FEATURE_IMAGES} />
           <div className="v2-photo-feature-overlay">
             <h2>
               A partnership
