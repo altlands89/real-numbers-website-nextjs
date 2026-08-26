@@ -976,7 +976,7 @@ p { margin: 0; }
   /* Bottom padding has to clear the HeroContext gallery photo straddling
      the seam below (see .hero-context-visual) or it overlaps the CTA. */
   .hero { padding: var(--space-700) 0 var(--space-900); }
-  .page-hero { padding: var(--space-700) 0 var(--space-500); }
+  .page-hero { padding: 132px 0 var(--space-500); }
   .section-head { margin-bottom: var(--space-600); }
 
   /* Ambient watermark compositions read as clutter at phone width —
@@ -1022,9 +1022,13 @@ p { margin: 0; }
 .page-hero {
   background: var(--black);
   color: var(--offwhite);
-  padding: var(--space-800) 0 var(--space-700);
+  /* Clears HeaderV2, which is fixed/out-of-flow (see .v2-hero-inner
+     for the same clearance value) — every subpage now uses it. */
+  padding: 168px 0 var(--space-700);
   overflow: hidden;
 }
+.v2-hero-glow-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.page-hero.bg-photo .v2-hero-glow { mix-blend-mode: screen; }
 /* Full container width, same as the header and the homepage hero — the
    880px cap this used to have wasn't just narrower, it also recentered
    the block instead of keeping it flush with the header logo's left
@@ -1897,16 +1901,27 @@ p { margin: 0; }
 }
 .v2-audience-card:hover { transform: translateY(-6px); background: rgba(240, 239, 232, 0.12); }
 .v2-audience-icon {
+  position: relative;
   width: 60px; height: 60px;
-  border-radius: 50%;
-  background: rgba(240, 239, 232, 0.12);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: var(--space-500);
 }
-.v2-audience-icon img {
-  width: 30px; height: 30px;
+/* The brand's own numeral outline stands in for a plain circle badge —
+   each card gets its own digit (1-4), tying icon and position together. */
+.v2-audience-icon-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   filter: brightness(0) invert(1);
-  opacity: 0.9;
+  opacity: 0.22;
+}
+.v2-audience-icon-glyph {
+  position: relative;
+  z-index: 1;
+  width: 26px; height: 26px;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
 }
 .v2-audience-card h3 { color: var(--offwhite); margin-bottom: var(--space-300); }
 .v2-audience-card p { color: var(--offwhite); opacity: 0.72; font-size: 0.95rem; line-height: 1.55; }
@@ -1970,6 +1985,7 @@ p { margin: 0; }
   .v2-header-bar { padding: 10px 10px 10px 18px; }
   .v2-hero-inner { padding-top: 132px; }
   .v2-hero-headline { font-size: clamp(3.2rem, 13vw, 5rem); }
+  .v2-hero-desc { font-size: 1.05rem; line-height: 1.4; }
   .v2-logos-strip { justify-content: flex-start; }
   .v2-logos-row { gap: var(--space-500); }
   .v2-stat-number { height: clamp(48px, 14vw, 80px); }

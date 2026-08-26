@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import HeaderV2 from "@/components/HeaderV2";
+import FooterV2 from "@/components/FooterV2";
 import ContactForm from "@/components/ContactForm";
 import CompositionDrift from "@/components/CompositionDrift";
+import HeroGlow from "@/components/HeroGlow";
 
 export const metadata: Metadata = {
   title: "Contact — Real Numbers",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <Header />
+      <HeaderV2 />
 
       <section
         className="page-hero bg-photo"
@@ -23,6 +24,7 @@ export default function ContactPage() {
           distance={170}
           style={{ left: "-12%", top: "-22%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
         />
+        <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">Contact</span>
           <h1 data-reveal className="reveal-heading">
@@ -71,7 +73,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <Footer />
+      <FooterV2 />
     </>
   );
 }

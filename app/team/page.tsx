@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import HeaderV2 from "@/components/HeaderV2";
+import FooterV2 from "@/components/FooterV2";
 import CompositionDrift from "@/components/CompositionDrift";
+import HeroGlow from "@/components/HeroGlow";
 
 export const metadata: Metadata = {
   title: "Our Team — Real Numbers",
@@ -99,7 +100,7 @@ function initials(name: string) {
 export default function TeamPage() {
   return (
     <>
-      <Header />
+      <HeaderV2 />
 
       <section
         className="page-hero bg-photo"
@@ -116,6 +117,7 @@ export default function TeamPage() {
             filter: "invert(1) brightness(1.9)",
           }}
         />
+        <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">Our Team</span>
           <h1 data-reveal className="reveal-heading">
@@ -208,7 +210,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <Footer />
+      <FooterV2 />
     </>
   );
 }

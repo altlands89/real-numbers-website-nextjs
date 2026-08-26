@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import HeaderV2 from "@/components/HeaderV2";
+import FooterV2 from "@/components/FooterV2";
 import CompositionDrift from "@/components/CompositionDrift";
+import HeroGlow from "@/components/HeroGlow";
 import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
@@ -88,7 +89,7 @@ const AREAS = [
 export default function OurExpertisePage() {
   return (
     <>
-      <Header />
+      <HeaderV2 />
 
       <section className="page-hero hairline-grid">
         <CompositionDrift
@@ -96,6 +97,7 @@ export default function OurExpertisePage() {
           distance={170}
           style={{ right: "-12%", top: "-20%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
         />
+        <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">Our Expertise</span>
           <h1 data-reveal className="reveal-heading">
@@ -189,7 +191,7 @@ export default function OurExpertisePage() {
         </div>
       </section>
 
-      <Footer />
+      <FooterV2 />
     </>
   );
 }
