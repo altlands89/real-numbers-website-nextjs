@@ -17,31 +17,59 @@ export default function ContactForm() {
         <div className="contact-form-grid">
           <div>
             <label htmlFor="firstName">First Name</label>
-            <input id="firstName" type="text" required />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-user.svg" alt="" className="field-icon" />
+              <input id="firstName" type="text" required />
+            </div>
           </div>
           <div>
             <label htmlFor="lastName">Last Name</label>
-            <input id="lastName" type="text" required />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-user.svg" alt="" className="field-icon" />
+              <input id="lastName" type="text" required />
+            </div>
           </div>
           <div>
             <label htmlFor="company">Company</label>
-            <input id="company" type="text" required />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-building.svg" alt="" className="field-icon" />
+              <input id="company" type="text" required />
+            </div>
           </div>
           <div>
             <label htmlFor="role">Role</label>
-            <input id="role" type="text" />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-role.svg" alt="" className="field-icon" />
+              <input id="role" type="text" />
+            </div>
           </div>
           <div>
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" required />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-email.svg" alt="" className="field-icon" />
+              <input id="email" type="email" required />
+            </div>
           </div>
           <div>
             <label htmlFor="phone">Phone</label>
-            <input id="phone" type="tel" />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-phone.svg" alt="" className="field-icon" />
+              <input id="phone" type="tel" />
+            </div>
           </div>
           <div className="full">
             <label htmlFor="message">How can we help?</label>
-            <textarea id="message" rows={4} />
+            <div className="field-input-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icons/ic-chat.svg" alt="" className="field-icon field-icon--top" />
+              <textarea id="message" rows={4} />
+            </div>
           </div>
         </div>
         <button type="submit" className="btn btn-primary">
