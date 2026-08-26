@@ -1,6 +1,7 @@
 import CompositionDrift from "./CompositionDrift";
 import PhotoSlideshow from "./PhotoSlideshow";
 import RotatingWord from "./RotatingWord";
+import LogoMarquee from "./LogoMarquee";
 
 const FEATURE_IMAGES = [
   "/img/photography/team-hero.jpg",
@@ -85,14 +86,7 @@ export default function HeroV2() {
       </div>
 
       <div className="wrap v2-logos-strip">
-        <div className="v2-logos-row">
-          {LOGOS.map((l) => (
-            <div className="v2-logo-chip" key={l.alt}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={l.src} alt={l.alt} />
-            </div>
-          ))}
-        </div>
+        <LogoMarquee logos={LOGOS} />
         <a href="/why-real-numbers" className="v2-pill-link">
           Why Real Numbers <span>→</span>
         </a>

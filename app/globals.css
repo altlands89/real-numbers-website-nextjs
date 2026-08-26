@@ -1826,8 +1826,20 @@ p { margin: 0; }
   gap: var(--space-500);
   flex-wrap: wrap;
 }
-.v2-logos-row { display: flex; align-items: center; gap: var(--space-800); flex-wrap: wrap; flex: 1; justify-content: space-between; }
-.v2-logo-chip { opacity: 0.55; transition: opacity var(--fast) var(--ease); }
+.v2-logos-row { display: flex; align-items: center; flex: 1; }
+.v2-logos-set {
+  display: flex;
+  align-items: center;
+  gap: var(--space-800);
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: space-between;
+}
+/* Second copy of the logo set — only rendered/used for the mobile
+   auto-scrolling loop (see LogoMarquee.tsx); desktop never scrolls so
+   it stays hidden there. */
+.v2-logos-set--dup { display: none; }
+.v2-logo-chip { flex: 0 0 auto; opacity: 0.55; transition: opacity var(--fast) var(--ease); }
 .v2-logo-chip:hover { opacity: 1; }
 .v2-logo-chip img { height: 34px; width: auto; filter: brightness(0) invert(1); }
 
@@ -2060,8 +2072,14 @@ p { margin: 0; }
   .v2-hero-inner { padding-top: 132px; }
   .v2-hero-headline { font-size: clamp(3.2rem, 13vw, 5rem); }
   .v2-hero-desc { font-size: 1.05rem; line-height: 1.4; }
-  .v2-logos-strip { justify-content: flex-start; }
-  .v2-logos-row { gap: var(--space-500); }
+  /* Row scrolls edge-to-edge without wrapping, auto-advancing via
+     LogoMarquee.tsx; the "Why Real Numbers" pill moves below it instead
+     of sitting inline (there's no room for both side by side here). */
+  .v2-logos-strip { flex-direction: column; align-items: flex-start; }
+  .v2-logos-strip > .v2-pill-link { margin-top: var(--space-500); }
+  .v2-logos-row { flex-wrap: nowrap; overflow-x: hidden; width: 100%; scroll-behavior: smooth; }
+  .v2-logos-set { flex-wrap: nowrap; gap: var(--space-500); justify-content: flex-start; flex: 0 0 auto; }
+  .v2-logos-set--dup { display: flex; }
   .v2-stat-number { height: clamp(48px, 14vw, 80px); }
   .v2-footer-bottom { flex-direction: column; gap: var(--space-300); text-align: center; }
 
