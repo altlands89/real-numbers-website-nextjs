@@ -1700,7 +1700,7 @@ p { margin: 0; }
   font-family: var(--font-tasa), sans-serif;
   font-weight: 800;
   font-size: clamp(4.5rem, 9vw + 1.5rem, 11.5rem);
-  line-height: 0.92;
+  line-height: 0.8;
   letter-spacing: -0.03em;
 }
 
@@ -1714,6 +1714,9 @@ p { margin: 0; }
 }
 .v2-rotating-word-track {
   transition: transform 800ms var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-rotating-word-track { transition: none; }
 }
 .v2-rotating-word-item {
   display: block;

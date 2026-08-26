@@ -13,8 +13,10 @@ export default function RotatingWord({ words, interval = 2200 }: RotatingWordPro
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    // Always keep cycling the word — a prefers-reduced-motion visitor still
+    // needs to see it change, just without the sliding transition (handled
+    // in CSS by turning off .v2-rotating-word-track's transition instead of
+    // freezing the content here on the first word forever).
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % words.length);
     }, interval);
