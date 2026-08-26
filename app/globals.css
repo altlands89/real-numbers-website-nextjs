@@ -1827,29 +1827,23 @@ p { margin: 0; }
   letter-spacing: -0.025em;
   max-width: 21ch;
 }
-/* Decoding sentence: font-size is set inline by DecodeText.tsx, computed
-   from .v2-decode-measure's natural width so the settled sentence spans
-   exactly one line at the container's full width. */
+/* Decoding sentence: font-size is fixed (small) regardless of viewport —
+   inter-character justify is what stretches the line to exactly span the
+   container's full width, by widening the gaps between letters rather
+   than scaling the type itself. */
 .v2-decode-wrap {
   margin-top: var(--space-800);
   overflow: hidden;
-  white-space: nowrap;
-}
-.v2-decode-measure {
-  position: absolute;
-  visibility: hidden;
-  white-space: nowrap;
-  pointer-events: none;
-  font-family: var(--font-tasa), sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.01em;
 }
 .v2-decode-text {
-  display: inline-block;
-  white-space: nowrap;
+  display: block;
+  width: 100%;
+  text-align: justify;
+  text-align-last: justify;
+  text-justify: inter-character;
   font-family: var(--font-tasa), sans-serif;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.01em;
   line-height: 1;
 }
 .v2-decode-text span { transition: color 0.16s ease-out; }

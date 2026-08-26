@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 /** Leetspeak seed — also the line's static/no-JS state. Same length and
  *  space positions as FINAL, so each index maps 1:1 to its real letter. */
@@ -23,34 +23,7 @@ function seedChars() {
 }
 
 export default function DecodeText() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
   const [chars, setChars] = useState(seedChars);
-  const [fontSize, setFontSize] = useState<number | null>(null);
-
-  // Auto-fit: scale font-size so the settled FINAL sentence exactly
-  // spans the container width on one line, never wrapping.
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    const measure = measureRef.current;
-    if (!wrap || !measure) return;
-
-    function fit() {
-      const containerWidth = wrap!.clientWidth;
-      const REF = 100;
-      measure!.style.fontSize = `${REF}px`;
-      const naturalWidth = measure!.getBoundingClientRect().width;
-      if (naturalWidth > 0) {
-        setFontSize((containerWidth / naturalWidth) * REF);
-      }
-    }
-
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(wrap);
-    return () => ro.disconnect();
-  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -121,16 +94,8 @@ export default function DecodeText() {
   }, []);
 
   return (
-    <div className="v2-decode-wrap" ref={wrapRef}>
-      <span className="v2-decode-measure" ref={measureRef} aria-hidden="true">
-        {FINAL}
-      </span>
-      <span
-        className="v2-decode-text"
-        ref={textRef}
-        style={fontSize ? { fontSize } : undefined}
-        aria-hidden="true"
-      >
+    <div className="v2-decode-wrap">
+      <span className="v2-decode-text" aria-hidden="true">
         {chars.map((c, i) => (
           <span key={i} style={{ color: c.color }}>
             {c.char}
