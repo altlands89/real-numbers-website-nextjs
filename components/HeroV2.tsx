@@ -1,6 +1,6 @@
 import CompositionDrift from "./CompositionDrift";
-import PillWord from "./PillWord";
 import PhotoSlideshow from "./PhotoSlideshow";
+import RotatingWord from "./RotatingWord";
 
 const FEATURE_IMAGES = [
   "/img/photography/team-hero.jpg",
@@ -47,13 +47,9 @@ export default function HeroV2() {
 
       <div className="wrap v2-hero-inner">
         <h1 className="v2-hero-headline" data-reveal>
-          Real numbers.
+          Real
           <br />
-          Real clarity
-          <PillWord color="var(--red)" />
-          and
-          <br />
-          real confidence.
+          <RotatingWord words={["Numbers.", "Clarity.", "Confidence."]} />
         </h1>
         <div className="v2-hero-foot">
           <p className="v2-hero-desc">
