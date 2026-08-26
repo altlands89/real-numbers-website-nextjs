@@ -12,6 +12,7 @@ interface CounterBadgeProps {
   duration?: number;
   className?: string;
   style?: CSSProperties;
+  color?: "red" | "blue";
 }
 
 const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
@@ -22,8 +23,10 @@ export default function CounterBadge({
   duration = 1600,
   className,
   style,
+  color,
 }: CounterBadgeProps) {
   const [display, setDisplay] = useState(0);
+  const [entered, setEntered] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const started = useRef(false);
 
@@ -33,6 +36,7 @@ export default function CounterBadge({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       setDisplay(value);
+      setEntered(true);
       return;
     }
 
@@ -40,6 +44,7 @@ export default function CounterBadge({
       (entries) => {
         if (entries[0]?.isIntersecting && !started.current) {
           started.current = true;
+          setEntered(true);
           const start = performance.now();
           function tick(now: number) {
             const t = Math.min(1, (now - start) / duration);
@@ -59,8 +64,8 @@ export default function CounterBadge({
   const str = padLength ? String(display).padStart(padLength, "0") : String(display);
 
   return (
-    <span ref={ref}>
-      <NumberBadge value={str} solid className={className} style={style} />
+    <span ref={ref} className={`v2-counter${entered ? " is-entered" : ""}`}>
+      <NumberBadge value={str} solid color={color} className={className} style={style} />
     </span>
   );
 }
