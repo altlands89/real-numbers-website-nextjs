@@ -1841,6 +1841,7 @@ p { margin: 0; }
   text-align: justify;
   text-align-last: justify;
   text-justify: inter-character;
+  text-transform: uppercase;
   font-family: var(--font-tasa), sans-serif;
   font-size: 14px;
   font-weight: 700;
