@@ -1599,6 +1599,11 @@ p { margin: 0; }
   padding: 18px var(--gutter);
 }
 .v2-header-bar {
+  position: relative;
+  /* The open full-screen menu is z-index:99 — without this, it painted
+     over the bar (and the toggle button on it), leaving no visible way
+     to close the menu at all. */
+  z-index: 101;
   max-width: 1280px;
   margin: 0 auto;
   display: flex;
