@@ -21,7 +21,7 @@ const STATS = [
 
 export default function StatsV2() {
   return (
-    <section className="v2-stats">
+    <section className="v2-stats v2-bg-cover v2-bg-cover--comp">
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
           Proof in numbers.

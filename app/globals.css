@@ -1819,6 +1819,33 @@ p { margin: 0; }
 .v2-logo-chip:hover { opacity: 1; }
 .v2-logo-chip img { height: 34px; width: auto; filter: brightness(0) invert(1); }
 
+/* Subtle cover-fixed brand texture for light sections that otherwise
+   have no decorative background art at all. Same fixed-parallax idea as
+   .bg-photo, but a very low-opacity line-art/numeral layer under an
+   offwhite section instead of a tinted photo. */
+.v2-bg-cover { position: relative; }
+.v2-bg-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0.07;
+}
+.v2-bg-cover--comp::before { background-image: url(/compositions/comp-16.svg); }
+.v2-bg-cover--digit::before { background-image: url(/img/digits/digit-7.svg); }
+.v2-bg-cover > .wrap { position: relative; z-index: 1; }
+@media (max-width: 900px) {
+  .v2-bg-cover::before { background-attachment: scroll; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-bg-cover::before { background-attachment: scroll; }
+}
+
 /* ---- Difference (white, pill-word headline + decoding sentence) ---- */
 .v2-difference { background: var(--offwhite); padding: var(--space-800) 0; }
 .v2-difference h2 {
