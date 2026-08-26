@@ -1394,7 +1394,13 @@ p { margin: 0; }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
-  .team-grid { grid-template-columns: 1fr; }
+  /* A single full-width column made each ~11-person grid a long scroll
+     of oversized square photos. Two columns keeps cards a sane size and
+     makes the whole team scannable at a glance. */
+  .team-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-400); }
+  .team-body { padding: var(--space-400); }
+  .team-body h3 { font-size: 0.92rem; }
+  .team-placeholder { font-size: 1.6rem; }
 }
 .moment { overflow: hidden; }
 .moment .wrap { position: relative; z-index: 1; }
