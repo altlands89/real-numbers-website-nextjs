@@ -21,6 +21,7 @@
   --stone: #cfc9bc;      /* Off White, deepened — quiet surfaces */
 
   --red-dark: #9c4933;   /* Signal Red hover fill */
+  --jet: #0d0d0d;        /* v2 hero glow blob — avoids the muddy brown that red produces when blurred over --black */
   --blue-dark: #2a3148;
 
   /* ---- Hairlines (border-led system — one shadow exists in the
@@ -1700,7 +1701,7 @@ p { margin: 0; }
   animation: v2-glow-drift 22s ease-in-out infinite;
 }
 .v2-hero-glow--a { background: var(--blue); top: -20%; left: -10%; }
-.v2-hero-glow--b { background: var(--red); bottom: -30%; right: -10%; animation-duration: 26s; animation-delay: -6s; }
+.v2-hero-glow--b { background: var(--jet); bottom: -30%; right: -10%; animation-duration: 26s; animation-delay: -6s; }
 @keyframes v2-glow-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(4%, 6%) scale(1.12); }
