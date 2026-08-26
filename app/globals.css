@@ -99,6 +99,17 @@ section { position: relative; }
   padding-left: var(--gutter);
   padding-right: var(--gutter);
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 @media (max-width: 1024px) {
   .wrap { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
 }
@@ -1808,19 +1819,40 @@ p { margin: 0; }
 .v2-logo-chip:hover { opacity: 1; }
 .v2-logo-chip img { height: 34px; width: auto; filter: brightness(0) invert(1); }
 
-/* ---- Difference (white, pill-word headline + gradient divider) ---- */
-.v2-difference { background: var(--offwhite); padding: var(--space-800) 0 0; }
+/* ---- Difference (white, pill-word headline + decoding sentence) ---- */
+.v2-difference { background: var(--offwhite); padding: var(--space-800) 0; }
 .v2-difference h2 {
   font-size: clamp(2.6rem, 4.2vw + 1rem, 5.6rem);
   line-height: 0.98;
   letter-spacing: -0.025em;
   max-width: 21ch;
 }
-.v2-divider {
+/* Decoding sentence: font-size is set inline by DecodeText.tsx, computed
+   from .v2-decode-measure's natural width so the settled sentence spans
+   exactly one line at the container's full width. */
+.v2-decode-wrap {
   margin-top: var(--space-800);
-  height: 3px;
-  background: linear-gradient(90deg, var(--red), var(--blue));
+  overflow: hidden;
+  white-space: nowrap;
 }
+.v2-decode-measure {
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.v2-decode-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.v2-decode-text span { transition: color 0.05s linear; }
 
 /* ---- Stats (giant digit-glyph numerals) ---- */
 .v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }

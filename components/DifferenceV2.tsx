@@ -1,4 +1,5 @@
 import PillWord from "./PillWord";
+import DecodeText from "./DecodeText";
 
 export default function DifferenceV2() {
   return (
@@ -12,7 +13,9 @@ export default function DifferenceV2() {
           the difference.
         </h2>
       </div>
-      <div className="v2-divider" aria-hidden="true" />
+      <div className="wrap">
+        <DecodeText />
+      </div>
     </section>
   );
 }
