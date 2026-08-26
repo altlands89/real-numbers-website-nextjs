@@ -993,11 +993,14 @@ p { margin: 0; }
 
   /* Ambient watermark compositions read as clutter at phone width —
      scale and dim them down without touching each instance's inline
-     values (which set the desktop-tuned size/opacity per section). */
+     values (which set the desktop-tuned size/opacity per section).
+     0.11 was dim enough that the sway/drift animation, while still
+     running, was imperceptible — the motion effectively "wasn't there"
+     even though it was. Raised so the movement actually reads. */
   .comp-drift {
-    transform: scale(0.62);
+    transform: scale(0.72);
     transform-origin: center;
-    opacity: 0.11 !important;
+    opacity: 0.22 !important;
   }
 
   /* The hero's interactive composition used to be hidden outright below
@@ -2109,14 +2112,14 @@ p { margin: 0; }
   .v2-stat-number { height: clamp(48px, 14vw, 80px); }
   .v2-footer-bottom { flex-direction: column; gap: var(--space-300); text-align: center; }
 
-  /* The site-wide mobile rule dims every .comp-drift down to
-     near-invisible (opacity 0.11 !important) so it reads as calm
-     texture behind dense text elsewhere on the site. The v2 hero
-     wants the opposite on mobile — bold, clearly visible moving
-     line-art — so override the opacity back up here (more specific
-     selector wins over the site-wide one; the scale(0.62) from that
-     same rule doesn't need overriding since the idle-float animation
-     above drives transform on this element anyway once it's running). */
+  /* The site-wide mobile rule dims every .comp-drift to a calm
+     background texture (opacity 0.22 !important) behind dense text
+     elsewhere on the site. The v2 hero wants more than that — bold,
+     clearly visible moving line-art — so override the opacity back up
+     here (more specific selector wins over the site-wide one; the
+     scale from that same rule doesn't need overriding since the
+     idle-float animation above drives transform on this element
+     anyway once it's running). */
   .v2-hero .comp-drift {
     opacity: 0.55 !important;
   }
