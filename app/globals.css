@@ -1899,6 +1899,23 @@ p { margin: 0; }
   line-height: 1;
 }
 .v2-decode-text span { transition: color 0.16s ease-out; }
+@media (max-width: 640px) {
+  /* The single-line, letter-spacing-stretched treatment only works when
+     the container is wide enough that the sentence's natural width at a
+     legible size is already close to it. On a ~335px mobile container
+     that's off by more than 2x, so forcing it either overflowed or
+     wrapped unpredictably (wrap points shifting mid-scramble as random
+     characters of different widths swapped in). Mobile drops the
+     forced single line/fill-width and just reads as a normal wrapped,
+     left-aligned paragraph instead — still decoding, still colorful. */
+  .v2-decode-text {
+    text-align: left;
+    text-align-last: left;
+    text-justify: auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
 
 /* ---- Stats (giant digit-glyph numerals) ---- */
 .v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }
