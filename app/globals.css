@@ -2089,6 +2089,9 @@ p { margin: 0; }
   .v2-hero-inner { padding-top: 132px; }
   .v2-hero-headline { font-size: clamp(3.2rem, 13vw, 5rem); }
   .v2-hero-desc { font-size: 1.05rem; line-height: 1.4; }
+  /* Pill buttons were ~36px tall (10px padding + small type) — under the
+     ~44px comfortable touch-target minimum. Desktop is unaffected. */
+  .v2-pill-link { padding: 14px 20px; }
   /* Row scrolls edge-to-edge without wrapping, auto-advancing via
      LogoMarquee.tsx; the "Why Real Numbers" pill moves below it instead
      of sitting inline (there's no room for both side by side here). */
