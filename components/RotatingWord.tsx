@@ -7,34 +7,32 @@ interface RotatingWordProps {
   interval?: number;
 }
 
-/** Odometer-style word rotator — a fixed-height window slides its inner
- *  track up one word at a time, looping continuously. */
+/** Swaps its text on a timer with a fade + rise transition. Deliberately
+ *  avoids clipped/sliding-track techniques (sensitive to font metrics
+ *  and line-height, and it broke) in favor of a single normal-flow text
+ *  node whose content changes between fade-out and fade-in — nothing to
+ *  misalign, so it can't render half off-screen. */
 export default function RotatingWord({ words, interval = 2200 }: RotatingWordProps) {
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // Always keep cycling the word — a prefers-reduced-motion visitor still
-    // needs to see it change, just without the sliding transition (handled
-    // in CSS by turning off .v2-rotating-word-track's transition instead of
-    // freezing the content here on the first word forever).
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fade = reduce ? 0 : 350;
+
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % words.length);
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((i) => (i + 1) % words.length);
+        setVisible(true);
+      }, fade);
     }, interval);
     return () => clearInterval(id);
   }, [words.length, interval]);
 
   return (
-    <span className="v2-rotating-word">
-      <span
-        className="v2-rotating-word-track"
-        style={{ transform: `translateY(-${index * 100}%)` }}
-      >
-        {words.map((w) => (
-          <span className="v2-rotating-word-item" key={w}>
-            {w}
-          </span>
-        ))}
-      </span>
+    <span className={`v2-rotating-word${visible ? " is-visible" : ""}`}>
+      {words[index]}
     </span>
   );
 }

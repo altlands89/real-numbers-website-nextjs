@@ -1671,6 +1671,15 @@ p { margin: 0; }
   overflow: hidden;
   pointer-events: none;
 }
+/* Constant gentle idle float for the background line-art, layered on
+   top of CompositionDrift's own scroll-driven per-path motion (which
+   only touches the inner <path> elements, so animating this outer
+   wrapper doesn't conflict with it). */
+.v2-hero-backdrop .comp-drift {
+  animation: v2-glow-drift 18s ease-in-out infinite;
+}
+.v2-hero-backdrop .comp-drift:nth-of-type(2) { animation-duration: 23s; animation-delay: -4s; }
+.v2-hero-backdrop .comp-drift:nth-of-type(3) { animation-duration: 20s; animation-delay: -9s; }
 .v2-hero-glow {
   position: absolute;
   width: 60vw;
@@ -1704,28 +1713,22 @@ p { margin: 0; }
   letter-spacing: -0.03em;
 }
 
-/* Odometer-style rotating word — a 1em-tall clipped window with an
-   inner track that slides up one word at a time. */
+/* Rotating word — a single text node that fades + rises in on each
+   swap. No stacking/clipping, so there's nothing for font metrics to
+   misalign. */
 .v2-rotating-word {
   display: inline-block;
-  overflow: hidden;
-  height: 1em;
   vertical-align: top;
+  opacity: 0;
+  transform: translateY(0.12em);
+  transition: opacity 350ms var(--ease), transform 350ms var(--ease);
 }
-.v2-rotating-word-track {
-  transition: transform 800ms var(--ease);
-}
-@media (prefers-reduced-motion: reduce) {
-  .v2-rotating-word-track { transition: none; }
-}
-.v2-rotating-word-item {
-  display: block;
-  height: 1em;
-  line-height: 1;
-  white-space: nowrap;
+.v2-rotating-word.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 .v2-hero-foot {
-  margin-top: var(--space-800);
+  margin-top: var(--space-500);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -1971,4 +1974,19 @@ p { margin: 0; }
   .v2-logos-row { gap: var(--space-500); }
   .v2-stat-number { height: clamp(48px, 14vw, 80px); }
   .v2-footer-bottom { flex-direction: column; gap: var(--space-300); text-align: center; }
+
+  /* The site-wide mobile rule dims every .comp-drift down to
+     near-invisible (opacity 0.11 !important) so it reads as calm
+     texture behind dense text elsewhere on the site. The v2 hero
+     wants the opposite on mobile — bold, clearly visible moving
+     line-art — so override the opacity back up here (more specific
+     selector wins over the site-wide one; the scale(0.62) from that
+     same rule doesn't need overriding since the idle-float animation
+     above drives transform on this element anyway once it's running). */
+  .v2-hero .comp-drift {
+    opacity: 0.55 !important;
+  }
+  .v2-hero-glow {
+    opacity: 0.55;
+  }
 }
