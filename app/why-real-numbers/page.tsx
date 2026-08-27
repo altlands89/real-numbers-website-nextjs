@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import HeaderV2 from "@/components/HeaderV2";
 import FooterV2 from "@/components/FooterV2";
 import CompositionDrift from "@/components/CompositionDrift";
@@ -13,21 +14,29 @@ export const metadata: Metadata = {
 const VALUE_PROPS = [
   {
     title: "Startup Mindset",
+    icon: "/icons/startup.svg",
+    bg: "var(--red)",
     p1: "We understand how founders think, because we work inside that world every day. Startups don't move in straight lines — priorities shift overnight, markets move faster than plans, funding timelines compress without warning.",
     p2: "Our role isn't slowing you down with process. It's building the clarity that lets leadership move faster, with confidence instead of guesswork.",
   },
   {
     title: "Strategic Thinking",
+    icon: "/icons/strategic.svg",
+    bg: "var(--blue)",
     p1: "Numbers only matter when they change a decision. Financial reports explain the past; strategic finance shapes what's next. We connect financial insight to business strategy — not just what happened, but what it means and what should happen because of it.",
     p2: "Information only becomes valuable the moment it drives action.",
   },
   {
     title: "Hands-on Partnership",
+    icon: "/icons/partnership.svg",
+    bg: "var(--red)",
     p1: "Great partnerships aren't measured by how many meetings happen — they're measured by what gets said in them.",
     p2: "Our clients don't treat us as an outside advisor looped in occasionally. They bring us into planning, board meetings, fundraising, hiring, expansion — because they know we'll bring honest, practical thinking to the table, not a status update. We become part of how leadership decides. Not a report that arrives after the decision's made.",
   },
   {
     title: "Built for Long-Term Growth",
+    icon: "/icons/longterm.svg",
+    bg: "var(--blue)",
     p1: "Today's decisions should hold up under tomorrow's ambitions. Our responsibility doesn't end at this quarter's problem — we build financial frameworks that keep supporting growth as the business changes shape: operational foundations, executive reporting, fundraising prep, strategic planning, the first five hires through international expansion.",
     p2: "Every recommendation is made with the next stage already in mind. The goal was never to fix today. It's to be right about tomorrow.",
   },
@@ -112,6 +121,9 @@ export default function WhyRealNumbersPage() {
           <div className="why-grid detailed">
             {VALUE_PROPS.map((v) => (
               <div className="why-item" key={v.title}>
+                <div className="pillar-icon" style={{ background: v.bg }}>
+                  <Image src={v.icon} alt="" width={22} height={22} />
+                </div>
                 <h3>{v.title}</h3>
                 <p style={{ marginBottom: 12 }}>{v.p1}</p>
                 <p>{v.p2}</p>
