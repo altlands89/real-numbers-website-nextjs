@@ -1060,7 +1060,7 @@ p { margin: 0; }
   font-weight: 800;
   margin-top: var(--space-400);
 }
-.page-hero .lede { color: var(--offwhite); opacity: 0.8; margin-top: var(--space-500); max-width: 64ch; }
+.page-hero .lede { color: #ffffff; font-size: 16px; opacity: 0.8; margin-top: var(--space-500); max-width: 64ch; }
 .page-hero .lede + .lede { margin-top: var(--space-400); }
 .page-hero .kicker { margin-top: var(--space-500); font-weight: 600; opacity: 0.92; max-width: 60ch; }
 
@@ -1734,7 +1734,7 @@ p { margin: 0; }
   opacity: 0.35;
   animation: v2-glow-drift 22s ease-in-out infinite;
 }
-.v2-hero-glow--a { background: var(--blue); top: -20%; left: -10%; }
+.v2-hero-glow--a { background: var(--blue); top: -20%; left: -10%; animation-duration: 2s; animation-delay: 1s; }
 .v2-hero-glow--b { background: var(--jet); bottom: -30%; right: -10%; animation-duration: 26s; animation-delay: -6s; }
 @keyframes v2-glow-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }

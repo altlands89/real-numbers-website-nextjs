@@ -5,7 +5,7 @@ const STATS = [
   {
     label: "Founded.",
     value: 2016,
-    photo: "/img/photography/home-momentum.jpg",
+    photo: "/compositions/comp-7.svg",
   },
   {
     label: "People on the team.",
