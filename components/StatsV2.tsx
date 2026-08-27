@@ -5,7 +5,7 @@ const STATS = [
   {
     label: "Founded.",
     value: 2016,
-    photo: "/compositions/comp-7.svg",
+    photo: null as string | null,
   },
   {
     label: "People on the team.",
@@ -35,9 +35,11 @@ export default function StatsV2() {
                 className="v2-stat-number"
                 color={i % 2 === 0 ? "red" : "blue"}
               />
-              <div className="v2-stat-photo">
-                <Image src={s.photo} alt="" fill style={{ objectFit: "cover" }} />
-              </div>
+              {s.photo && (
+                <div className="v2-stat-photo">
+                  <Image src={s.photo} alt="" fill style={{ objectFit: "cover" }} />
+                </div>
+              )}
             </div>
           ))}
         </div>

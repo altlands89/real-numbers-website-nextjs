@@ -824,7 +824,7 @@ p { margin: 0; }
 .why-item p { font-size: 0.88rem; opacity: 0.66; line-height: 1.5; }
 
 /* =========================== TESTIMONIALS =========================== */
-.stories { padding: var(--section-y) 0; background: var(--stone); }
+.stories { padding: var(--section-y) 0; background: var(--offwhite); }
 /* Testimonials as a swipeable horizontal-scroll rail — the client asked
    for occasional side-scroll moments, and it keeps four full quotes from
    turning into one very long mobile stack. */
@@ -845,7 +845,8 @@ p { margin: 0; }
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
-  padding: 4px var(--gutter) var(--space-500);
+  padding: 50px var(--gutter) var(--space-500);
+  background-color: var(--blue-dark);
   scrollbar-width: none;
 }
 .stories-grid::-webkit-scrollbar { display: none; }

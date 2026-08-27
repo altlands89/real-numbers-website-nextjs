@@ -5,6 +5,7 @@ import PillWord from "./PillWord";
 const AREAS = [
   {
     num: "1",
+    bgDigit: "8",
     icon: "/icons/finops.svg",
     title: "Financial Operations",
     text: "The foundations every growing business depends on — bookkeeping, payroll, compliance, and control.",
@@ -64,7 +65,7 @@ export default function AudienceV2() {
               <div className="v2-audience-icon">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`/img/digits/digit-${a.num}.svg`}
+                  src={`/img/digits/digit-${a.bgDigit || a.num}.svg`}
                   alt=""
                   className="v2-audience-icon-shape"
                 />
