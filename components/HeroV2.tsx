@@ -28,20 +28,23 @@ export default function HeroV2() {
         <div className="v2-hero-glow v2-hero-glow--b" />
         <CompositionDrift
           src="/compositions/comp-5.svg"
-          distance={140}
+          distance={220}
           seed={11}
+          swayScale={2.2}
           style={{ left: "-8%", top: "-10%", width: 620, opacity: 0.5 }}
         />
         <CompositionDrift
           src="/compositions/comp-11.svg"
-          distance={120}
+          distance={190}
           seed={22}
+          swayScale={2.2}
           style={{ right: "-6%", top: "10%", width: 520, opacity: 0.4 }}
         />
         <CompositionDrift
           src="/compositions/comp-14.svg"
-          distance={160}
+          distance={250}
           seed={33}
+          swayScale={2.2}
           style={{ left: "18%", bottom: "-14%", width: 460, opacity: 0.35 }}
         />
       </div>

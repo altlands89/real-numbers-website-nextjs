@@ -1,27 +1,14 @@
-import Image from "next/image";
 import CounterBadge from "./CounterBadge";
 
 const STATS = [
-  {
-    label: "Founded.",
-    value: 2016,
-    photo: null as string | null,
-  },
-  {
-    label: "People on the team.",
-    value: 12,
-    photo: "/img/photography/expertise-atmosphere.jpg",
-  },
-  {
-    label: "Connected areas of expertise.",
-    value: 4,
-    photo: "/img/photography/usecases-atmosphere.jpg",
-  },
+  { label: "Founded.", value: 2016 },
+  { label: "People on the team.", value: 12 },
+  { label: "Connected areas of expertise.", value: 4 },
 ];
 
 export default function StatsV2() {
   return (
-    <section className="v2-stats v2-bg-cover v2-bg-cover--comp">
+    <section className="v2-stats">
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
           Proof in numbers.
@@ -35,11 +22,6 @@ export default function StatsV2() {
                 className="v2-stat-number"
                 color={i % 2 === 0 ? "red" : "blue"}
               />
-              {s.photo && (
-                <div className="v2-stat-photo">
-                  <Image src={s.photo} alt="" fill style={{ objectFit: "cover" }} />
-                </div>
-              )}
             </div>
           ))}
         </div>

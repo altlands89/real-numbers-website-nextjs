@@ -1947,7 +1947,7 @@ p { margin: 0; }
 .v2-stats-list { margin-top: var(--space-700); }
 .v2-stat-row {
   display: grid;
-  grid-template-columns: 1fr auto 90px;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--space-600);
   padding: var(--space-600) 0;
@@ -1970,14 +1970,6 @@ p { margin: 0; }
   transition: filter 900ms var(--ease);
 }
 .v2-counter.is-entered .number-badge-digit { filter: grayscale(0) opacity(1); }
-.v2-stat-photo {
-  position: relative;
-  width: 90px;
-  aspect-ratio: 1/1;
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  background: var(--stone);
-}
 
 /* ---- Dark CTA strip ---- */
 .v2-cta-dark {
@@ -2104,8 +2096,6 @@ p { margin: 0; }
 }
 @media (max-width: 900px) {
   .v2-photo-feature { aspect-ratio: 4/5; }
-  .v2-stat-row { grid-template-columns: 1fr auto; }
-  .v2-stat-photo { display: none; }
 }
 @media (max-width: 640px) {
   .v2-header { padding: 14px var(--gutter-mobile); }

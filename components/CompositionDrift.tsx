@@ -19,6 +19,10 @@ interface CompositionDriftProps {
    *  composition (or different comps with the same path count) don't
    *  all drift/sway in lockstep — each section gets its own motion feel. */
   seed?: number;
+  /** Multiplier on the idle ambient sway (amplitude + speed). Default 1
+   *  keeps the usual gentle feel; raise it for sections that want the
+   *  background motion to read as more noticeable. */
+  swayScale?: number;
 }
 
 // Deterministic pseudo-random in [-1, 1], stable across renders.
@@ -33,6 +37,7 @@ export default function CompositionDrift({
   className,
   distance = 90,
   seed = 0,
+  swayScale = 1,
 }: CompositionDriftProps) {
   const [viewBox, setViewBox] = useState("0 0 1200 1200");
   const [aspect, setAspect] = useState(1);
@@ -128,10 +133,10 @@ export default function CompositionDrift({
           let swayY = 0;
           let scale = 1;
           if (!reduce) {
-            const ampX = 6 + Math.abs(hash(i, 20 + seed)) * 10;
-            const ampY = 6 + Math.abs(hash(i, 21 + seed)) * 10;
-            const freqX = 0.035 + Math.abs(hash(i, 22 + seed)) * 0.045;
-            const freqY = 0.03 + Math.abs(hash(i, 24 + seed)) * 0.045;
+            const ampX = (6 + Math.abs(hash(i, 20 + seed)) * 10) * swayScale;
+            const ampY = (6 + Math.abs(hash(i, 21 + seed)) * 10) * swayScale;
+            const freqX = (0.035 + Math.abs(hash(i, 22 + seed)) * 0.045) * Math.sqrt(swayScale);
+            const freqY = (0.03 + Math.abs(hash(i, 24 + seed)) * 0.045) * Math.sqrt(swayScale);
             const phase = hash(i, 23 + seed) * Math.PI * 2;
             swayX = Math.sin(elapsed * freqX * Math.PI * 2 + phase) * ampX;
             swayY = Math.cos(elapsed * freqY * Math.PI * 2 + phase * 1.3) * ampY;
@@ -139,7 +144,7 @@ export default function CompositionDrift({
             // Digits stay at their original angle (rotating a numeral can
             // read as a different digit) — vary size instead, a slow
             // per-path breathing scale so the piece still feels alive.
-            const scaleAmp = 0.02 + Math.abs(hash(i, 30 + seed)) * 0.035;
+            const scaleAmp = (0.02 + Math.abs(hash(i, 30 + seed)) * 0.035) * swayScale;
             const scaleFreq = 0.02 + Math.abs(hash(i, 31 + seed)) * 0.03;
             const scalePhase = hash(i, 32 + seed) * Math.PI * 2;
             scale = 1 + Math.sin(elapsed * scaleFreq * Math.PI * 2 + scalePhase) * scaleAmp;
@@ -166,7 +171,7 @@ export default function CompositionDrift({
       window.removeEventListener("resize", measure);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [paths, distance, seed]);
+  }, [paths, distance, seed, swayScale]);
 
   return (
     <div
