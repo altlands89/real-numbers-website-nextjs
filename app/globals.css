@@ -1821,8 +1821,8 @@ p { margin: 0; }
 }
 .v2-photo-feature-overlay h2 {
   color: var(--offwhite);
-  font-size: clamp(1.8rem, 3vw + 1rem, 3rem);
-  line-height: 1.02;
+  font-size: 8vw;
+  line-height: 1;
 }
 
 .v2-logos-strip {
