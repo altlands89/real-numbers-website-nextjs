@@ -1856,15 +1856,35 @@ p { margin: 0; }
   gap: var(--space-800);
   flex-wrap: wrap;
   flex: 1;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 /* Second copy of the logo set — only rendered/used for the mobile
    auto-scrolling loop (see LogoMarquee.tsx); desktop never scrolls so
    it stays hidden there. */
 .v2-logos-set--dup { display: none; }
-.v2-logo-chip { flex: 0 0 auto; opacity: 0.55; transition: opacity var(--fast) var(--ease); }
+/* Each chip is a fixed bounding box (not just a fixed height) so logos
+   with very different proportions — a compact icon+wordmark vs. a long,
+   thin wordmark — still read as the same visual size instead of the
+   widest one dominating the row. */
+.v2-logo-chip {
+  flex: 0 0 auto;
+  width: 92px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  transition: opacity var(--fast) var(--ease);
+}
 .v2-logo-chip:hover { opacity: 1; }
-.v2-logo-chip img { height: 34px; width: auto; filter: brightness(0) invert(1); }
+.v2-logo-chip img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
 
 /* Subtle cover-fixed brand texture for light sections that otherwise
    have no decorative background art at all. Same fixed-parallax idea as
