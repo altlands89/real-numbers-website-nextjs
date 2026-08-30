@@ -1368,33 +1368,6 @@ p { margin: 0; }
 .comp-interactive svg { overflow: visible; }
 
 /* Team page */
-.team-leaders {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-600);
-  margin-top: var(--space-700);
-}
-.team-leader-card {
-  background: var(--offwhite);
-  border: 1px solid var(--line-dark);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  transition: transform var(--standard) var(--ease), border-color var(--standard) var(--ease);
-}
-.team-leader-card:hover { transform: translateY(-6px); border-color: rgba(36, 30, 28, 0.3); }
-.team-leader-photo { position: relative; aspect-ratio: 1; background: var(--stone); }
-.team-leader-body { padding: var(--space-600); }
-.team-leader-body .role {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.55;
-  margin: 4px 0 var(--space-400);
-}
-.team-leader-body p { font-size: 0.95rem; line-height: 1.65; opacity: 0.78; }
-
 .team-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1435,7 +1408,6 @@ p { margin: 0; }
 .team-body p { font-size: 0.86rem; line-height: 1.55; opacity: 0.72; }
 
 @media (max-width: 900px) {
-  .team-leaders { grid-template-columns: 1fr; }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {

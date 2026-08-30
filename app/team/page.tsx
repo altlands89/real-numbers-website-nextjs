@@ -97,6 +97,8 @@ function initials(name: string) {
     .join("");
 }
 
+const ALL_TEAM = [...LEADERSHIP, ...TEAM];
+
 export default function TeamPage() {
   return (
     <>
@@ -138,30 +140,9 @@ export default function TeamPage() {
         />
         <div className="wrap">
           <div className="prose-block" style={{ marginTop: 0, borderTop: "none", paddingTop: 0 }}>
-            <h2 data-reveal className="reveal-heading">Leadership</h2>
-            <div className="team-leaders">
-              {LEADERSHIP.map((p) => (
-                <div className="team-leader-card" key={p.name}>
-                  <div className="team-leader-photo">
-                    <Image src={p.image} alt={p.name} fill style={{ objectFit: "cover" }} />
-                  </div>
-                  <div className="team-leader-body">
-                    <h3>{p.name}</h3>
-                    <span className="role">{p.role}</span>
-                    <p>{p.bio}</p>
-                    <p style={{ marginTop: 12, fontWeight: 600, opacity: 0.85 }}>
-                      {p.edu}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="prose-block">
             <h2 data-reveal className="reveal-heading">The Team</h2>
             <div className="team-grid">
-              {TEAM.map((p, i) => (
+              {ALL_TEAM.map((p, i) => (
                 <div className="team-card" key={p.name}>
                   <div className="team-photo">
                     {p.image ? (
@@ -186,6 +167,11 @@ export default function TeamPage() {
                     <h3>{p.name}</h3>
                     <span className="role">{p.role}</span>
                     <p>{p.bio}</p>
+                    {"edu" in p && (
+                      <p style={{ marginTop: 8, fontWeight: 600, opacity: 0.85 }}>
+                        {(p as { edu: string }).edu}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
