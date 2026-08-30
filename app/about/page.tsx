@@ -61,35 +61,47 @@ export default function AboutPage() {
 
       <section className="prose-section" data-reveal>
         <div className="wrap">
-          <div className="prose-block">
-            <h2 data-reveal className="reveal-heading">Our Story</h2>
-            <p>
-              Every business reaches a point where instinct alone stops being
-              enough. Growth brings new opportunity and greater complexity in
-              the same breath — the questions get more strategic, the risk
-              more consequential, the decisions heavier than they used to be.
-            </p>
-            <p>
-              That&apos;s the gap Real Numbers was built to close: between
-              traditional financial management and strategic business
-              leadership. We work alongside founders and executive teams to
-              turn financial complexity into business clarity — helping
-              companies decide with confidence and build foundations that
-              hold under real growth.
-            </p>
-            <p>
-              Our role was never just to explain what happened. It&apos;s to
-              help leadership understand what comes next.
-            </p>
-            <Parallax className="atmosphere-photo" strength={26}>
-              <Image
-                src="/img/photography/about-atmosphere.jpg"
-                alt="Inside a Real Numbers strategy session"
-                fill
-                style={{ objectFit: "cover" }}
-              />
-              <span className="tag">Where the conversations happen</span>
-            </Parallax>
+          <div className="prose-block prose-block--story">
+            <div className="prose-block-text">
+              <h2 data-reveal className="reveal-heading">Our Story</h2>
+              <p>
+                Every business reaches a point where instinct alone stops being
+                enough. Growth brings new opportunity and greater complexity in
+                the same breath — the questions get more strategic, the risk
+                more consequential, the decisions heavier than they used to be.
+              </p>
+              <p>
+                That&apos;s the gap Real Numbers was built to close: between
+                traditional financial management and strategic business
+                leadership. We work alongside founders and executive teams to
+                turn financial complexity into business clarity — helping
+                companies decide with confidence and build foundations that
+                hold under real growth.
+              </p>
+              <p>
+                Our role was never just to explain what happened. It&apos;s to
+                help leadership understand what comes next.
+              </p>
+            </div>
+            <div className="prose-block-media">
+              <Parallax className="atmosphere-photo" strength={26}>
+                <Image
+                  src="/img/photography/about-atmosphere.jpg"
+                  alt="Inside a Real Numbers strategy session"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+                <span className="tag">Where the conversations happen</span>
+              </Parallax>
+              <Parallax className="atmosphere-photo atmosphere-photo--secondary" strength={18}>
+                <Image
+                  src="/img/photography/moment-lobby.jpg"
+                  alt="The Real Numbers team space"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </Parallax>
+            </div>
           </div>
 
           <div className="prose-block">

@@ -1103,6 +1103,33 @@ p { margin: 0; }
 }
 .prose-section.on-stone { background: var(--stone); }
 
+/* Story block — text + a stacked photo column, so a long narrative reads
+   as a designed two-up spread instead of one long single-column of text. */
+.prose-block--story {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--space-800);
+  align-items: start;
+}
+.prose-block--story .prose-block-text > p { max-width: 58ch; }
+.prose-block--story .prose-block-media {
+  display: grid;
+  gap: var(--space-500);
+  position: sticky;
+  top: var(--space-700);
+}
+.prose-block--story .atmosphere-photo { max-width: none; margin-top: 0; }
+.prose-block--story .atmosphere-photo--secondary {
+  aspect-ratio: 5/4;
+  max-width: 82%;
+  margin-left: auto;
+}
+@media (max-width: 900px) {
+  .prose-block--story { grid-template-columns: 1fr; }
+  .prose-block--story .prose-block-media { position: static; }
+  .prose-block--story .atmosphere-photo--secondary { max-width: 100%; }
+}
+
 .prose-mask-photo {
   width: 220px;
   aspect-ratio: 1/1;
