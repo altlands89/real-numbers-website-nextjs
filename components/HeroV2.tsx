@@ -13,11 +13,9 @@ const FEATURE_IMAGES = [
 ];
 
 const LOGOS = [
-  { src: "/img/logos/mccann.png", alt: "McCann" },
-  { src: "/img/logos/fix.png", alt: "Fix" },
-  { src: "/img/logos/dominos.png", alt: "Domino's" },
-  { src: "/img/logos/asus.png", alt: "ASUS" },
-  { src: "/img/logos/yes.png", alt: "yes" },
+  { src: "/img/logos/fig.svg", alt: "Fig" },
+  { src: "/img/logos/novee.svg", alt: "Novee" },
+  { src: "/img/logos/lines.svg", alt: "Lines" },
 ];
 
 export default function HeroV2() {
