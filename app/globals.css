@@ -1119,15 +1119,9 @@ p { margin: 0; }
   top: var(--space-700);
 }
 .prose-block--story .atmosphere-photo { max-width: none; margin-top: 0; }
-.prose-block--story .atmosphere-photo--secondary {
-  aspect-ratio: 5/4;
-  width: 82%;
-  justify-self: end;
-}
 @media (max-width: 900px) {
   .prose-block--story { grid-template-columns: 1fr; }
   .prose-block--story .prose-block-media { position: static; }
-  .prose-block--story .atmosphere-photo--secondary { width: 100%; }
 }
 
 .prose-mask-photo {

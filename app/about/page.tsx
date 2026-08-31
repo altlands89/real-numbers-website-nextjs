@@ -93,14 +93,6 @@ export default function AboutPage() {
                 />
                 <span className="tag">Where the conversations happen</span>
               </Parallax>
-              <Parallax className="atmosphere-photo atmosphere-photo--secondary" strength={18}>
-                <Image
-                  src="/img/photography/moment-lobby.jpg"
-                  alt="The Real Numbers team space"
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
-              </Parallax>
             </div>
           </div>
 
