@@ -73,7 +73,7 @@ export default function ContactForm() {
           </div>
         </div>
         <button type="submit" className="btn btn-primary">
-          {status === "sent" ? "Thanks — we'll be in touch" : "Let's Talk"}
+          {status === "sent" ? "Thanks, we'll be in touch" : "Let's Talk"}
         </button>
       </form>
       <div className="contact-direct">

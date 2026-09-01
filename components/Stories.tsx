@@ -13,7 +13,7 @@ const STORIES = [
   },
   {
     quote:
-      "The Real Numbers team supported us every step of the way — guiding with clarity, strengthening our business model, and responding quickly whenever needed. Their true partnership and personal approach made us feel like the first and only client.",
+      "The Real Numbers team supported us every step of the way, guiding with clarity, strengthening our business model, and responding quickly whenever needed. Their true partnership and personal approach made us feel like the first and only client.",
     name: "Yaniv Nisanboim",
     role: "",
   },
@@ -25,7 +25,7 @@ const STORIES = [
   },
   {
     quote:
-      "As a CEO, trust is everything — especially when it comes to finances. The team at Real Numbers has become a true partner in our journey. They act as real-time advisors for every financial strategy and question, and their proactive approach allows us to focus fully on our customers, confident that Real Numbers has our back at every step. Their professionalism, combined with a level of service that is truly unheard of, sets them apart in every way.",
+      "As a CEO, trust is everything, especially when it comes to finances. The team at Real Numbers has become a true partner in our journey. They act as real-time advisors for every financial strategy and question, and their proactive approach allows us to focus fully on our customers, confident that Real Numbers has our back at every step. Their professionalism, combined with a level of service that is truly unheard of, sets them apart in every way.",
     name: "Amit Rapaport",
     role: "CEO, Compete",
   },
@@ -64,7 +64,7 @@ export default function Stories() {
                   <span className="story-quote-mark story-quote-mark--close">&quot;</span>
                 </p>
                 <p className="attribution">
-                  — {s.name}
+                  {s.name}
                   {s.role ? `, ${s.role}` : ""}
                 </p>
               </div>

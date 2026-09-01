@@ -5,6 +5,7 @@ import Image from "next/image";
 
 export default function HeaderV2() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -13,8 +14,28 @@ export default function HeaderV2() {
     };
   }, [open]);
 
+  // Tightens the floating header bar once the page leaves the hero, so it
+  // reads as a compact toolbar rather than staying hero-sized all the way
+  // down. rAF-throttled: scroll fires far more often than we need to react.
+  useEffect(() => {
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 40);
+        ticking = false;
+      });
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className={`v2-header${open ? " open" : ""}`}>
+    <header
+      className={`v2-header${open ? " open" : ""}${scrolled ? " is-scrolled" : ""}`}
+    >
       <div className="v2-header-bar">
         <a href="/" className="logo" aria-label="Real Numbers home">
           <Image

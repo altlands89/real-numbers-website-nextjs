@@ -2200,3 +2200,142 @@ p { margin: 0; }
     opacity: 0.55;
   }
 }
+
+/* =========================== ABSTRACT BRAND PANELS ===========================
+   Paper-craft brand still-lifes used as visual texture in sections that
+   would otherwise be a wall of type. Three shapes: a full-bleed band, a
+   contained wide strip, and a squarer panel that sits beside copy. */
+.abstract-panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--stone);
+  /* Reveal: the panel un-clips upward and settles, rather than just
+     fading — reads as the image arriving, not appearing. */
+  clip-path: inset(12% 0 0 0 round var(--radius-card));
+  transition: clip-path 1100ms var(--ease), opacity 900ms var(--ease),
+    transform 900ms var(--ease);
+}
+.abstract-panel.is-visible { clip-path: inset(0 0 0 0 round var(--radius-card)); }
+.abstract-panel-inner { position: absolute; inset: -6% 0; }
+.abstract-panel img { display: block; }
+
+.abstract-panel--band {
+  width: 100%;
+  aspect-ratio: 21 / 7;
+  border-radius: 0;
+  clip-path: inset(12% 0 0 0);
+}
+.abstract-panel--band.is-visible { clip-path: inset(0 0 0 0); }
+
+.abstract-panel--strip {
+  width: min(1000px, 100%);
+  margin-inline: auto;
+  aspect-ratio: 21 / 8;
+  border-radius: var(--radius-card);
+}
+
+.abstract-panel--panel {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .abstract-panel { clip-path: none !important; transition: opacity 300ms linear; }
+}
+
+@media (max-width: 640px) {
+  .abstract-panel--band { aspect-ratio: 16 / 10; }
+  .abstract-panel--strip { aspect-ratio: 16 / 10; }
+}
+
+/* Contact: form beside a brand panel instead of a narrow centred column
+   floating in empty gutters. */
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: var(--space-700);
+  align-items: start;
+}
+.contact-layout-visual { position: sticky; top: var(--space-800); }
+@media (max-width: 1024px) {
+  .contact-layout { grid-template-columns: 1fr; gap: var(--space-600); }
+  .contact-layout-visual { position: static; max-width: 520px; margin-inline: auto; }
+}
+@media (max-width: 640px) {
+  .contact-layout-visual { display: none; }
+}
+
+/* Abstract strip sitting above a closing CTA */
+.final-cta-visual { margin-bottom: var(--space-700); }
+.expertise-break { margin: var(--space-800) 0; }
+
+/* =========================== MOTION POLISH =========================== */
+
+/* Header settles into a tighter bar once you leave the hero. */
+.v2-header {
+  transition: padding var(--standard) var(--ease);
+}
+.v2-header-bar {
+  transition: padding var(--standard) var(--ease),
+    box-shadow var(--standard) var(--ease),
+    background-color var(--standard) var(--ease);
+}
+.v2-header.is-scrolled { padding-top: 10px; padding-bottom: 10px; }
+.v2-header.is-scrolled .v2-header-bar {
+  padding: 9px 9px 9px 22px;
+  box-shadow: 0 10px 34px -14px rgba(36, 30, 28, 0.38);
+}
+
+/* Images breathe on hover wherever they're interactive or decorative. */
+.abstract-panel img,
+.atmosphere-photo img,
+.team-photo img {
+  transition: transform 900ms var(--ease);
+}
+.abstract-panel:hover img,
+.team-card:hover .team-photo img { transform: scale(1.04); }
+
+/* Links and pills get a consistent, unhurried response. */
+.v2-pill-link,
+.btn,
+.link-arrow,
+.v2-footer-nav a,
+.v2-header-menu nav a {
+  transition: color var(--fast) var(--ease), background-color var(--fast) var(--ease),
+    border-color var(--fast) var(--ease), transform var(--fast) var(--ease),
+    opacity var(--fast) var(--ease);
+}
+.v2-pill-link:hover,
+.btn:hover { transform: translateY(-2px); }
+.v2-pill-link:active,
+.btn:active { transform: translateY(0); }
+
+/* The arrow inside pill links leans forward on hover. */
+.v2-pill-link span,
+.link-arrow span { transition: transform var(--fast) var(--ease); display: inline-block; }
+.v2-pill-link:hover span,
+.link-arrow:hover span { transform: translateX(3px); }
+
+/* Cards lift consistently rather than each section inventing its own. */
+.usecase-item,
+.principle,
+.why-item {
+  transition: transform var(--standard) var(--ease), box-shadow var(--standard) var(--ease);
+}
+.usecase-item:hover,
+.principle:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgba(36, 30, 28, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-pill-link:hover,
+  .btn:hover,
+  .usecase-item:hover,
+  .principle:hover,
+  .abstract-panel:hover img,
+  .team-card:hover .team-photo img { transform: none; }
+  .v2-pill-link:hover span,
+  .link-arrow:hover span { transform: none; }
+}

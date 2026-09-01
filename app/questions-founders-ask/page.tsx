@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import HeaderV2 from "@/components/HeaderV2";
 import FooterV2 from "@/components/FooterV2";
+import AbstractPanel from "@/components/AbstractPanel";
 import Faq from "@/components/Faq";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
-  title: "Questions Founders Ask — Real Numbers",
+  title: "Questions Founders Ask | Real Numbers",
   description:
     "Honest answers to the questions we hear most, before we start working together.",
 };
@@ -56,6 +57,10 @@ export default function QuestionsFoundersAskPage() {
           <Faq />
         </div>
       </section>
+
+      {/* The Q&A page is otherwise an unbroken column of type — this gives
+          the eye somewhere to land before the footer. */}
+      <AbstractPanel src="/img/abstract/wide-23.jpg" variant="band" strength={26} />
 
       <FooterV2 />
     </>

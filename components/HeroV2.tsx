@@ -57,7 +57,7 @@ export default function HeroV2() {
           <p className="v2-hero-desc">
             Real Numbers is a financial partnership platform that backs
             growing companies and turns financial complexity into clear,
-            confident decisions — at every stage.
+            confident decisions, at every stage.
           </p>
           <div className="v2-hero-ctas">
             <a href="/contact" className="v2-pill-link v2-pill-link--solid">

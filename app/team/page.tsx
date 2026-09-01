@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import HeaderV2 from "@/components/HeaderV2";
 import FooterV2 from "@/components/FooterV2";
+import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 
 export const metadata: Metadata = {
-  title: "Our Team — Real Numbers",
+  title: "Our Team | Real Numbers",
   description: "The people behind Real Numbers.",
 };
 
@@ -15,14 +16,14 @@ const LEADERSHIP = [
     name: "Eran Dor",
     role: "Founder & CEO",
     image: "/img/team/eran-dor.jpg",
-    bio: "A CPA and economist with a 360-degree view of the high-tech industry — auditor, controller, CFO, and investor. Eran has guided hundreds of fundraising processes and prepared companies for IPOs, M&As, and major growth phases. Before founding Real Numbers, he built his career at EY, then served as CFO across cybersecurity and health-tech VCs and startups — experience that gives him a close read on what investors actually expect.",
+    bio: "A CPA and economist with a 360-degree view of the high-tech industry: auditor, controller, CFO, and investor. Eran has guided hundreds of fundraising processes and prepared companies for IPOs, M&As, and major growth phases. Before founding Real Numbers, he built his career at EY, then served as CFO across cybersecurity and health-tech VCs and startups, experience that gives him a close read on what investors actually expect.",
     edu: "B.A. in Accounting and Business Administration, MBA.",
   },
   {
     name: "Uzi Baruch",
     role: "Partner, Investor Relations",
     image: "/img/team/uzi-baruch.jpg",
-    bio: "Over 15 years inside Israel's technology and financial ecosystems, working every engagement from both the business and financial side. Before Real Numbers, Uzi led Business Development for KPMG Israel's Technology Practice, with deep focus on mobility and fintech. His path runs through the Israel Securities Authority, American Express, and PwC — investigation, management, and accounting, all in one background.",
+    bio: "Over 15 years inside Israel's technology and financial ecosystems, working every engagement from both the business and financial side. Before Real Numbers, Uzi led Business Development for KPMG Israel's Technology Practice, with deep focus on mobility and fintech. His path runs through the Israel Securities Authority, American Express, and PwC: investigation, management, and accounting, all in one background.",
     edu: "B.A. in Accounting and Business Administration, LLB in Law.",
   },
 ];
@@ -32,19 +33,19 @@ const TEAM = [
     name: "Dana Atzmon",
     role: "VP Finance",
     image: "/img/team/dana-atzmon.jpg",
-    bio: "Startup financial management, corporate finance, and financial reporting under US GAAP and IFRS — Dana leads strategic planning and due diligence for growing companies.",
+    bio: "Startup financial management, corporate finance, and financial reporting under US GAAP and IFRS. Dana leads strategic planning and due diligence for growing companies.",
   },
   {
     name: "Shalom Renard",
     role: "Finance Director",
     image: "/img/team/shalom-renard.jpg",
-    bio: "Financial leadership for early-stage and established companies across high-tech, medical, food tech, and SaaS — financial modeling, cash flow, and ERP implementation.",
+    bio: "Financial leadership for early-stage and established companies across high-tech, medical, food tech, and SaaS: financial modeling, cash flow, and ERP implementation.",
   },
   {
     name: "Idan Stern",
     role: "Controller",
     image: "/img/team/idan-stern.jpg",
-    bio: "Manages financial operations for Real Numbers clients, including venture capital funds — financial reporting, internal and external audits, full event tracking.",
+    bio: "Manages financial operations for Real Numbers clients, including venture capital funds: financial reporting, internal and external audits, full event tracking.",
   },
   {
     name: "Dorit Blit",
@@ -68,25 +69,25 @@ const TEAM = [
     name: "Yulia Sytnyk",
     role: "Financial Operations",
     image: "/img/team/yulia-sytnyk.jpg",
-    bio: "Manages financial processes and payment workflows to keep day-to-day operations running smoothly — precise, detail-driven, client-focused.",
+    bio: "Manages financial processes and payment workflows to keep day-to-day operations running smoothly: precise, detail-driven, client-focused.",
   },
   {
     name: "Haim Dagan",
     role: "Senior Bookkeeper",
     image: null,
-    bio: "Financial systems and technology — ERP implementation, U.S. bookkeeping, and digital transformation of accounting processes using Priority and SAP.",
+    bio: "Financial systems and technology: ERP implementation, U.S. bookkeeping, and digital transformation of accounting processes using Priority and SAP.",
   },
   {
     name: "Lesya Feldman",
     role: "Senior Bookkeeper & Payroll Manager",
     image: null,
-    bio: "Over 12 years in advanced bookkeeping and payroll — monthly closings, tax reporting, international payments, and advanced payroll solutions.",
+    bio: "Over 12 years in advanced bookkeeping and payroll: monthly closings, tax reporting, international payments, and advanced payroll solutions.",
   },
   {
     name: "Sara Kanal",
     role: "Senior Bookkeeper",
     image: null,
-    bio: "Comprehensive accounting for startups and corporations — financial reporting, payroll, and international banking reconciliations including SVB and PayPal.",
+    bio: "Comprehensive accounting for startups and corporations: financial reporting, payroll, and international banking reconciliations including SVB and PayPal.",
   },
 ];
 
@@ -127,7 +128,7 @@ export default function TeamPage() {
           </h1>
           <p className="lede">
             Every model, every board deck, every late-night answer to an
-            urgent question — it comes from this team.
+            urgent question: it comes from this team.
           </p>
         </div>
       </section>
@@ -143,7 +144,12 @@ export default function TeamPage() {
             <h2 data-reveal className="reveal-heading">The Team</h2>
             <div className="team-grid">
               {ALL_TEAM.map((p, i) => (
-                <div className="team-card" key={p.name}>
+                <div
+                  className="team-card"
+                  key={p.name}
+                  data-reveal
+                  style={{ transitionDelay: `${Math.min(i, 5) * 70}ms` }}
+                >
                   <div className="team-photo">
                     {p.image ? (
                       <Image
@@ -182,6 +188,7 @@ export default function TeamPage() {
 
       <section className="final-cta hairline-grid" data-reveal>
         <div className="wrap">
+          <AbstractPanel src="/img/abstract/wide-13.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
             <h2>The right people, at every stage of growth</h2>
             <p className="closing-line">

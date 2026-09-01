@@ -5,7 +5,7 @@ import Preloader from "@/components/Preloader";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "[Design Concept] Real Numbers — Financial Clarity for Growing Companies",
+  title: "[Design Concept] Real Numbers | Financial Clarity for Growing Companies",
   description:
     "Real Numbers helps startups and technology companies turn financial complexity into clear decisions, scalable planning and confident growth.",
   robots: { index: false, follow: false },

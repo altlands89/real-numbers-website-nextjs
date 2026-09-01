@@ -4,9 +4,10 @@ import FooterV2 from "@/components/FooterV2";
 import ContactForm from "@/components/ContactForm";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
+import AbstractPanel from "@/components/AbstractPanel";
 
 export const metadata: Metadata = {
-  title: "Contact — Real Numbers",
+  title: "Contact | Real Numbers",
   description: "Every meaningful partnership starts with a conversation.",
 };
 
@@ -39,9 +40,16 @@ export default function ContactPage() {
           distance={140}
           style={{ right: "-10%", bottom: "-12%", width: 500, opacity: 0.14 }}
         />
+        <div className="wrap contact-layout">
+          <div className="contact-layout-form">
+            <ContactForm />
+          </div>
+          {/* Fills the wide empty gutter the centred form used to leave. */}
+          <div className="contact-layout-visual">
+            <AbstractPanel src="/img/abstract/sq-12.jpg" variant="panel" strength={16} />
+          </div>
+        </div>
         <div className="wrap">
-          <ContactForm />
-
           <div className="manifesto">
             <h3>
               Real Numbers. Built on trust. Driven by clarity. Focused on

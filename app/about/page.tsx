@@ -7,7 +7,7 @@ import HeroGlow from "@/components/HeroGlow";
 import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
-  title: "About — Real Numbers",
+  title: "About | Real Numbers",
   description:
     "We believe every growing company deserves a financial partner it can actually trust.",
 };
@@ -19,7 +19,7 @@ const PRINCIPLES = [
   },
   {
     lead: "Confidence is earned.",
-    text: "Strong partnerships run on honesty, consistency, and discretion — earned conversation by conversation, decision by decision.",
+    text: "Strong partnerships run on honesty, consistency, and discretion, earned conversation by conversation, decision by decision.",
   },
   {
     lead: "Growth needs a partner, not a vendor.",
@@ -52,7 +52,7 @@ export default function AboutPage() {
           <p className="lede">
             We didn&apos;t build Real Numbers to become another accounting
             firm. We built it because leadership deserves more than accurate
-            reports — it deserves clarity, perspective, honest conversations,
+            reports: it deserves clarity, perspective, honest conversations,
             and a partner who understands that behind every financial
             decision sits a business, a team, and a vision worth protecting.
           </p>
@@ -67,14 +67,14 @@ export default function AboutPage() {
               <p>
                 Every business reaches a point where instinct alone stops being
                 enough. Growth brings new opportunity and greater complexity in
-                the same breath — the questions get more strategic, the risk
+                the same breath: the questions get more strategic, the risk
                 more consequential, the decisions heavier than they used to be.
               </p>
               <p>
                 That&apos;s the gap Real Numbers was built to close: between
                 traditional financial management and strategic business
                 leadership. We work alongside founders and executive teams to
-                turn financial complexity into business clarity — helping
+                turn financial complexity into business clarity, helping
                 companies decide with confidence and build foundations that
                 hold under real growth.
               </p>
@@ -107,8 +107,13 @@ export default function AboutPage() {
               <img src="/img/masked/masked-13.png" alt="" />
             </div>
             <div className="principles-list">
-              {PRINCIPLES.map((p) => (
-                <div className="principle" key={p.lead}>
+              {PRINCIPLES.map((p, i) => (
+                <div
+                  className="principle"
+                  key={p.lead}
+                  data-reveal
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
                   <strong>{p.lead}</strong>
                   <p>{p.text}</p>
                 </div>
@@ -121,7 +126,7 @@ export default function AboutPage() {
             <p>
               Every engagement starts with understanding, not a template.
               Before we build a forecast, dashboard, or model, we learn the
-              business behind the numbers — its ambitions, its pace, its
+              business behind the numbers: its ambitions, its pace, its
               people, and what growth is actually pressuring right now.
             </p>
             <p>
@@ -132,7 +137,7 @@ export default function AboutPage() {
               spreadsheet and everything to do with judgment.
             </p>
             <p>
-              Whatever the challenge, the purpose stays the same — clarity
+              Whatever the challenge, the purpose stays the same: clarity
               and confidence to move forward.
             </p>
             <div className="prose-mask-photo">
@@ -154,12 +159,12 @@ export default function AboutPage() {
                 <span className="role">Founder &amp; CEO</span>
                 <p className="bio">
                   Eran is a CPA and economist who learned finance from the
-                  inside before founding Real Numbers — starting at KPMG,
+                  inside before founding Real Numbers, starting at KPMG,
                   then moving client-side through VP Finance and CFO roles,
                   including time at BRM. He founded Real Numbers in 2016 on a
                   simple conviction: growing companies need financial
                   leadership, not just financial reporting. That conviction
-                  still shapes how he works — Eran would rather understand
+                  still shapes how he works: Eran would rather understand
                   what a business actually needs than hand over a standard
                   deliverable, and that instinct sits behind every model,
                   forecast, and board conversation we lead.
@@ -171,13 +176,13 @@ export default function AboutPage() {
                 <p className="bio">
                   Uzi doesn&apos;t fit the usual mold of the profession, by
                   design. He trained in accounting and holds a law degree,
-                  but built his career on people more than paperwork — first
+                  but built his career on people more than paperwork: first
                   as an investigator at the Israel Securities Authority, then
                   in fintech business development at KPMG, where he built the
                   market relationships and startup-ecosystem knowledge that
                   still shape how we work with founders today. At Real
                   Numbers, Uzi is the reason clients feel looked after rather
-                  than processed — he owns the relationship and the
+                  than processed: he owns the relationship and the
                   responsiveness, so the team stays focused on getting the
                   numbers right.
                 </p>

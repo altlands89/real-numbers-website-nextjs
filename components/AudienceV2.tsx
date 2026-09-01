@@ -7,14 +7,14 @@ const AREAS = [
     bgDigit: "8",
     icon: "/icons/finops.svg",
     title: "Financial Operations",
-    text: "The foundations every growing business depends on — bookkeeping, payroll, compliance, and control.",
+    text: "The foundations every growing business depends on: bookkeeping, payroll, compliance, and control.",
     href: "/our-expertise",
   },
   {
     num: "2",
     icon: "/icons/stratfin.svg",
     title: "Strategic Finance",
-    text: "Turning financial information into business direction — budgeting, forecasting, and board-ready reporting.",
+    text: "Turning financial information into business direction: budgeting, forecasting, and board-ready reporting.",
     href: "/our-expertise",
   },
   {

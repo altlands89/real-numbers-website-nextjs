@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import HeaderV2 from "@/components/HeaderV2";
 import FooterV2 from "@/components/FooterV2";
+import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import Parallax from "@/components/Parallax";
 
 export const metadata: Metadata = {
-  title: "Our Expertise — Real Numbers",
+  title: "Our Expertise | Real Numbers",
   description: "The right expertise at every stage of growth.",
 };
 
@@ -17,7 +18,7 @@ const AREAS = [
     title: "Financial Operations",
     tagline: "Build confidence from the ground up.",
     paras: [
-      "Strong businesses run on strong financial foundations — not exciting, but non-negotiable. Financial Operations keeps every process accurate, compliant, and scalable, giving leadership full visibility into the real health of the business, and structure to grow without losing control of what's underneath it.",
+      "Strong businesses run on strong financial foundations: not exciting, but non-negotiable. Financial Operations keeps every process accurate, compliant, and scalable, giving leadership full visibility into the real health of the business, and structure to grow without losing control of what's underneath it.",
     ],
     services: [
       "Bookkeeping",
@@ -34,7 +35,7 @@ const AREAS = [
     title: "Strategic Finance",
     tagline: "Turning financial information into business direction.",
     paras: [
-      "As companies grow, finance moves from the edge of strategic conversations to the center of them. We connect financial insight to business planning — sharper budgeting and forecasting, KPI frameworks that mean something, board reporting that earns trust, strategy grounded in real numbers.",
+      "As companies grow, finance moves from the edge of strategic conversations to the center of them. We connect financial insight to business planning: sharper budgeting and forecasting, KPI frameworks that mean something, board reporting that earns trust, strategy grounded in real numbers.",
       "Numbers should guide leadership. Not overwhelm it.",
     ],
     services: [
@@ -53,7 +54,7 @@ const AREAS = [
     title: "Fundraising & Growth",
     tagline: "Building credibility before you meet a single investor.",
     paras: [
-      "Fundraising starts long before the first pitch deck opens. We build the financial foundations investors expect to see — the kind that hold up through the entire process, not just the room.",
+      "Fundraising starts long before the first pitch deck opens. We build the financial foundations investors expect to see, the kind that hold up through the entire process, not just the room.",
       "Whether you're preparing for Seed, Series A, or your next milestone, we help leadership tell a financial story investors trust because it's true, not just polished.",
     ],
     services: [
@@ -71,7 +72,7 @@ const AREAS = [
     title: "Business Performance",
     tagline: "Make every number mean something.",
     paras: [
-      "Data creates value the moment it changes a decision. We turn financial information into clear insight — performance dashboards, profitability analysis, runway monitoring, executive reporting — built so leadership spots opportunity and manages risk without waiting for next quarter to explain what already happened.",
+      "Data creates value the moment it changes a decision. We turn financial information into clear insight: performance dashboards, profitability analysis, runway monitoring, executive reporting, built so leadership spots opportunity and manages risk without waiting for next quarter to explain what already happened.",
     ],
     services: [
       "KPI Reporting",
@@ -105,7 +106,7 @@ export default function OurExpertisePage() {
           </h1>
           <p className="lede">
             Every growing business hits a different financial challenge at a
-            different moment — stronger operations, strategic leadership in
+            different moment: stronger operations, strategic leadership in
             the room, fundraising readiness, or infrastructure for scale it
             hasn&apos;t hit yet.
           </p>
@@ -152,12 +153,18 @@ export default function OurExpertisePage() {
             </div>
           ))}
 
+          <AbstractPanel
+            src="/img/abstract/wide-8.jpg"
+            variant="strip"
+            className="expertise-break"
+          />
+
           <div className="prose-block">
             <h2 data-reveal className="reveal-heading">One integrated financial partnership</h2>
             <p>
               Each area creates value alone. Together, they&apos;re one
               connected financial framework supporting leadership at every
-              stage — one partner who sees the whole business, instead of
+              stage: one partner who sees the whole business, instead of
               four providers each holding a piece of a picture no one sees
               whole.
             </p>
@@ -176,6 +183,7 @@ export default function OurExpertisePage() {
 
       <section className="final-cta hairline-grid" data-reveal>
         <div className="wrap">
+          <AbstractPanel src="/img/abstract/wide-24.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
             <h2>Whatever stage your business is in, we&apos;ll help you prepare for what&apos;s next</h2>
             <p className="closing-line">
