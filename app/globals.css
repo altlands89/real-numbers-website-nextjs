@@ -2007,10 +2007,15 @@ p { margin: 0; }
 .v2-stat-number.v2-counter-text {
   font-family: var(--font-tasa), sans-serif;
   font-weight: 800;
-  font-size: clamp(40px, 4.5vw, 64px);
+  font-size: clamp(64px, 7.5vw, 116px);
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  /* 800 is already the heaviest weight the font ships — a thin same-color
+     stroke thickens the glyphs further so "bolder" reads as bolder, not
+     just bigger. */
+  -webkit-text-stroke: 1.5px currentColor;
+  paint-order: stroke fill;
 }
 /* Rise-and-fade entrance, timed together with the count-up in
    CounterBadge.tsx — reads as the number arriving into place, not just
