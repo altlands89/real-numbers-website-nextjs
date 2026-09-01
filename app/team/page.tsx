@@ -123,7 +123,7 @@ export default function TeamPage() {
         <div className="wrap">
           <span className="eyebrow">Our Team</span>
           <h1 data-reveal className="reveal-heading">
-            The people behind Real Numbers.
+            The people behind Real Numbers
           </h1>
           <p className="lede">
             Every model, every board deck, every late-night answer to an
@@ -183,7 +183,7 @@ export default function TeamPage() {
       <section className="final-cta hairline-grid" data-reveal>
         <div className="wrap">
           <div className="section-head center">
-            <h2>The right people, at every stage of growth.</h2>
+            <h2>The right people, at every stage of growth</h2>
             <p className="closing-line">
               Let&apos;s talk about what your business needs next.
             </p>

@@ -101,7 +101,7 @@ export default function OurExpertisePage() {
         <div className="wrap">
           <span className="eyebrow">Our Expertise</span>
           <h1 data-reveal className="reveal-heading">
-            The right expertise at every stage of growth.
+            The right expertise at every stage of growth
           </h1>
           <p className="lede">
             Every growing business hits a different financial challenge at a
@@ -177,7 +177,7 @@ export default function OurExpertisePage() {
       <section className="final-cta hairline-grid" data-reveal>
         <div className="wrap">
           <div className="section-head center">
-            <h2>Whatever stage your business is in, we&apos;ll help you prepare for what&apos;s next.</h2>
+            <h2>Whatever stage your business is in, we&apos;ll help you prepare for what&apos;s next</h2>
             <p className="closing-line">
               Let&apos;s build clarity. Let&apos;s build confidence. Let&apos;s
               build growth that lasts.

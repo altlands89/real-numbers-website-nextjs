@@ -19,7 +19,7 @@ export default function CtaDarkV2() {
         <h2 data-reveal className="reveal-heading">
           From ambition to
           <br />
-          tangible results.
+          tangible results
         </h2>
         <a href="/why-real-numbers" className="v2-pill-link">
           Discover more <span>→</span>

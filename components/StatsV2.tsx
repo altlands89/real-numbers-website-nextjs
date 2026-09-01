@@ -1,9 +1,12 @@
 import CounterBadge from "./CounterBadge";
 
+// M&A deals and funds managed are placeholders pending final figures from
+// the client — everything else here is a real, current number.
 const STATS = [
-  { label: "Founded.", value: 2016 },
-  { label: "People on the team.", value: 12 },
-  { label: "Connected areas of expertise.", value: 4 },
+  { label: "People on the team", value: 12, color: "red" as const },
+  { label: "Years in business", value: 10, color: "blue" as const },
+  { label: "M&A deals", value: 8, color: "jet" as const },
+  { label: "Funds managed ($M)", value: 250, color: "horizon" as const },
 ];
 
 export default function StatsV2() {
@@ -11,17 +14,13 @@ export default function StatsV2() {
     <section className="v2-stats">
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          Proof in numbers.
+          Proof in numbers
         </h2>
-        <div className="v2-stats-list">
-          {STATS.map((s, i) => (
-            <div className="v2-stat-row" key={s.label} data-reveal>
+        <div className="v2-stats-grid">
+          {STATS.map((s) => (
+            <div className="v2-stat-col" key={s.label} data-reveal>
+              <CounterBadge value={s.value} className="v2-stat-number" color={s.color} />
               <span className="v2-stat-label">{s.label}</span>
-              <CounterBadge
-                value={s.value}
-                className="v2-stat-number"
-                color={i % 2 === 0 ? "red" : "blue"}
-              />
             </div>
           ))}
         </div>

@@ -29,7 +29,7 @@ export default function QuestionsFoundersAskPage() {
           <span className="eyebrow">Questions Founders Ask</span>
           <h1 data-reveal className="reveal-heading">
             Honest answers to the questions we hear most, before we start
-            working together.
+            working together
           </h1>
         </div>
       </section>

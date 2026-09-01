@@ -58,7 +58,7 @@ export default function UseCasesPage() {
           <span className="eyebrow">Use Cases</span>
           <h1 data-reveal className="reveal-heading">
             Different companies. Different challenges. One trusted financial
-            partner.
+            partner
           </h1>
           <p className="lede">
             Some are preparing to raise. Others are scaling faster than their
@@ -111,7 +111,7 @@ export default function UseCasesPage() {
             <h2>
               If one of these sounds familiar, let&apos;s talk. Every
               business deserves financial clarity before its next important
-              decision — not after.
+              decision — not after
             </h2>
           </div>
           <div className="final-cta-action">

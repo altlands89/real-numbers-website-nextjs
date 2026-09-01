@@ -28,7 +28,7 @@ export default function ContactPage() {
         <div className="wrap">
           <span className="eyebrow">Contact</span>
           <h1 data-reveal className="reveal-heading">
-            Every meaningful partnership starts with a conversation.
+            Every meaningful partnership starts with a conversation
           </h1>
           <p className="lede">
             Whether you&apos;re preparing for growth, raising capital,
@@ -58,13 +58,8 @@ export default function ContactPage() {
           <div className="manifesto">
             <h3>
               Real Numbers. Built on trust. Driven by clarity. Focused on
-              growth.
+              growth
             </h3>
-            <p>
-              Leadership deserves more than financial reporting — clarity,
-              perspective, honest conversations, and a partner who turns
-              uncertainty into confident decisions.
-            </p>
             <p>
               That&apos;s why Real Numbers exists. And that&apos;s how we
               help businesses grow.

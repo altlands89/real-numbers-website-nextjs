@@ -8,7 +8,7 @@ interface NumberBadgeProps {
   solid?: boolean;
   /** Use a pre-colored solid variant instead of the plain black one
    *  (still needs solid to be meaningful; color implies solid). */
-  color?: "red" | "blue";
+  color?: "red" | "blue" | "jet" | "horizon";
 }
 
 /** Renders a numeral string using the brand's hand-drawn digit outlines

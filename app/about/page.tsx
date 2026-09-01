@@ -47,7 +47,7 @@ export default function AboutPage() {
           <span className="eyebrow">About Real Numbers</span>
           <h1 data-reveal className="reveal-heading">
             We believe every growing company deserves a financial partner it
-            can actually trust.
+            can actually trust
           </h1>
           <p className="lede">
             We didn&apos;t build Real Numbers to become another accounting

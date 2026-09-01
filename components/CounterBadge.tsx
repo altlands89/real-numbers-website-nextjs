@@ -12,7 +12,7 @@ interface CounterBadgeProps {
   duration?: number;
   className?: string;
   style?: CSSProperties;
-  color?: "red" | "blue";
+  color?: "red" | "blue" | "jet" | "horizon";
 }
 
 const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));

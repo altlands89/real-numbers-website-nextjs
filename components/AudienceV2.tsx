@@ -1,6 +1,5 @@
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
-import PillWord from "./PillWord";
 
 const AREAS = [
   {
@@ -48,10 +47,9 @@ export default function AudienceV2() {
       </div>
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          One partnership.
-          <PillWord color="var(--red)" />
+          One partnership
           <br />
-          Every stage of growth.
+          for every stage of growth
         </h2>
         <div className="v2-audience-grid">
           {AREAS.map((a, i) => (

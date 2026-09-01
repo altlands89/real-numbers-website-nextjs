@@ -871,6 +871,12 @@ p { margin: 0; }
   opacity: 0.55;
 }
 .story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
+.story-text .story-quote-mark--close {
+  display: inline;
+  font-size: 1.3rem;
+  vertical-align: -0.28em;
+  margin-inline-start: 0.1em;
+}
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
 .story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; }
 @media (max-width: 1024px) {
@@ -1609,23 +1615,6 @@ p { margin: 0; }
 .v2-difference .v2-pill-link:hover,
 .v2-stats .v2-pill-link:hover { border-color: var(--black); }
 
-.v2-pill-word {
-  display: inline-flex;
-  width: 1.3em;
-  height: 0.42em;
-  border-radius: 999px;
-  margin: 0 0.15em;
-  vertical-align: 0.09em;
-  /* Inline background (the color prop) sets the starting frame; the
-     animation still wins the cascade for the same property while
-     it runs, cycling through the brand's two accent colors. */
-  animation: v2-pill-color-cycle 5s ease-in-out infinite;
-}
-@keyframes v2-pill-color-cycle {
-  0%, 100% { background-color: var(--red); }
-  50% { background-color: var(--blue); }
-}
-
 /* ---- Header ---- */
 /* Fixed and transparent so the hero's dark background runs all the way
    to the top of the page and shows through around the pill — a sticky
@@ -1954,35 +1943,58 @@ p { margin: 0; }
   }
 }
 
-/* ---- Stats (giant digit-glyph numerals) ---- */
+/* ---- Stats (digit-glyph numerals, one column per stat) ---- */
 .v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }
 .v2-stats h2 { font-size: clamp(2.3rem, 3.5vw + 1rem, 4.5rem); }
-.v2-stats-list { margin-top: var(--space-700); }
-.v2-stat-row {
+.v2-stats-grid {
+  margin-top: var(--space-700);
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-600);
-  padding: var(--space-600) 0;
   border-top: 1px solid var(--line-dark);
+  padding-top: var(--space-700);
 }
-.v2-stat-row:last-child { border-bottom: 1px solid var(--line-dark); }
+.v2-stat-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-300);
+}
 .v2-stat-label {
   font-family: var(--font-tasa), sans-serif;
-  font-size: clamp(1.3rem, 1.4vw + 0.9rem, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-size: clamp(0.95rem, 0.4vw + 0.8rem, 1.1rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
   color: var(--black);
-  max-width: 14ch;
+  opacity: 0.7;
+  max-width: 16ch;
 }
-.v2-stat-number.number-badge { gap: 0.06em; }
-.v2-stat-number { height: clamp(56px, 8vw, 112px); }
+/* Smaller and more restrained than the original full-bleed treatment —
+   the client felt the numerals read as too heavy/oversized. */
+.v2-stat-number.number-badge { gap: 0.05em; }
+.v2-stat-number { height: clamp(40px, 4.5vw, 64px); }
+/* Rise-and-fade entrance, timed together with the count-up in
+   CounterBadge.tsx — reads as the number arriving into place, not just
+   fading on. */
+.v2-counter {
+  display: inline-flex;
+  transform: translateY(14px);
+  opacity: 0;
+  transition: transform 700ms var(--ease), opacity 700ms var(--ease);
+}
+.v2-counter.is-entered { transform: translateY(0); opacity: 1; }
 .v2-counter .number-badge-digit {
   filter: grayscale(1) opacity(0.35);
   transition: filter 900ms var(--ease);
 }
 .v2-counter.is-entered .number-badge-digit { filter: grayscale(0) opacity(1); }
+@media (max-width: 900px) {
+  .v2-stats-grid { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-700); }
+}
+@media (max-width: 480px) {
+  .v2-stats-grid { grid-template-columns: 1fr; }
+}
 
 /* ---- Dark CTA strip ---- */
 .v2-cta-dark {

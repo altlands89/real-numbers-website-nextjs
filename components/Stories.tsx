@@ -46,8 +46,7 @@ export default function Stories() {
         <div className="section-head center">
           <span className="eyebrow">Client Stories</span>
           <h2 data-reveal className="reveal-heading">
-            Reports were never the point. The confidence leaders gain from
-            them is.
+            What happens when the numbers start working for you
           </h2>
         </div>
         <div className="stories-grid-wrap">
@@ -60,7 +59,10 @@ export default function Stories() {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <span className="story-quote-mark">&quot;</span>
-                <p className="story-text">{s.quote}</p>
+                <p className="story-text">
+                  {s.quote}
+                  <span className="story-quote-mark story-quote-mark--close">&quot;</span>
+                </p>
                 <p className="attribution">
                   — {s.name}
                   {s.role ? `, ${s.role}` : ""}

@@ -61,7 +61,7 @@ export default function WhyRealNumbersPage() {
           <span className="eyebrow">Why Real Numbers</span>
           <h1 data-reveal className="reveal-heading">
             Financial leadership was never really about numbers. It&apos;s
-            about helping leaders make better decisions.
+            about helping leaders make better decisions
           </h1>
           <p className="lede">
             The most valuable financial conversations rarely start with a
@@ -172,7 +172,7 @@ export default function WhyRealNumbersPage() {
         />
         <div className="wrap">
           <div className="section-head center">
-            <h2>Better financial decisions begin with better conversations.</h2>
+            <h2>Better financial decisions begin with better conversations</h2>
             <p className="closing-line">Let&apos;s start one.</p>
           </div>
           <div className="final-cta-action">

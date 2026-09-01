@@ -16,10 +16,10 @@ export default function FooterV2() {
       <div className="wrap">
         <div className="v2-footer-cta">
           <h2 data-reveal className="reveal-heading">
-            Let&apos;s talk real numbers.
+            Let&apos;s talk real numbers
           </h2>
           <a href="/contact" className="v2-pill-link v2-pill-link--solid">
-            Start the conversation <span>→</span>
+            Let&apos;s Talk <span>→</span>
           </a>
         </div>
 
