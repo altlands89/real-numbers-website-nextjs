@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import NumberBadge from "./NumberBadge";
 
 interface CounterBadgeProps {
   /** Target integer value to count up to. */
@@ -16,6 +15,13 @@ interface CounterBadgeProps {
 }
 
 const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
+const COLOR_VARS: Record<string, string> = {
+  red: "var(--red)",
+  blue: "var(--blue)",
+  jet: "var(--jet)",
+  horizon: "var(--horizon)",
+};
 
 export default function CounterBadge({
   value,
@@ -65,7 +71,12 @@ export default function CounterBadge({
 
   return (
     <span ref={ref} className={`v2-counter${entered ? " is-entered" : ""}`}>
-      <NumberBadge value={str} solid color={color} className={className} style={style} />
+      <span
+        className={`v2-counter-text${className ? ` ${className}` : ""}`}
+        style={{ color: color ? COLOR_VARS[color] : undefined, ...style }}
+      >
+        {str}
+      </span>
     </span>
   );
 }

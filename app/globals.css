@@ -2001,10 +2001,17 @@ p { margin: 0; }
   opacity: 0.7;
   max-width: 16ch;
 }
-/* Smaller and more restrained than the original full-bleed treatment —
-   the client felt the numerals read as too heavy/oversized. */
-.v2-stat-number.number-badge { gap: 0.05em; }
-.v2-stat-number { height: clamp(40px, 4.5vw, 64px); }
+/* Live text digits (ExtraBold) instead of the SVG glyph badges — smaller
+   and more restrained than the original full-bleed treatment, per client
+   feedback that the numerals read as too heavy/oversized. */
+.v2-stat-number.v2-counter-text {
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 4.5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
 /* Rise-and-fade entrance, timed together with the count-up in
    CounterBadge.tsx — reads as the number arriving into place, not just
    fading on. */
@@ -2015,11 +2022,11 @@ p { margin: 0; }
   transition: transform 700ms var(--ease), opacity 700ms var(--ease);
 }
 .v2-counter.is-entered { transform: translateY(0); opacity: 1; }
-.v2-counter .number-badge-digit {
+.v2-counter-text {
   filter: grayscale(1) opacity(0.35);
   transition: filter 900ms var(--ease);
 }
-.v2-counter.is-entered .number-badge-digit { filter: grayscale(0) opacity(1); }
+.v2-counter.is-entered .v2-counter-text { filter: grayscale(0) opacity(1); }
 @media (max-width: 900px) {
   .v2-stats-grid { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-700); }
 }
