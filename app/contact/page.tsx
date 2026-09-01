@@ -30,19 +30,6 @@ export default function ContactPage() {
           <h1 data-reveal className="reveal-heading">
             Every meaningful partnership starts with a conversation
           </h1>
-          <p className="lede">
-            Whether you&apos;re preparing for growth, raising capital,
-            building stronger foundations, or just looking for more clarity
-            than you have today — we&apos;d like to hear your story.
-          </p>
-          <p className="lede">
-            Every company is different, so every conversation starts with
-            understanding yours before we recommend anything.
-          </p>
-          <p className="kicker">
-            Tell us where your business is today. We&apos;ll help you
-            understand what comes next.
-          </p>
         </div>
       </section>
 

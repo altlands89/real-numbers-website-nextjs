@@ -76,9 +76,29 @@ export default function ContactForm() {
           {status === "sent" ? "Thanks — we'll be in touch" : "Let's Talk"}
         </button>
       </form>
-      <p className="contact-fine">
-        Prefer a direct conversation? Schedule a meeting with our team.
-      </p>
+      <div className="contact-direct">
+        <p className="contact-direct-text">Prefer a direct conversation?</p>
+        <div className="contact-direct-links">
+          <a
+            href="https://wa.me/972523735059"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-direct-icon"
+            aria-label="Message us on WhatsApp"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/ic-whatsapp.svg" alt="" />
+          </a>
+          <a
+            href="mailto:Uzi@realnumbers.co.il"
+            className="contact-direct-icon"
+            aria-label="Email us"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/ic-email.svg" alt="" />
+          </a>
+        </div>
+      </div>
     </>
   );
 }

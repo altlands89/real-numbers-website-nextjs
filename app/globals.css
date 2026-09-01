@@ -1323,7 +1323,38 @@ p { margin: 0; }
 .contact-form-field:first-child,
 .contact-form-grid { margin-top: 0; }
 .contact-form button { width: 100%; justify-content: center; margin-top: var(--space-500); }
-.contact-fine { text-align: center; margin-top: var(--space-500); font-size: 0.85rem; opacity: 0.6; }
+.contact-direct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+  margin-top: var(--space-600);
+}
+.contact-direct-text {
+  font-family: var(--font-tasa), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--black);
+}
+.contact-direct-links { display: flex; align-items: center; gap: var(--space-300); }
+.contact-direct-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--stone);
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.contact-direct-icon:hover { background: var(--red); transform: translateY(-2px); }
+.contact-direct-icon:hover img { filter: brightness(0) invert(1); }
+.contact-direct-icon img { width: 20px; height: 20px; }
+@media (max-width: 560px) {
+  .contact-direct { flex-direction: column; gap: var(--space-300); }
+}
 
 /* Composition watermarks (parallax) */
 .comp-parallax {
