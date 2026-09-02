@@ -414,6 +414,10 @@ p { margin: 0; }
   object-fit: contain;
   display: block;
   opacity: 0;
+  /* Photo crossfade — deliberately slower than --editorial (400ms),
+     which is tuned for UI reveals, not a gallery breathing between
+     images. Not drawn from the --fast/--standard/--editorial set on
+     purpose. */
   transition: opacity 900ms var(--ease);
 }
 .hero-context-gallery-img.is-active { opacity: 1; }
@@ -1872,6 +1876,10 @@ p { margin: 0; }
   height: 100%;
   object-fit: cover;
   opacity: 0;
+  /* Same "slow photo crossfade" category as .hero-context-gallery-img,
+     independently tuned for this slideshow's own pace — plus a
+     much slower 6s linear Ken Burns drift while active, unrelated to
+     the crossfade timing. Neither is meant to match --editorial. */
   transition: opacity 1400ms var(--ease), transform 6000ms linear;
   transform: scale(1);
 }
