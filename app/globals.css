@@ -34,7 +34,7 @@
      falls back to full width with gutters on tablet and phone. Body copy
      keeps its own reading-width caps, so the wider container mainly gives
      the grids, rails and header more room. ---- */
-  --max: 80%;
+  --max: 92%;
   --gutter: 6px;
   --gutter-tablet: 32px;
   --gutter-mobile: 20px;
