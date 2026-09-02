@@ -2419,7 +2419,9 @@ p { margin: 0; }
    vertical rhythm plus a slightly denser card brings it in by roughly a
    third without touching the quotes themselves. */
 .stories { padding: clamp(56px, 6vw, 96px) 0; }
-.stories .section-head { margin-bottom: var(--space-500); }
+/* 24px here left only ~8px of visual gap once the heading's line box was
+   accounted for, so the rail crowded the headline. */
+.stories .section-head { margin-bottom: var(--space-800); }
 .story-card {
   padding: var(--space-500);
   gap: var(--space-400);
