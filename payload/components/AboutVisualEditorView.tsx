@@ -47,9 +47,13 @@ export async function AboutVisualEditorView(props: ViewProps) {
   if (!user) redirect("/admin/login?redirect=%2Fadmin%2Fvisual-editor%2Fabout");
 
   const payload = await getCMS();
-  const [page, tokens] = await Promise.all([
+  const [page, tokens, media] = await Promise.all([
     payload.findGlobal({ slug: "about-page" }),
     payload.findGlobal({ slug: "design-tokens" }),
+    // Powers the in-canvas image picker. Newest first, capped — the
+    // picker filters client-side, so this stays one query rather than a
+    // search endpoint.
+    payload.find({ collection: "media", limit: 200, sort: "-createdAt", depth: 0 }),
   ]);
 
   const c = (tokens?.colors ?? {}) as Record<string, string>;
@@ -62,9 +66,9 @@ export async function AboutVisualEditorView(props: ViewProps) {
     stone: c.stone || "#cfc9bc",
   };
 
-  const photoUrls = (page.ourStory?.photos ?? [])
-    .map((p) => (typeof p.image === "object" && p.image?.url ? p.image.url : ""))
-    .filter(Boolean) as string[];
+  const mediaLibrary = media.docs
+    .filter((m) => Boolean(m.url))
+    .map((m) => ({ id: m.id, url: m.url as string, alt: m.alt ?? "", filename: m.filename ?? "" }));
 
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,7 +84,7 @@ export async function AboutVisualEditorView(props: ViewProps) {
         @font-face { font-family: "TASA Orbiter Editor"; src: url("/fonts/TASAOrbiter-Bold.ttf") format("truetype"); font-weight: 700; }
         @font-face { font-family: "TASA Orbiter Editor"; src: url("/fonts/TASAOrbiter-ExtraBold.ttf") format("truetype"); font-weight: 800; }
       `}</style>
-      <AboutVisualEditorClient initialData={page as AboutPage} colors={colors} photoUrls={photoUrls} />
+      <AboutVisualEditorClient initialData={page as AboutPage} colors={colors} mediaLibrary={mediaLibrary} />
     </DefaultTemplate>
   );
 }

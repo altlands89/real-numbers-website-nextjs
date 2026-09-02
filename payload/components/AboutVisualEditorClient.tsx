@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { AboutPage } from "@/payload/payload-types";
 import { saveAboutPage } from "./aboutVisualEditorActions";
+
+export type MediaItem = { id: number; url: string; alt: string; filename: string };
 
 type Colors = {
   black: string;
@@ -16,7 +19,7 @@ type Colors = {
 type Props = {
   initialData: AboutPage;
   colors: Colors;
-  photoUrls: string[];
+  mediaLibrary: MediaItem[];
 };
 
 /** Every editable field renders as a borderless input that approximates
@@ -184,11 +187,23 @@ function RowActions({ onAdd, onRemove }: { onAdd: () => void; onRemove?: () => v
   );
 }
 
-export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Props) {
+export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: Props) {
+  const router = useRouter();
   const [data, setData] = useState<AboutPage>(initialData);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
   const [dirty, setDirty] = useState(false);
+  // Which photo slot the media picker is currently choosing for:
+  // a number replaces that index, "new" appends.
+  const [picking, setPicking] = useState<number | "new" | null>(null);
+
+  const mediaById = useCallback(
+    (id: number | { id: number } | null | undefined) => {
+      const key = typeof id === "object" && id ? id.id : id;
+      return mediaLibrary.find((m) => m.id === key);
+    },
+    [mediaLibrary],
+  );
 
   // Generic immutable setter for a nested path, so each field below stays
   // a one-liner instead of repeating spread-merge boilerplate 20 times.
@@ -242,12 +257,18 @@ export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Prop
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
+      // Re-render the server component so what's on screen is what's
+      // actually stored, rather than trusting local state to have stayed
+      // in sync with the database.
+      router.refresh();
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
       setSaving(false);
     }
   };
+
+  const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
   const type = {
     eyebrow: { fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: colors.clay },
@@ -293,11 +314,6 @@ export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Prop
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          {status.kind !== "idle" && (
-            <span style={{ fontSize: 12, color: status.kind === "ok" ? "var(--theme-success-500)" : "var(--theme-error-500, #b85840)" }}>
-              {status.message}
-            </span>
-          )}
           <button
             type="button"
             onClick={save}
@@ -317,6 +333,53 @@ export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Prop
           </button>
         </div>
       </div>
+
+      {/* A save result has to be impossible to miss — the previous version
+          put it in small grey text beside the button, where a failed save
+          (an expired session, most likely) read as "nothing happened". */}
+      {status.kind !== "idle" && (
+        <div
+          role="status"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 14,
+            padding: "12px 16px",
+            borderRadius: "var(--style-radius-m, 8px)",
+            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
+            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            color: "var(--theme-text)",
+            fontSize: 13,
+            fontWeight: 500,
+          }}
+        >
+          <span>
+            {status.kind === "ok" ? "✓ " : "⚠ "}
+            {status.message}
+          </span>
+          {sessionExpired && (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              style={{
+                border: "1px solid var(--theme-elevation-250)",
+                background: "var(--theme-elevation-0)",
+                color: "var(--theme-text)",
+                borderRadius: "var(--style-radius-s, 4px)",
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              Reload &amp; sign in
+            </button>
+          )}
+        </div>
+      )}
 
       {/* ---- The schematic canvas ---- */}
       <div
@@ -392,7 +455,16 @@ export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Prop
               />
             </div>
             <div>
-              <PhotoPlaceholder urls={photoUrls} count={photoUrls.length} />
+              <PhotoSlots
+                photos={data.ourStory?.photos ?? []}
+                resolve={mediaById}
+                onPick={(index) => setPicking(index)}
+                onRemove={(index) =>
+                  set((d) => {
+                    d.ourStory!.photos!.splice(index, 1);
+                  })
+                }
+              />
               <div style={{ marginTop: 8 }}>
                 <Field
                   label="Photo caption"
@@ -553,49 +625,222 @@ export function AboutVisualEditorClient({ initialData, colors, photoUrls }: Prop
           </div>
         </div>
       </div>
+
+      {picking !== null && (
+        <MediaPicker
+          library={mediaLibrary}
+          onClose={() => setPicking(null)}
+          onSelect={(id) => {
+            set((d) => {
+              d.ourStory = d.ourStory ?? {};
+              d.ourStory.photos = d.ourStory.photos ?? [];
+              if (picking === "new") d.ourStory.photos.push({ image: id });
+              else d.ourStory.photos[picking] = { ...d.ourStory.photos[picking], image: id };
+            });
+            setPicking(null);
+          }}
+        />
+      )}
     </div>
   );
 }
 
-/** Photos aren't editable here on purpose — uploads belong in the regular
- *  form. This just shows what's currently set, so the canvas still reads
- *  like the real two-column layout instead of a gap. */
-function PhotoPlaceholder({ urls, count }: { urls: string[]; count: number }) {
+/** The photo slots for Our Story. One photo renders as a static image on
+ *  the live page; several auto-play as a crossfading slideshow, which is
+ *  why this shows them as an ordered set rather than a single well. */
+function PhotoSlots({
+  photos,
+  resolve,
+  onPick,
+  onRemove,
+}: {
+  photos: { image: number | { id: number; url?: string | null } }[];
+  resolve: (id: number | { id: number } | null | undefined) => MediaItem | undefined;
+  onPick: (index: number | "new") => void;
+  onRemove: (index: number) => void;
+}) {
+  const tile: React.CSSProperties = {
+    position: "relative",
+    aspectRatio: "4 / 5",
+    borderRadius: 8,
+    overflow: "hidden",
+    background: "rgba(36,30,28,0.08)",
+    border: "1px solid rgba(36,30,28,0.15)",
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 8 }}>
+      {photos.map((p, i) => {
+        // Prefer the populated object's own url so a freshly picked image
+        // still renders even if it wasn't in the library page we loaded.
+        const populated = typeof p.image === "object" ? p.image : undefined;
+        const url = populated?.url ?? resolve(p.image)?.url;
+        return (
+          <div key={i} style={tile}>
+            {url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 10, color: "rgba(36,30,28,0.45)", fontFamily: "system-ui, sans-serif" }}>
+                Missing image
+              </span>
+            )}
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 6, padding: 6 }}>
+              <button type="button" onClick={() => onPick(i)} style={photoBtn}>
+                Change
+              </button>
+              <button type="button" onClick={() => onRemove(i)} style={photoBtn} title="Remove this photo">
+                Remove
+              </button>
+            </div>
+            {photos.length > 1 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 6,
+                  left: 6,
+                  background: "rgba(36,30,28,0.75)",
+                  color: "#f0efe8",
+                  fontSize: 9,
+                  padding: "2px 6px",
+                  borderRadius: 3,
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                {i + 1} / {photos.length}
+              </span>
+            )}
+          </div>
+        );
+      })}
+      <button
+        type="button"
+        onClick={() => onPick("new")}
+        style={{
+          ...photoBtn,
+          width: "100%",
+          padding: "8px 10px",
+          background: "rgba(255,255,255,0.75)",
+          color: "#241e1c",
+          border: "1px dashed rgba(36,30,28,0.3)",
+        }}
+      >
+        + Add photo{photos.length >= 1 ? " (becomes a slideshow)" : ""}
+      </button>
+    </div>
+  );
+}
+
+const photoBtn: React.CSSProperties = {
+  border: "1px solid rgba(255,255,255,0.35)",
+  background: "rgba(36,30,28,0.78)",
+  color: "#f0efe8",
+  borderRadius: 4,
+  padding: "4px 8px",
+  fontSize: 10,
+  fontWeight: 600,
+  cursor: "pointer",
+  fontFamily: "system-ui, sans-serif",
+};
+
+/** Picks an existing image from the Media library. Uploading brand-new
+ *  files still belongs in the regular form / Media collection — this is
+ *  about swapping what a slot points at, which is the common case. */
+function MediaPicker({
+  library,
+  onSelect,
+  onClose,
+}: {
+  library: MediaItem[];
+  onSelect: (id: number) => void;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const filtered = query
+    ? library.filter((m) => `${m.alt} ${m.filename}`.toLowerCase().includes(query.toLowerCase()))
+    : library;
+
   return (
     <div
+      role="dialog"
+      aria-label="Choose an image"
+      onClick={onClose}
       style={{
-        position: "relative",
-        aspectRatio: "4 / 5",
-        borderRadius: 8,
-        overflow: "hidden",
-        background: "rgba(36,30,28,0.08)",
-        border: "1px dashed rgba(36,30,28,0.25)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        background: "rgba(0,0,0,0.55)",
+        display: "grid",
+        placeItems: "center",
+        padding: 24,
       }}
     >
-      {urls[0] ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={urls[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.85 }} />
-      ) : (
-        <span style={{ fontSize: 10, color: "rgba(36,30,28,0.45)", fontFamily: "system-ui, sans-serif" }}>Photo</span>
-      )}
-      <span
+      <div
+        onClick={(e) => e.stopPropagation()}
         style={{
-          position: "absolute",
-          bottom: 6,
-          left: 6,
-          background: "rgba(36,30,28,0.75)",
-          color: "#f0efe8",
-          fontSize: 9,
-          padding: "2px 6px",
-          borderRadius: 3,
+          background: "var(--theme-elevation-0)",
+          borderRadius: "var(--style-radius-m, 8px)",
+          border: "1px solid var(--theme-elevation-150)",
+          width: "min(840px, 100%)",
+          maxHeight: "80vh",
+          display: "flex",
+          flexDirection: "column",
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        {count > 1 ? `${count} photos — edit in form` : "Photo — edit in form"}
-      </span>
+        <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--theme-elevation-150)", display: "flex", gap: 12, alignItems: "center" }}>
+          <strong style={{ fontSize: 14 }}>Choose an image</strong>
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name…"
+            style={{
+              flex: 1,
+              padding: "6px 10px",
+              borderRadius: "var(--style-radius-s, 4px)",
+              border: "1px solid var(--theme-elevation-200)",
+              background: "var(--theme-input-bg, transparent)",
+              color: "var(--theme-text)",
+              fontSize: 13,
+            }}
+          />
+          <button type="button" onClick={onClose} style={{ ...photoBtn, background: "var(--theme-elevation-100)", color: "var(--theme-text)", border: "1px solid var(--theme-elevation-200)" }}>
+            Close
+          </button>
+        </div>
+        <div style={{ overflowY: "auto", padding: 16, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 12 }}>
+          {filtered.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => onSelect(m.id)}
+              title={m.alt || m.filename}
+              style={{
+                padding: 0,
+                border: "1px solid var(--theme-elevation-150)",
+                borderRadius: 6,
+                overflow: "hidden",
+                background: "var(--theme-elevation-50)",
+                cursor: "pointer",
+                display: "grid",
+                gap: 0,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={m.url} alt="" style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+              <span style={{ fontSize: 10, padding: "6px 8px", color: "var(--theme-elevation-600)", textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {m.alt || m.filename}
+              </span>
+            </button>
+          ))}
+          {filtered.length === 0 && (
+            <p style={{ gridColumn: "1 / -1", fontSize: 13, color: "var(--theme-elevation-600)", margin: 0 }}>
+              No images match “{query}”.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
