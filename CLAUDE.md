@@ -464,7 +464,22 @@ keeps recurring across a long session of frequent dev-server restarts,
 worth switching the local dev workflow to a single long-lived `next dev`
 process instead of repeated kill+restart cycles.
 
-## Working notes
+**Brand icon set in nav + dashboard — done, verified live (2026-09-02
+session)**: `public/icons/brand/RN_ICON_BLUE_1.svg`…`_48.svg` — the full
+48-icon brand set, pulled from the Drive brand folder
+(`BRAND ELEMENTS/ICONS/BLUE/SVG/`). 19 of them are assigned one-per-item
+to every sidebar collection/global (`AdminBrandStyles.tsx`'s `NAV_ICONS`
+map, keyed by href — e.g. key for Users, handshake for Team Members, star
+for Testimonials, briefcase for Our Expertise) and to the dashboard's page
+quick-link cards (`AdminDashboardWelcome.tsx`, same numbers, so the two
+surfaces stay visually consistent). No icon reused across items. **Tooling
+gotcha worth remembering**: batch-generating preview thumbnails via macOS's
+`qlmanage -t` on many SVGs at once produced silently wrong/colliding
+thumbnails for some files (icons 41–48 all rendered as duplicates of
+33–40, confirmed by `md5` that the actual source SVGs were genuinely
+different) — don't trust a `qlmanage` batch run for visual icon review;
+render them for real through the browser (an `<img src="...">` page
+served by the dev server) instead.
 
 - The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`.
 - No screenshot/browser-preview tooling is available from a sandboxed environment — verification has relied on `npm run build` passing cleanly plus manual review of the diff. If Claude Code has real screenshot/browser access, use it to visually QA before/after changes — that's a real upgrade over how this was built so far.
