@@ -37,6 +37,16 @@ export default function AudienceV2() {
   return (
     <section className="v2-audience">
       <div className="v2-audience-backdrop" aria-hidden="true">
+        {/* Brand still-life as surface texture, blended into the navy rather
+            than sitting on top of it as a photo. */}
+        <Image
+          src="/img/abstract/wide-10.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="v2-audience-texture"
+          style={{ objectFit: "cover" }}
+        />
         <div className="v2-hero-glow v2-hero-glow--a" />
         <CompositionDrift
           src="/compositions/comp-9.svg"

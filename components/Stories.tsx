@@ -59,10 +59,12 @@ export default function Stories() {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <span className="story-quote-mark">&quot;</span>
-                <p className="story-text">
-                  {s.quote}
-                  <span className="story-quote-mark story-quote-mark--close">&quot;</span>
-                </p>
+                <p className="story-text">{s.quote}</p>
+                {/* Closing mark sits bottom-right so the pair brackets the
+                    quote, instead of trailing the last word like a typo. */}
+                <span className="story-quote-mark story-quote-mark--close" aria-hidden="true">
+                  &quot;
+                </span>
                 <p className="attribution">
                   {s.name}
                   {s.role ? `, ${s.role}` : ""}

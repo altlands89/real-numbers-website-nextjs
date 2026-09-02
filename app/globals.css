@@ -630,21 +630,34 @@ p { margin: 0; }
   gap: 10px;
   margin-top: var(--space-500);
 }
+/* The button itself is just a generous, invisible hit area; the visible dot
+   is the pseudo-element. Painting the dot on the button meant its rounding
+   was computed on the padded box, so the visible part clipped to a square. */
 .scroll-dot {
   appearance: none;
   border: none;
-  padding: 0;
+  background: none;
+  padding: 16px 9px;
+  margin: -16px -9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.scroll-dot::before {
+  content: "";
+  display: block;
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: var(--line-dark);
-  cursor: pointer;
-  transition: width var(--fast) var(--ease), background var(--fast) var(--ease), opacity var(--fast) var(--ease);
+  background-color: var(--line-dark);
+  transition: width var(--fast) var(--ease), background-color var(--fast) var(--ease),
+    opacity var(--fast) var(--ease);
 }
-.scroll-dot:hover { opacity: 0.75; }
-.scroll-dot.active { width: 24px; background: var(--red); }
-.on-dark .scroll-dot { background: var(--line); }
-.on-dark .scroll-dot.active { background: var(--clay); }
+.scroll-dot:hover::before { opacity: 0.75; }
+.scroll-dot.active::before { width: 24px; background-color: var(--red); }
+.on-dark .scroll-dot::before { background-color: var(--line); }
+.on-dark .scroll-dot.active::before { background-color: var(--clay); }
 .services-dots { display: none; }
 @media (max-width: 1024px) {
   .services-dots { display: flex; }
@@ -845,7 +858,7 @@ p { margin: 0; }
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
-  padding: 50px var(--gutter) var(--space-500);
+  padding: var(--space-700) var(--gutter);
   background-color: var(--blue-dark);
   scrollbar-width: none;
 }
@@ -871,11 +884,13 @@ p { margin: 0; }
   opacity: 0.55;
 }
 .story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
-.story-text .story-quote-mark--close {
-  display: inline;
-  font-size: 1.3rem;
-  vertical-align: -0.28em;
-  margin-inline-start: 0.1em;
+/* Mirrors the opening mark at the other end of the quote: same weight and
+   colour, aligned to the opposite edge and flipped, so the two read as a
+   deliberate pair of brackets around the testimonial. */
+.story-quote-mark--close {
+  align-self: flex-end;
+  transform: rotate(180deg);
+  margin-top: calc(var(--space-400) * -1);
 }
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
 .story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; }
@@ -2374,16 +2389,6 @@ p { margin: 0; }
   padding-block: 8px;
   margin-block: -8px;
 }
-/* The carousel dots were an 8px-tall strip — far too small to hit reliably.
-   Padding grows the button's hit box; content-box keeps the painted dot at
-   its original size, and the matching negative margin keeps the row's
-   spacing and alignment pixel-identical to before. */
-.scroll-dot {
-  box-sizing: content-box;
-  padding: 16px 9px;
-  margin: -16px -9px;
-  background-clip: content-box;
-}
 
 /* Footer links sat at 23px tall in a centred row — same padding/negative
    margin treatment so they're comfortably tappable without the row growing. */
@@ -2398,4 +2403,12 @@ p { margin: 0; }
   align-items: center;
   padding: 15px 10px;
   margin: -15px -10px;
+}
+
+/* Abstract still-life used as surface texture behind the audience cards.
+   soft-light keeps the navy reading as navy and lets only the paper grain
+   and shadow structure through, so it never competes with the copy. */
+.v2-audience-texture {
+  mix-blend-mode: soft-light;
+  opacity: 0.5;
 }
