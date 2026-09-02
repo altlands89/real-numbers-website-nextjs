@@ -318,6 +318,85 @@ needs a walkthrough of `/admin` before full handoff — this session verified
 everything works technically, but the client hasn't had a guided tour of the
 finished CMS yet.
 
+**Visual design editor for admin (native `blocks` + sliders) — done, verified
+live (2026-09-02 session, continued)**: follow-up to the CMS integration
+above, for the user's own admin use (not the client) — full plan at
+`/Users/omer/.claude/plans/cached-whistling-hopper.md`. Researched two
+third-party Payload visual-builder packages first and rejected both:
+`payload-visual-editor` (pemedia, last updated before Payload 3 existed) and
+`@orion-studios/payload-visual-builder` (v0.1.4, single maintainer, no
+linked repo — unreviewable). Went with Payload's own native `blocks` field
+instead: zero third-party dependency, built-in drag-to-reorder.
+- **Part 1 — slider UI**: `payload/components/SliderField.tsx` (new) swaps
+  the Field component only on the existing `sizeScale` selects (Typography,
+  6 fields) and the 4 Layout & Motion multiplier fields — renders a native
+  `<input type="range">` snapping between the field's own existing `options`
+  values, plus a live label readout. **No schema change, no migration** —
+  same pattern as the earlier `ColorPickerField`. Needed a manual
+  `npx payload generate:importmap` run before the component would resolve
+  (didn't auto-register from a dev-server request this time, unlike some
+  earlier components).
+- **Part 2 — Home page sections as native blocks**: `HomeGlobal.ts`'s fixed
+  flat-field tabs (hero, featuredPhoto, logosStrip, difference, ctaDark,
+  audience, stories) became one `sections` field of `type: "blocks"`
+  (`payload/blocks/HomeBlocks.ts`), giving real drag-to-reorder in
+  `/admin` with no extra code — Payload's `blocks` field ships this by
+  default (`admin.isSortable`). **Design correction made before finishing
+  the implementation**: originally modeled Hero, FeaturedPhoto, and
+  LogosStrip as 3 separate block types (matching the old 3 tabs), but
+  caught that `HeroV2` renders all three as one inseparable visual unit —
+  3 separately-draggable-but-visually-inert blocks would have been
+  misleading, so merged them into one `HeroBlock` with nested `group`
+  fields before implementing further. Final 7 blocks, short slugs on
+  purpose (`hero`, `diff`, `stats`, `divider`, `cta`, `audience`,
+  `stories`) to leave headroom under Postgres's 63-char identifier limit
+  once per-block tables are added on top of `home`'s already-long
+  versioned-drafts schema. `app/(frontend)/page.tsx` now iterates
+  `home.sections` and renders the matching existing component per
+  `section.blockType` via a `switch` — every component (`HeroV2`,
+  `DifferenceV2`, `StatsV2`, `AbstractPanel`, `CtaDarkV2`, `AudienceV2`,
+  `Stories`) is reused as-is, only the ordering/selection logic is new.
+  `components/Stories.tsx` now finds its content by scanning
+  `home.sections` for `blockType === "stories"` instead of a fixed
+  `home.stories` field.
+- **CRITICAL migration-safety lesson**: `npx payload migrate:create`'s
+  auto-generated migration, when the config diff spans both new blocks AND
+  removed old flat fields in one edit, bundles ALL the new `CREATE TABLE`
+  statements and ALL the `DROP TABLE`/`DROP COLUMN` statements for the old
+  fields into one single `up()` — applying that as generated would have
+  destroyed the live Home content immediately, with no chance to copy it
+  over first. Fixed by manually splitting into two separate, sequentially
+  applied migrations: `20260902_115832_add_home_sections_blocks.ts`
+  (additive-only — every new `CREATE TABLE`/constraint/index, nothing
+  dropped) applied first, then a **hand-written data-migration script**
+  (`payload/migrate-home-to-blocks.ts`, one-off, run via `tsx`) that reads
+  the old flat fields via raw `pg` SQL (Payload's Local API no longer
+  surfaces columns removed from the config, even though they still exist
+  in the DB) and writes the equivalent `sections` array back via
+  `payload.updateGlobal()` — verified via direct SQL query that every
+  section matched the source exactly before doing anything destructive.
+  Only after that was confirmed did a second migration,
+  `20260902_150500_remove_home_old_section_fields.ts`, drop the
+  now-unused old tables/columns — this is the pattern to repeat if any
+  other page ever gets the same blocks treatment: **additive migration →
+  verified data-copy script → destructive migration, three separate
+  reviewed steps, never one auto-generated migration that does both.**
+  `payload/migrate-home-to-blocks.ts` was kept in the repo as historical
+  documentation of the migration, same as `payload/reset-seed.ts`.
+- **Verification**: admin blocks UI end-to-end tested with a real
+  `left_click_drag` (dragged a row to reorder, confirmed the visual swap,
+  dragged back, confirmed via direct SQL that nothing persisted since
+  Save/Publish was never clicked — Payload's blocks reordering is
+  local-only until an explicit save). Live homepage confirmed rendering
+  identically (screenshot + full page-text check) both immediately after
+  the data-migration script ran and again after the destructive migration
+  was applied. Full `npm run build` clean both times.
+- **Scope note, unchanged from the plan**: the other 7 pages were NOT
+  converted to blocks — Home was a deliberate pilot. A free-form
+  Webflow-style drag canvas also stays explicitly deferred (two concrete
+  third-party candidates were evaluated and rejected as unsafe, see above)
+  — native `blocks` covers reordering, which was the actual ask.
+
 **Video upload bug — fixed, verified live (2026-09-02 session)**: the client
 reported "can't upload video" for the home hero's background video. Root
 cause: `vercelBlobStorage()` in `payload.config.ts` didn't have
