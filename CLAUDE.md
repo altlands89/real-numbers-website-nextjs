@@ -431,6 +431,39 @@ styles) — correctness was instead confirmed via computed styles
 visual QA again, don't rely on a full-page screenshot — check computed
 styles/playback state directly, or view it in a real browser.
 
+**Admin panel brand texture — done, verified live (2026-09-02 session)**:
+brought the live site's own visual language into `/admin`'s entry/landing
+surfaces, deliberately leaving collection tables and edit forms plain —
+visual noise there would work against the safety-net/friendliness work
+from earlier in this session, not for it.
+- `payload/components/AdminLoginBackground.tsx` (new, `beforeLogin`-only)
+  and an addition to `AdminDashboardWelcome.tsx`'s card both render the same
+  `comp-16.svg` abstract composition the live site already uses as a
+  low-opacity texture (`.v2-bg-cover--comp` in `globals.css`) — ties the
+  admin to the same brand system instead of a bare gray/white UI.
+- `AdminBrandStyles.tsx` gained CSS that puts the brand symbol mark before
+  the "Pages" (red, `symbol-red.svg`) and "Site Design" (blue,
+  `symbol-blue.svg`) nav-group labels. **Useful discovery**: Payload adds
+  the `admin.group` string itself as a literal CSS class on the `.nav-group`
+  wrapper (e.g. `class="nav-group Pages"`), confirmed via DOM inspection —
+  a stable, structural selector to hook into, not a guess. A two-word group
+  name becomes two separate classes (`Site` and `Design`), so the selector
+  needs `.nav-group.Site.Design` (both required), not a single
+  `.nav-group["Site Design"]`-style match.
+
+**Recurring gotcha, hit again this session**: repeated `next dev`
+restarts (many across this session's iterative testing) left ~14 stuck
+idle Postgres connections against Supabase's Session Pooler (15-connection
+cap), to the point `/admin` itself started failing with `EMAXCONNSESSION`.
+Same root cause and same fix documented earlier in this file (pool
+exhaustion, not a code bug) — cleared via
+`select pg_terminate_backend(pid) from pg_stat_activity where usename='postgres' and application_name='Supavisor' and state='idle' and pid <> pg_backend_pid();`,
+with explicit user go-ahead first. Plain `pkill -f "next dev"` (SIGTERM)
+doesn't always let Node's `pg` pool drain cleanly before exit — if this
+keeps recurring across a long session of frequent dev-server restarts,
+worth switching the local dev workflow to a single long-lived `next dev`
+process instead of repeated kill+restart cycles.
+
 ## Working notes
 
 - The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`.
