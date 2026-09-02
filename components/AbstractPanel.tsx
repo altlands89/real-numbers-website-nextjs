@@ -54,6 +54,13 @@ export default function AbstractPanel({
           <video autoPlay muted loop playsInline aria-hidden="true">
             <source src={video} type="video/mp4" />
           </video>
+          {/* Halftone dot texture, colored by a slow-drifting blue→red
+              (brand "orange") gradient instead of a flat dot color — a
+              radial-gradient dot pattern used as a mask over the gradient
+              fill. Fixed to the viewport too, so it stays perfectly
+              registered with the video underneath as both scroll/reveal
+              together. */}
+          <div className="abstract-panel-video-dots" aria-hidden="true" />
         </div>
       ) : (
         <Parallax className="abstract-panel-inner" strength={strength}>
