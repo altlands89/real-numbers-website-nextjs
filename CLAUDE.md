@@ -755,6 +755,53 @@ why-real-numbers, our-expertise, and contact at mobile/tablet/desktop
 widths, `npm run build` clean each time, deployed and confirmed live on
 production after each stage.
 
+**⚠️ Custom admin views are NOT auth-gated by default — fixed, verify this
+on every new one (2026-09-02 session, continued)**: views registered under
+`admin.components.views` do **not** inherit Payload's auth redirect the way
+`/admin/globals/*` and `/admin/collections/*` do. An unauthenticated
+visitor reaches the component function directly, and `getCMS()` / the
+Local API used inside **bypasses access control by design** — so both
+`/admin/brand-identity` and `/admin/visual-editor/about` were rendering
+their full contents (every page's copy; the whole brand asset library
+including Blob download links) to anyone who knew the URL. Both now start
+with `if (!user) redirect("/admin/login?redirect=…")`, reading `user` from
+`initPageResult.req.user`. **Any future custom view must do the same.**
+Found by accident: a save was failing, and rather than assuming a tooling
+glitch, checking revealed the browser was never logged in — the normal
+form correctly showed the login screen while the custom view happily
+rendered content. **Verification gotcha**: a plain `curl | grep` for page
+text is misleading in dev — it matches the component's module source
+inlined in the dev bundle, not rendered output. Check for real rendered
+markup (e.g. `aria-label="…"` on an actual input) instead.
+
+**About page visual editor — experimental, verified live (2026-09-02
+session, continued)**: `/admin/visual-editor/about`
+(`payload/components/AboutVisualEditorView.tsx` + `…Client.tsx`), a
+spatial alternative to the About Global's normal form. The form is a flat
+list of labelled inputs across 6 tabs and says nothing about *where* a
+text lands; this renders a schematic of the real layout (dark top banner,
+two-column story block, 2×2 principles grid, leadership cards) with each
+field sitting where its text appears, at roughly its real size and in the
+brand typeface — position and scale identify the field, and the field
+path only appears on hover/focus so it still reads as a page. The
+standard form stays authoritative (photos, SEO, drafts, version history).
+- **Saving uses a Server Action** (`aboutVisualEditorActions.ts`), not a
+  client `fetch` to `/api/globals/about-page` — the REST route
+  authenticates from the payload-token cookie and returned **403**, with
+  `/api/users/me` reporting no user. The action calls `payload.auth({
+  headers })` to enforce a real admin user, then `payload.updateGlobal`.
+- Only the groups the editor owns are sent, with **photo relations mapped
+  back to plain IDs** (loaded data has them populated as Media objects).
+  Verified after a real save that photos, principles, leadership cards and
+  the untouched `seo` group all survived.
+- **Textarea auto-size bug worth remembering**: measuring `scrollHeight`
+  on mount happens before the `@font-face` brand font loads and before
+  column widths settle, so text wraps into far more lines than it finally
+  needs and the box stays stuck at that stale height (234px for 81px of
+  content). Fix: re-measure on `document.fonts.ready` **and** on width
+  changes via `ResizeObserver` (guard on width only, or observing the same
+  element you resize loops).
+
 **Brand Identity page missing the admin sidebar — fixed, verified live
 (2026-09-02 session, continued)**: custom views registered via
 `admin.components.views` (like `/admin/brand-identity`) render with no
