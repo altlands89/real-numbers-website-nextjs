@@ -3,7 +3,8 @@ import { revalidateGlobalOnChange } from "../revalidate";
 
 export const OurExpertiseGlobal: GlobalConfig = {
   slug: "our-expertise-page",
-  admin: { description: "Our Expertise page copy." },
+  label: "Our Expertise",
+  admin: { group: "Pages", description: "Our Expertise page copy." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
@@ -12,65 +13,90 @@ export const OurExpertiseGlobal: GlobalConfig = {
   },
   fields: [
     {
-      name: "hero",
-      type: "group",
-      label: "Top Banner",
-      fields: [
-        { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Our Expertise" },
-        { name: "heading", type: "textarea", label: "Heading", required: true },
-        { name: "ledeParagraphs", type: "array", label: "Intro Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, maxRows: 2, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
-      ],
-    },
-    {
-      name: "areas",
-      type: "array",
-      label: "Expertise Areas",
-      labels: { singular: "Expertise Area", plural: "Expertise Areas" },
-      minRows: 1,
-      maxRows: 4,
-      admin: { description: "Financial Operations, Strategic Finance, Fundraising & Growth, Business Performance." },
-      fields: [
-        { name: "title", type: "text", label: "Title", required: true },
-        { name: "tagline", type: "text", label: "Tagline", required: true },
-        { name: "paragraphs", type: "array", label: "Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
+      type: "tabs",
+      tabs: [
         {
-          name: "services",
-          type: "array",
-          label: "Service Tags",
-          labels: { singular: "Service Tag", plural: "Service Tags" },
-          minRows: 1,
-          admin: { description: "The pill list under each area (e.g. \"Bookkeeping\", \"Payroll\")." },
-          fields: [{ name: "label", type: "text", label: "Tag Text", required: true }],
+          label: "Top Banner",
+          fields: [
+            {
+              name: "hero",
+              type: "group",
+              label: false,
+              fields: [
+                { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Our Expertise" },
+                { name: "heading", type: "textarea", label: "Heading", required: true },
+                { name: "ledeParagraphs", type: "array", label: "Intro Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, maxRows: 2, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
+              ],
+            },
+          ],
         },
-      ],
-    },
-    {
-      name: "integrated",
-      type: "group",
-      label: "\"Integrated Partnership\" Section",
-      admin: { description: "\"One integrated financial partnership\" closing section." },
-      fields: [
-        { name: "heading", type: "textarea", label: "Heading", defaultValue: "One integrated financial partnership" },
-        { name: "text", type: "textarea", label: "Paragraph" },
         {
-          name: "photos",
-          type: "array",
-          label: "Photos",
-          labels: { singular: "Photo", plural: "Photos" },
-          admin: { description: "Upload one photo for a static image, or several for an auto-playing fading slideshow." },
-          fields: [{ name: "image", type: "upload", label: "Photo", relationTo: "media", required: true }],
+          label: "Expertise Areas",
+          fields: [
+            {
+              name: "areas",
+              type: "array",
+              label: "Expertise Areas",
+              labels: { singular: "Expertise Area", plural: "Expertise Areas" },
+              minRows: 1,
+              maxRows: 4,
+              admin: { description: "Financial Operations, Strategic Finance, Fundraising & Growth, Business Performance." },
+              fields: [
+                { name: "title", type: "text", label: "Title", required: true },
+                { name: "tagline", type: "text", label: "Tagline", required: true },
+                { name: "paragraphs", type: "array", label: "Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
+                {
+                  name: "services",
+                  type: "array",
+                  label: "Service Tags",
+                  labels: { singular: "Service Tag", plural: "Service Tags" },
+                  minRows: 1,
+                  admin: { description: "The pill list under each area (e.g. \"Bookkeeping\", \"Payroll\")." },
+                  fields: [{ name: "label", type: "text", label: "Tag Text", required: true }],
+                },
+              ],
+            },
+          ],
         },
-        { name: "photoCaption", type: "text", label: "Photo Caption", defaultValue: "The work behind the clarity" },
-      ],
-    },
-    {
-      name: "closingCta",
-      type: "group",
-      label: "Closing Banner Section",
-      fields: [
-        { name: "heading", type: "textarea", label: "Heading", required: true },
-        { name: "closingLine", type: "textarea", label: "Supporting Line" },
-        { name: "buttonLabel", type: "text", label: "Button Text", defaultValue: "Let's Talk" },
+        {
+          label: "Integrated Partnership",
+          fields: [
+            {
+              name: "integrated",
+              type: "group",
+              label: false,
+              admin: { description: "\"One integrated financial partnership\" closing section." },
+              fields: [
+                { name: "heading", type: "textarea", label: "Heading", defaultValue: "One integrated financial partnership" },
+                { name: "text", type: "textarea", label: "Paragraph" },
+                {
+                  name: "photos",
+                  type: "array",
+                  label: "Photos",
+                  labels: { singular: "Photo", plural: "Photos" },
+                  admin: { description: "Upload one photo for a static image, or several for an auto-playing fading slideshow." },
+                  fields: [{ name: "image", type: "upload", label: "Photo", relationTo: "media", required: true }],
+                },
+                { name: "photoCaption", type: "text", label: "Photo Caption", defaultValue: "The work behind the clarity" },
+              ],
+            },
+          ],
+        },
+        {
+          label: "Closing Banner",
+          fields: [
+            {
+              name: "closingCta",
+              type: "group",
+              label: false,
+              fields: [
+                { name: "heading", type: "textarea", label: "Heading", required: true },
+                { name: "closingLine", type: "textarea", label: "Supporting Line" },
+                { name: "buttonLabel", type: "text", label: "Button Text", defaultValue: "Let's Talk" },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],

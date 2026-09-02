@@ -3,7 +3,8 @@ import { revalidateGlobalOnChange } from "../revalidate";
 
 export const QuestionsFoundersAskGlobal: GlobalConfig = {
   slug: "questions-founders-ask-page",
-  admin: { description: "Questions Founders Ask page copy. The Q&A list itself lives in the FAQ Items collection." },
+  label: "Questions Founders Ask",
+  admin: { group: "Pages", description: "Questions Founders Ask page copy. The Q&A list itself lives in the FAQ Items collection." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
