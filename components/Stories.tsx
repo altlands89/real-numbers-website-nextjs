@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
+import QuoteMark from "./QuoteMark";
 
 const STORIES = [
   {
@@ -58,13 +59,11 @@ export default function Stories() {
                 data-reveal
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <span className="story-quote-mark">&quot;</span>
+                <QuoteMark />
                 <p className="story-text">{s.quote}</p>
                 {/* Closing mark sits bottom-right so the pair brackets the
                     quote, instead of trailing the last word like a typo. */}
-                <span className="story-quote-mark story-quote-mark--close" aria-hidden="true">
-                  &quot;
-                </span>
+                <QuoteMark close />
                 <p className="attribution">
                   {s.name}
                   {s.role ? `, ${s.role}` : ""}

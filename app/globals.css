@@ -879,23 +879,13 @@ p { margin: 0; }
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-.story-quote-mark {
-  font-family: var(--font-tasa), sans-serif;
-  font-weight: 800;
-  font-size: 2.2rem;
-  color: var(--red);
-  line-height: 1;
-  opacity: 0.55;
-}
+/* A single bold geometric comma-glyph (see QuoteMark.tsx), used as a pair:
+   the closing mark is the same SVG rotated 180°, aligned to the opposite
+   corner, so together they read as deliberate brackets around the quote
+   rather than a stray mark trailing the last word. */
+.quote-mark { color: var(--red); opacity: 0.75; display: block; }
 .story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
-/* Mirrors the opening mark at the other end of the quote: same weight and
-   colour, aligned to the opposite edge and flipped, so the two read as a
-   deliberate pair of brackets around the testimonial. */
-.story-quote-mark--close {
-  align-self: flex-end;
-  transform: rotate(180deg);
-  margin-top: calc(var(--space-400) * -1);
-}
+.quote-mark--close { align-self: flex-end; transform: rotate(180deg); }
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
 .story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; }
 @media (max-width: 1024px) {
@@ -2175,11 +2165,6 @@ p { margin: 0; }
   transform: translateY(-6px);
   box-shadow: 0 32px 60px -24px rgba(36, 30, 28, 0.34);
 }
-.story-quote-mark {
-  display: block;
-  font-size: 3rem;
-  line-height: 0.6;
-}
 
 @media (max-width: 1080px) {
   .v2-hero-foot { flex-direction: column; align-items: flex-start; }
@@ -2426,6 +2411,11 @@ p { margin: 0; }
 /* 24px here left only ~8px of visual gap once the heading's line box was
    accounted for, so the rail crowded the headline. */
 .stories .section-head { margin-bottom: var(--space-800); }
+/* The shared .section-head cap (760px) is tuned for shorter section
+   headlines; this one is a full sentence and was wrapping onto a lonely
+   third line ("...you"). Wider box, same centring, breaks it into two
+   balanced lines instead. */
+.stories .section-head { max-width: 900px; }
 .story-card {
   padding: var(--space-500);
   gap: var(--space-400);
@@ -2436,7 +2426,6 @@ p { margin: 0; }
    bottom edge, keeping attributions aligned across cards. */
 .story-text { font-size: 0.92rem; line-height: 1.55; flex: 0 0 auto; }
 .story-card .attribution { margin-top: auto; }
-.story-quote-mark--close { margin-top: calc(var(--space-300) * -1); }
 
 /* Below the desktop breakpoint the container is full-width with gutters, so
    the header bar has to match. This lives at the end of the file because
