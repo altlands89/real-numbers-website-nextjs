@@ -601,6 +601,49 @@ same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
 downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
 `content-type`/`content-disposition`, 200).
 
+**Per-page SEO fields + Site Settings global — done, verified live
+(2026-09-02 session, continued)**: user asked for per-page title editing
+plus a dedicated sitewide info page (favicon, featured/OG image, SEO
+descriptions), and separately to research Elementor Pro's full feature
+set and apply what's applicable. Elementor research conclusion: almost
+everything (Theme Builder, Popup Builder, WooCommerce Builder, 100+
+widgets) is page-builder territory this project deliberately doesn't do
+(a free-form Webflow-style canvas was already evaluated and explicitly
+deferred earlier this session — see the visual-editor plan above), and
+global colors/fonts/layout/motion are already covered by the existing
+Site Design globals. The one real gap was Elementor's **Site Identity**
+panel (name, tagline, logo, favicon) — that became the shape of the new
+Global.
+- `payload/fields/seoFields.ts` — a shared field-group helper (title,
+  meta description, optional social share image) added to all 8 page
+  Globals so it isn't hand-duplicated 8 times. Every field is optional —
+  an empty page falls back cleanly.
+- New `SiteSettingsGlobal` (slug `site-settings`, label "SEO & Site
+  Info", group "Site Design"): site name, tagline, favicon, default
+  social share image, and an **"Allow search engines to index this
+  site"** checkbox — defaulted to `false`, matching the `robots:
+  {index:false}` that was previously hardcoded in `layout.tsx`, so
+  nothing about the live site's actual search visibility changes until
+  someone explicitly opts in.
+- `lib/site-metadata.ts` centralizes the fallback chain (page's own SEO
+  → Site Settings' sitewide default → the page's original hardcoded
+  copy, kept as the final fallback) and is called from every page's new
+  `generateMetadata()` — replacing the previous static `export const
+  metadata` on all 8 pages plus the root layout (which now also sets the
+  favicon and robots tag dynamically).
+- **Real bug caught during verification, not just "looks right"**: a
+  stray space left in a field after clearing it (via the admin's text
+  input) rendered as a literal blank `<title> </title>` instead of
+  falling back — a plain `value || fallback` check treats `" "` as
+  truthy. Added a `nonBlank()` helper that trims before checking, fixed
+  before shipping.
+- **Verified end-to-end against the real dev database**: set a test SEO
+  title on the About page via `/admin`, confirmed it appeared in the
+  live page's `<title>` immediately after Publish (no redeploy);
+  cleared it, confirmed correct fallback; confirmed all 8 pages' default
+  titles were byte-identical to before via `curl` both before and after
+  the change (no regression from the static-to-dynamic conversion).
+
 **Design-system consistency audit — all 4 stages shipped, verified live
 (2026-09-02 session, continued)**: user asked for deep research into
 reference sites plus a full audit of the site's own uniformity (section
