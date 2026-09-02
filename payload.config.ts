@@ -125,6 +125,11 @@ export default buildConfig({
         media: { disablePayloadAccessControl: true },
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || "",
+      // Vercel's serverless functions cap request bodies at 4.5MB, which
+      // silently rejects anything but small images (video files in
+      // particular). This routes the upload straight from the browser to
+      // Vercel Blob instead of proxying it through our own API route.
+      clientUploads: true,
     }),
   ],
 });
