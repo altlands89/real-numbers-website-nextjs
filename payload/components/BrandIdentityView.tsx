@@ -2,6 +2,7 @@ import React from "react";
 import { getCMS } from "@/lib/payload";
 import { BRAND_ASSET_CATEGORIES } from "@/payload/collections/BrandAssets";
 import type { BrandAsset } from "@/payload/payload-types";
+import { ICON_ANIMATIONS, ANIMATION_KEYFRAMES } from "@/payload/brand-icon-animations";
 
 // Custom top-level admin view (registered at /admin/brand-identity via
 // payload.config.ts's admin.components.views). A living one-pager
@@ -36,6 +37,15 @@ const VOICE_PILLARS = [
 const ICON_COUNT = 48;
 const DIGITS = Array.from({ length: 10 }, (_, i) => i);
 const COMPOSITION_PREVIEW_COUNT = 6;
+
+const DIGIT_STYLES: { prefix: string; label: string }[] = [
+  { prefix: "digit", label: "Outline" },
+  { prefix: "digit-solid", label: "Solid" },
+  { prefix: "digit-solid-jet", label: "Solid — Jet" },
+  { prefix: "digit-solid-blue", label: "Solid — Blue" },
+  { prefix: "digit-solid-red", label: "Solid — Red" },
+  { prefix: "digit-solid-horizon", label: "Solid — Horizon" },
+];
 
 function Section({
   title,
@@ -80,6 +90,12 @@ export async function BrandIdentityView() {
     list.push(asset);
     assetsByCategory.set(asset.category, list);
   }
+  const findAsset = (title: string) => assets.find((a) => a.title === title);
+  const iconPacks = {
+    static: findAsset("Icon Set — Static SVG (as shown)"),
+    animatedSvg: findAsset("Icon Set — Animated SVG Pack"),
+    animatedGif: findAsset("Icon Set — Animated GIF Pack (Transparent)"),
+  };
 
   return (
     <div style={{ maxWidth: 980, margin: "0 auto", padding: "40px 32px 80px" }}>
@@ -91,6 +107,15 @@ export async function BrandIdentityView() {
         @font-face { font-family: "TASA Orbiter Specimen"; src: url("/fonts/TASAOrbiter-SemiBold.ttf") format("truetype"); font-weight: 600; }
         @font-face { font-family: "TASA Orbiter Specimen"; src: url("/fonts/TASAOrbiter-Bold.ttf") format("truetype"); font-weight: 700; }
         @font-face { font-family: "TASA Orbiter Specimen"; src: url("/fonts/TASAOrbiter-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+        ${Object.entries(ANIMATION_KEYFRAMES)
+          .map(([name, body]) => `@keyframes icon-anim-${name}{${body}}`)
+          .join("\n")}
+        .brand-icon-tile { transform-origin: center; }
+        @media (prefers-reduced-motion: no-preference) {
+          ${Object.keys(ANIMATION_KEYFRAMES)
+            .map((name) => `.brand-icon-anim-${name}{animation:icon-anim-${name} 4s ease-in-out infinite;}`)
+            .join("\n")}
+        }
       `}</style>
 
       {/* Hero */}
@@ -270,55 +295,86 @@ export async function BrandIdentityView() {
       {/* Iconography */}
       <Section
         title="Iconography"
-        description={`The full 48-icon brand set (solid style, blue) — used one-per-item in the admin sidebar and dashboard. Files at /icons/brand/RN_ICON_BLUE_1.svg … _${ICON_COUNT}.svg.`}
+        description={`The full 48-icon brand set (solid style, blue), each with its own 4s looping animation. Click any icon to download it on its own. Files at /icons/brand/RN_ICON_BLUE_1.svg … _${ICON_COUNT}.svg.`}
       >
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+          {(iconPacks.static || iconPacks.animatedSvg || iconPacks.animatedGif) ? (
+            <>
+              {iconPacks.static && <DownloadPillButton href={iconPacks.static.url} label="↓ Download all — Static SVG" />}
+              {iconPacks.animatedSvg && <DownloadPillButton href={iconPacks.animatedSvg.url} label="↓ Download all — Animated SVG" />}
+              {iconPacks.animatedGif && <DownloadPillButton href={iconPacks.animatedGif.url} label="↓ Download all — Animated GIF (transparent)" />}
+            </>
+          ) : (
+            <p style={{ fontSize: 12, color: "var(--theme-elevation-500)" }}>
+              Bulk download packs not generated yet — run <code>payload/build-icon-download-packs.ts</code>.
+            </p>
+          )}
+        </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(48px, 1fr))", gap: 8 }}>
-          {Array.from({ length: ICON_COUNT }, (_, i) => i + 1).map((n) => (
-            <div
-              key={n}
-              title={`Icon ${n}`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                aspectRatio: "1",
-                borderRadius: "var(--style-radius-s, 4px)",
-                border: "1px solid var(--theme-elevation-150)",
-                background: "var(--theme-elevation-0)",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/icons/brand/RN_ICON_BLUE_${n}.svg`} alt="" style={{ width: 20, height: 20 }} />
-            </div>
-          ))}
+          {Array.from({ length: ICON_COUNT }, (_, i) => i + 1).map((n) => {
+            const recipe = ICON_ANIMATIONS[n] ?? "pulse";
+            return (
+              <a
+                key={n}
+                href={`/icons/brand/RN_ICON_BLUE_${n}.svg`}
+                download={`RN-Icon-${n}.svg`}
+                title={`Icon ${n} — click to download`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  aspectRatio: "1",
+                  borderRadius: "var(--style-radius-s, 4px)",
+                  border: "1px solid var(--theme-elevation-150)",
+                  background: "var(--theme-elevation-0)",
+                  cursor: "pointer",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/icons/brand/RN_ICON_BLUE_${n}.svg`}
+                  alt=""
+                  className={`brand-icon-tile brand-icon-anim-${recipe}`}
+                  style={{ width: 20, height: 20 }}
+                />
+              </a>
+            );
+          })}
         </div>
       </Section>
 
       {/* Numerals */}
       <Section
         title="Numerals"
-        description="Digit badges used for stat counters and numbered lists — solid style, available in jet, red, blue, and horizon."
+        description="Digit badges used for stat counters and numbered lists — every style and color variant that exists in the brand set."
       >
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {DIGITS.map((d) => (
-            <div
-              key={d}
-              style={{
-                width: 44,
-                height: 44,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "var(--style-radius-m, 8px)",
-                border: "1px solid var(--theme-elevation-150)",
-                background: "var(--theme-elevation-0)",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/img/digits/digit-solid-jet-${d}.svg`} alt={String(d)} style={{ width: 24, height: 24 }} />
+        {DIGIT_STYLES.map(({ prefix, label }) => (
+          <div key={prefix} style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: "var(--theme-elevation-600)" }}>{label}</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {DIGITS.map((d) => (
+                <a
+                  key={d}
+                  href={`/img/digits/${prefix}-${d}.svg`}
+                  download={`RN-${prefix}-${d}.svg`}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "var(--style-radius-m, 8px)",
+                    border: "1px solid var(--theme-elevation-150)",
+                    background: "var(--theme-elevation-0)",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/img/digits/${prefix}-${d}.svg`} alt={String(d)} style={{ width: 24, height: 24 }} />
+                </a>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </Section>
 
       {/* Compositions */}
@@ -334,7 +390,7 @@ export async function BrandIdentityView() {
                 aspectRatio: "1",
                 borderRadius: "var(--style-radius-m, 8px)",
                 border: "1px solid var(--theme-elevation-150)",
-                background: "#241e1c",
+                background: colors.offwhite || "#f0efe8",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -345,7 +401,7 @@ export async function BrandIdentityView() {
               <img
                 src={`/compositions/comp-${n}.svg`}
                 alt=""
-                style={{ width: "70%", height: "70%", objectFit: "contain", opacity: 0.85 }}
+                style={{ width: "80%", height: "80%", objectFit: "contain" }}
               />
             </div>
           ))}
@@ -460,6 +516,30 @@ export async function BrandIdentityView() {
         BRANDING / BRAND ELEMENTS).
       </p>
     </div>
+  );
+}
+
+function DownloadPillButton({ href, label }: { href?: string | null; label: string }) {
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      download
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "8px 14px",
+        borderRadius: "var(--style-radius-pill, 999px)",
+        border: "1px solid var(--theme-elevation-150)",
+        background: "var(--theme-elevation-0)",
+        color: "var(--theme-text)",
+        textDecoration: "none",
+        fontSize: 12,
+        fontWeight: 600,
+      }}
+    >
+      {label}
+    </a>
   );
 }
 
