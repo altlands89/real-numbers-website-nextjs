@@ -20,7 +20,10 @@ export const LayoutMotionGlobal: GlobalConfig = {
       type: "select",
       label: "Site Width (desktop)",
       defaultValue: "92",
-      admin: { description: "How wide the main content area is on desktop screens. Doesn't affect mobile." },
+      admin: {
+        description: "How wide the main content area is on desktop screens. Doesn't affect mobile.",
+        components: { Field: "@/payload/components/SliderField#SliderField" },
+      },
       options: [
         { label: "Narrower (80%)", value: "80" },
         { label: "Narrow (86%)", value: "86" },
@@ -34,7 +37,10 @@ export const LayoutMotionGlobal: GlobalConfig = {
       type: "select",
       label: "Corner Roundness",
       defaultValue: "100",
-      admin: { description: "How rounded cards, photos, and form fields are. Buttons stay fully round regardless — that's a deliberate brand shape, not affected by this." },
+      admin: {
+        description: "How rounded cards, photos, and form fields are. Buttons stay fully round regardless — that's a deliberate brand shape, not affected by this.",
+        components: { Field: "@/payload/components/SliderField#SliderField" },
+      },
       options: [
         { label: "Sharp (0%)", value: "0" },
         { label: "Slight (50%)", value: "50" },
@@ -48,7 +54,10 @@ export const LayoutMotionGlobal: GlobalConfig = {
       type: "select",
       label: "Spacing Density",
       defaultValue: "100",
-      admin: { description: "How much breathing room is between sections and elements site-wide." },
+      admin: {
+        description: "How much breathing room is between sections and elements site-wide.",
+        components: { Field: "@/payload/components/SliderField#SliderField" },
+      },
       options: [
         { label: "Compact (80%)", value: "80" },
         { label: "Cozy (90%)", value: "90" },
@@ -62,7 +71,10 @@ export const LayoutMotionGlobal: GlobalConfig = {
       type: "select",
       label: "Animation Speed",
       defaultValue: "100",
-      admin: { description: "How fast hover effects, reveals, and transitions play across the site." },
+      admin: {
+        description: "How fast hover effects, reveals, and transitions play across the site.",
+        components: { Field: "@/payload/components/SliderField#SliderField" },
+      },
       options: [
         { label: "Slower / Relaxed (150%)", value: "150" },
         { label: "Slow (125%)", value: "125" },

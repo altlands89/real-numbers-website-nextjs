@@ -16,7 +16,10 @@ function styleFields(defaults: { lineHeight: number; letterSpacing: number; weig
       type: "select",
       label: "Size",
       defaultValue: "3",
-      admin: { description: "1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way." },
+      admin: {
+        description: "1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.",
+        components: { Field: "@/payload/components/SliderField#SliderField" },
+      },
       options: [
         { label: "1 — Smallest", value: "1" },
         { label: "2 — Small", value: "2" },
