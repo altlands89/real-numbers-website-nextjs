@@ -1488,19 +1488,29 @@ p { margin: 0; }
 .stories { overflow: hidden; }
 .stories .wrap { position: relative; z-index: 1; }
 
-/* Scroll reveal */
+/* Scroll reveal. will-change is scoped to the pre-reveal state only (not
+   .is-visible) — it promotes the element to its own compositor layer
+   ahead of the IntersectionObserver callback so the first animated frame
+   doesn't stall, but doesn't linger afterward paying for a layer nothing
+   still needs (a big win when dozens of these exist on one page). */
 [data-reveal] {
   opacity: 0;
   transform: translateY(28px) scale(0.985);
   transition: opacity var(--editorial) var(--ease), transform var(--editorial) var(--ease);
+  will-change: opacity, transform;
 }
-[data-reveal].is-visible { opacity: 1; transform: none; }
+[data-reveal].is-visible { opacity: 1; transform: none; will-change: auto; }
 
 /* Headlines get their own smaller, slightly-delayed entrance so they
    settle a beat after the section around them, rather than moving as
-   one rigid block. */
+   one rigid block. No scale() here (unlike the base rule above) —
+   animating transform: scale() on text forces the browser to
+   re-rasterize glyphs at a fractional size every frame, which reads as
+   a soft/blurry flicker right as the heading settles, worst on mobile
+   where headline type is largest relative to the viewport. Plain
+   translateY + opacity stays crisp throughout. */
 [data-reveal].reveal-heading {
-  transform: translateY(16px) scale(0.99);
+  transform: translateY(16px);
   transition-delay: 90ms;
 }
 /* Same specificity as [data-reveal].is-visible above, so without this
@@ -1782,7 +1792,7 @@ p { margin: 0; }
   opacity: 0.35;
   animation: v2-glow-drift 22s ease-in-out infinite;
 }
-.v2-hero-glow--a { background: var(--blue); top: -20%; left: -10%; animation-duration: 2s; animation-delay: 1s; }
+.v2-hero-glow--a { background: var(--blue); top: -20%; left: -10%; animation-duration: 24s; animation-delay: 1s; }
 .v2-hero-glow--b { background: var(--jet); bottom: -30%; right: -10%; animation-duration: 26s; animation-delay: -6s; }
 @keyframes v2-glow-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }

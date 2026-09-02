@@ -57,7 +57,7 @@ export default function HeroV2({
       </div>
 
       <div className="wrap v2-hero-inner">
-        <h1 className="v2-hero-headline" data-reveal>
+        <h1 className="v2-hero-headline reveal-heading" data-reveal>
           Real
           <br />
           <RotatingWord words={rotatingWords} />
