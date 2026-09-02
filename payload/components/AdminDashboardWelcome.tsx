@@ -24,6 +24,8 @@ export function AdminDashboardWelcome({ user }: ServerProps) {
   return (
     <div
       style={{
+        position: "relative",
+        overflow: "hidden",
         marginBottom: "var(--base, 20px)",
         padding: "28px 32px",
         borderRadius: "var(--style-radius-m, 8px)",
@@ -31,58 +33,77 @@ export function AdminDashboardWelcome({ user }: ServerProps) {
         background: "var(--theme-elevation-50)",
       }}
     >
-      <h2 style={{ margin: "0 0 6px", fontSize: 22 }}>
-        {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
-      </h2>
-      <p style={{ margin: "0 0 20px", color: "var(--theme-elevation-600)" }}>
-        Jump straight to a page to edit, or see what&apos;s live right now.
-      </p>
-
-      <a
-        href={getSiteUrl()}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "10px 18px",
-          marginBottom: 24,
-          borderRadius: "var(--style-radius-m, 8px)",
-          background: "var(--theme-success-500)",
-          color: "#fff",
-          fontWeight: 600,
-          textDecoration: "none",
-        }}
-      >
-        View Live Site ↗
-      </a>
-
+      {/* Same abstract composition line-art the live site uses as texture
+          (.v2-bg-cover--comp) — ties this card to the same brand system
+          instead of a plain gray box. */}
       <div
+        aria-hidden="true"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-          gap: 10,
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          backgroundImage: "url(/compositions/comp-16.svg)",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "right -60px top -60px",
+          backgroundSize: "420px",
+          opacity: 0.08,
+          pointerEvents: "none",
         }}
-      >
-        {PAGE_LINKS.map((page) => (
-          <a
-            key={page.slug}
-            href={`/admin/globals/${page.slug}`}
-            style={{
-              display: "block",
-              padding: "12px 16px",
-              borderRadius: "var(--style-radius-m, 8px)",
-              border: "1px solid var(--theme-elevation-150)",
-              background: "var(--theme-elevation-0)",
-              color: "var(--theme-text)",
-              textDecoration: "none",
-              fontWeight: 500,
-            }}
-          >
-            {page.label}
-          </a>
-        ))}
+      />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <h2 style={{ margin: "0 0 6px", fontSize: 22 }}>
+          {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+        </h2>
+        <p style={{ margin: "0 0 20px", color: "var(--theme-elevation-600)" }}>
+          Jump straight to a page to edit, or see what&apos;s live right now.
+        </p>
+
+        <a
+          href={getSiteUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "10px 18px",
+            marginBottom: 24,
+            borderRadius: "var(--style-radius-m, 8px)",
+            background: "var(--theme-success-500)",
+            color: "#fff",
+            fontWeight: 600,
+            textDecoration: "none",
+          }}
+        >
+          View Live Site ↗
+        </a>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+            gap: 10,
+          }}
+        >
+          {PAGE_LINKS.map((page) => (
+            <a
+              key={page.slug}
+              href={`/admin/globals/${page.slug}`}
+              style={{
+                display: "block",
+                padding: "12px 16px",
+                borderRadius: "var(--style-radius-m, 8px)",
+                border: "1px solid var(--theme-elevation-150)",
+                background: "var(--theme-elevation-0)",
+                color: "var(--theme-text)",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              {page.label}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

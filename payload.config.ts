@@ -57,7 +57,10 @@ export default buildConfig({
       // The header slot only renders inside the authenticated app shell —
       // the login screen needs its own copy of the same style injector so
       // the brand color override applies there too.
-      beforeLogin: ["@/payload/components/AdminBrandStyles#AdminBrandStyles"],
+      beforeLogin: [
+        "@/payload/components/AdminBrandStyles#AdminBrandStyles",
+        "@/payload/components/AdminLoginBackground#AdminLoginBackground",
+      ],
       // Friendly landing panel above the default collections/globals grid —
       // a greeting, one-click links to the 8 content pages, and a link to
       // the live site, so a non-technical editor isn't dropped straight

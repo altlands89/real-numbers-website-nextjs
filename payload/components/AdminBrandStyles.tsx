@@ -52,6 +52,36 @@ export function AdminBrandStyles() {
         --theme-success-900: #f7e3de;
         --theme-success-950: #fbf1ef;
       }
+
+      /* Brand symbol mark before the "Pages" and "Site Design" nav-group
+         labels — Payload adds the group name itself as a literal class on
+         .nav-group (e.g. class="nav-group Pages"), so these are stable,
+         structural selectors, not guesses. Two-word group names become two
+         separate classes, hence .Site.Design (both required) rather than a
+         single ".Site Design" selector. */
+      .nav-group.Pages .nav-group__label,
+      .nav-group.Site.Design .nav-group__label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .nav-group.Pages .nav-group__label::before,
+      .nav-group.Site.Design .nav-group__label::before {
+        content: "";
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+      }
+      .nav-group.Pages .nav-group__label::before {
+        background-image: url(/img/symbol-red.svg);
+      }
+      .nav-group.Site.Design .nav-group__label::before {
+        background-image: url(/img/symbol-blue.svg);
+      }
     `}</style>
   );
 }
