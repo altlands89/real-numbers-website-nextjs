@@ -1,5 +1,62 @@
 import React from "react";
 
+// One brand icon (from the 48-icon set in public/icons/brand/) per sidebar
+// nav item — href is a stable selector Payload always renders identically,
+// unlike matching by visible text. Picked for a reasonable semantic fit
+// per item; every number is used at most once so no two items share an
+// icon.
+const NAV_ICONS: Record<string, number> = {
+  // Collections
+  "/admin/collections/users": 26, // key
+  "/admin/collections/media": 38, // archive box
+  "/admin/collections/team-members": 17, // handshake
+  "/admin/collections/testimonials": 3, // star
+  "/admin/collections/faq-items": 13, // checklist
+  "/admin/collections/client-logos": 23, // globe
+  // Site Design
+  "/admin/globals/branding": 47, // diamond
+  "/admin/globals/design-tokens": 21, // swatch grid
+  "/admin/globals/typography": 29, // books
+  "/admin/globals/layout-motion": 44, // lightning bolt
+  // Pages (+ Stats, which sits in its own "Globals" group)
+  "/admin/globals/stats": 40, // bar chart
+  "/admin/globals/home": 42, // compass
+  "/admin/globals/about-page": 15, // binoculars
+  "/admin/globals/team-page": 31, // bench
+  "/admin/globals/contact-page": 14, // phone
+  "/admin/globals/why-real-numbers-page": 27, // pulse line
+  "/admin/globals/our-expertise-page": 25, // briefcase
+  "/admin/globals/use-cases-page": 36, // pushpin
+  "/admin/globals/questions-founders-ask-page": 32, // keyhole
+};
+
+const navIconCSS = Object.entries(NAV_ICONS)
+  .map(
+    ([href, num]) => `
+      .nav__link[href="${href}"] {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav__link[href="${href}"]::before {
+        content: "";
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+        background-image: url(/icons/brand/RN_ICON_BLUE_${num}.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        opacity: 0.55;
+      }
+      .nav__link[href="${href}"].active::before,
+      .nav__link[href="${href}"]:hover::before {
+        opacity: 0.9;
+      }`,
+  )
+  .join("\n");
+
 // Payload's default admin accent ("success" color scale — used for the Save
 // button, active nav item, links, etc.) is a blue. This swaps that whole
 // 19-step scale for a ramp built from the site's brand red (#b85840) so the
@@ -82,6 +139,10 @@ export function AdminBrandStyles() {
       .nav-group.Site.Design .nav-group__label::before {
         background-image: url(/img/symbol-blue.svg);
       }
+
+      /* Per-item icons from the brand icon set, one per collection/global
+         in the sidebar — see NAV_ICONS above for the href → icon mapping. */
+      ${navIconCSS}
     `}</style>
   );
 }

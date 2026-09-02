@@ -2,15 +2,17 @@ import React from "react";
 import type { ServerProps } from "payload";
 import { getSiteUrl } from "@/lib/site-url";
 
+// Icon numbers match AdminBrandStyles.tsx's NAV_ICONS mapping for the same
+// pages, so the sidebar and this dashboard grid stay visually consistent.
 const PAGE_LINKS = [
-  { label: "Home", slug: "home" },
-  { label: "About", slug: "about-page" },
-  { label: "Team", slug: "team-page" },
-  { label: "Why Real Numbers", slug: "why-real-numbers-page" },
-  { label: "Our Expertise", slug: "our-expertise-page" },
-  { label: "Use Cases", slug: "use-cases-page" },
-  { label: "Questions Founders Ask", slug: "questions-founders-ask-page" },
-  { label: "Contact", slug: "contact-page" },
+  { label: "Home", slug: "home", icon: 42 },
+  { label: "About", slug: "about-page", icon: 15 },
+  { label: "Team", slug: "team-page", icon: 31 },
+  { label: "Why Real Numbers", slug: "why-real-numbers-page", icon: 27 },
+  { label: "Our Expertise", slug: "our-expertise-page", icon: 25 },
+  { label: "Use Cases", slug: "use-cases-page", icon: 36 },
+  { label: "Questions Founders Ask", slug: "questions-founders-ask-page", icon: 32 },
+  { label: "Contact", slug: "contact-page", icon: 14 },
 ];
 
 // Rendered above Payload's own collections/globals grid via
@@ -90,7 +92,9 @@ export function AdminDashboardWelcome({ user }: ServerProps) {
               key={page.slug}
               href={`/admin/globals/${page.slug}`}
               style={{
-                display: "block",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
                 padding: "12px 16px",
                 borderRadius: "var(--style-radius-m, 8px)",
                 border: "1px solid var(--theme-elevation-150)",
@@ -100,6 +104,13 @@ export function AdminDashboardWelcome({ user }: ServerProps) {
                 fontWeight: 500,
               }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/icons/brand/RN_ICON_BLUE_${page.icon}.svg`}
+                alt=""
+                aria-hidden="true"
+                style={{ width: 16, height: 16, flexShrink: 0, opacity: 0.6 }}
+              />
               {page.label}
             </a>
           ))}
