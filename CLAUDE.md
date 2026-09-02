@@ -404,6 +404,33 @@ by the local part of their email, a red "View Live Site ↗" button
 content pages' `/admin/globals/:slug` edit views. Verified live: clicking a
 page card navigates correctly, greeting reflects the real logged-in user.
 
+**Video background on the Home divider — done, verified live (2026-09-02
+session)**: the decorative `AbstractPanel` strip between the homepage stats
+section and the dark CTA (`app/(frontend)/page.tsx`, `wide-14.jpg`) can now
+show a looping background video instead, uploaded from a new "Video
+Background Section" tab on the Home global — falls back to the static image
+when empty. `components/AbstractPanel.tsx` gained an optional `video` prop;
+when set it renders `<video autoPlay muted loop playsInline>` instead of
+`next/image`, genuinely `position: fixed` to the real viewport (not a
+"fake fixed" via a transformed ancestor — that would make it behave like
+`position: absolute` instead, since a transformed ancestor becomes the
+containing block for fixed descendants; this was a real bug caught and
+fixed during this session). `.abstract-panel`'s own `overflow: hidden`
+clips the fixed video down to a "window" revealed as the panel scrolls
+past, matching the pinned-background feel the client asked for. Falls back
+to `position: absolute` under `max-width: 900px` and
+`prefers-reduced-motion: reduce`, mirroring the site's existing
+`.bg-photo`/`.v2-bg-cover` fixed-background sections. **Verification
+gotcha worth remembering**: this session's browser-automation screenshot
+tool cannot capture large/full-viewport `<video>` elements at all (confirmed
+via a controlled test — a 300×200px fixed video screenshots fine, a
+900×600px one doesn't, regardless of DOM structure, z-index, or ancestor
+styles) — correctness was instead confirmed via computed styles
+(`position`, `object-fit`, `src`), `elementFromPoint` hit-testing, and
+`video.currentTime` actually progressing. If this section ever needs
+visual QA again, don't rely on a full-page screenshot — check computed
+styles/playback state directly, or view it in a real browser.
+
 ## Working notes
 
 - The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`.
