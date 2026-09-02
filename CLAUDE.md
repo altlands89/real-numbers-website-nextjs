@@ -601,7 +601,7 @@ same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
 downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
 `content-type`/`content-disposition`, 200).
 
-**Design-system consistency audit — in progress, 1 of 4 stages shipped
+**Design-system consistency audit — all 4 stages shipped, verified live
 (2026-09-02 session, continued)**: user asked for deep research into
 reference sites plus a full audit of the site's own uniformity (section
 spacing, text sizes, motion), with conclusions and a plan presented before
@@ -657,6 +657,60 @@ confirmed via `getComputedStyle` that `.v2-hero-headline` and `.v2-stats
 h2` both scaled by exactly the injected factor — before this fix, changing
 those admin sliders had zero visible effect on any of the 7 overridden
 headings.
+
+**Stage 2/4 shipped — section vertical rhythm unified**: `.v2-difference`,
+`.v2-stats`, `.v2-cta-dark`, and `.v2-audience` switched from fixed
+`--space-800`/`--space-900` padding to the fluid `--section-y` token
+every directly-equivalent older-style section (`.philosophy`, `.momentum`,
+`.why`, `.stories`, `.prose-section`) already used. Scoped narrowly —
+`.v2-hero`/`.v2-hero-inner` (hero role), `.v2-footer`/`.site-footer`
+(both already intentionally fixed, old and new alike — footers
+consistently differ from content sections), `.atmosphere-break`
+(full-height break), and `.services` (deliberately mixed fixed-top/fluid-
+bottom) were left alone since none of those were actually inconsistent
+with their own equivalents. Verified visually at 375px and 1440px:
+padding grows from 64-96px fixed to a 72-144px fluid range, reads as
+intentional editorial breathing room, not a visible jump.
+
+**Stage 3/4 — motion durations, concluded "nothing to fix"**: went
+through each of the 6 duration values outside the `--fast`/`--standard`/
+`--editorial` token set expecting to find drift like stage 1. Found the
+opposite — every one is deliberate: two independently-tuned photo
+crossfades (`.hero-context-gallery-img` 900ms, `.v2-slideshow-img`
+1400ms + a separate 6s Ken Burns drift), an "un-clip" panel reveal
+(`.abstract-panel`, 1100ms/900ms, already commented), an image hover
+"breathe" effect (900ms, already commented), and a counter entrance
+explicitly synced to `CounterBadge.tsx`'s JS timing (700ms, already
+commented). Forcing any of these onto the fast UI-feedback token set
+would have made slow atmospheric reveals feel snappy and cheap — a
+regression. No timing values changed; added comments only to the two
+crossfades that didn't already explain themselves.
+
+**Stage 4/4 shipped — tablet breakpoint cluster consolidated**: `900px`,
+`980px`, and `1080px` (21 separate `@media` blocks across every page) sat
+within a 180px band of the already-most-common `1024px` (6 blocks) —
+different sections switched to tablet/mobile layout at different scroll
+widths in that zone. Confirmed no selector was controlled by two
+different breakpoints among the 21 before merging (would have meant two
+independently-tuned responsive stages colliding) — safe to consolidate
+purely by changing *when* each rule activates. Left `480px`/`560px`/
+`640px` alone (spread far enough apart to read as an intentional mobile-
+tier gradient, not the same clustering problem). **Screenshot-tool gotcha
+hit during verification**: setting a custom viewport width larger than
+the Browser pane's own native width (e.g. 960px) produced a visibly
+wrong screenshot (content crammed into a narrow left column, rest blank)
+even though `window.innerWidth`/`getBoundingClientRect()` correctly
+reported the full logical width — a pane-scaling rendering artifact, not
+a real page bug. Worked around it by verifying via computed-style JS
+checks (reliable at any width) plus the `tablet` preset (768px, native
+and trustworthy) for actual visual screenshots — don't trust a screenshot
+at a width wider than the pane's own default without cross-checking
+computed styles first.
+
+All 4 stages verified across home, about, team, use-cases,
+why-real-numbers, our-expertise, and contact at mobile/tablet/desktop
+widths, `npm run build` clean each time, deployed and confirmed live on
+production after each stage.
 
 **Brand Identity page missing the admin sidebar — fixed, verified live
 (2026-09-02 session, continued)**: custom views registered via
