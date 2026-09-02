@@ -24,6 +24,20 @@ import { BrandingGlobal } from "./payload/globals/BrandingGlobal";
 import { DesignTokensGlobal } from "./payload/globals/DesignTokensGlobal";
 import { TypographyGlobal } from "./payload/globals/TypographyGlobal";
 import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
+import { getSiteUrl } from "./lib/site-url";
+
+// Maps each page Global's slug to the live route it renders, so Live
+// Preview's iframe can open the right page while editing.
+const PAGE_ROUTE_BY_GLOBAL_SLUG: Record<string, string> = {
+  home: "/",
+  "about-page": "/about",
+  "team-page": "/team",
+  "contact-page": "/contact",
+  "why-real-numbers-page": "/why-real-numbers",
+  "our-expertise-page": "/our-expertise",
+  "use-cases-page": "/use-cases",
+  "questions-founders-ask-page": "/questions-founders-ask",
+};
 
 export default buildConfig({
   admin: {
@@ -44,6 +58,18 @@ export default buildConfig({
       // the login screen needs its own copy of the same style injector so
       // the brand color override applies there too.
       beforeLogin: ["@/payload/components/AdminBrandStyles#AdminBrandStyles"],
+    },
+    livePreview: {
+      globals: Object.keys(PAGE_ROUTE_BY_GLOBAL_SLUG),
+      breakpoints: [
+        { name: "mobile", label: "Mobile", width: 390, height: 844 },
+        { name: "tablet", label: "Tablet", width: 820, height: 1180 },
+        { name: "desktop", label: "Desktop", width: 1440, height: 900 },
+      ],
+      url: ({ globalConfig }) => {
+        const route = globalConfig?.slug ? PAGE_ROUTE_BY_GLOBAL_SLUG[globalConfig.slug] : undefined;
+        return route ? `${getSiteUrl()}${route}` : undefined;
+      },
     },
   },
   collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos],
