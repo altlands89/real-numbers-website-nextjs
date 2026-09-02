@@ -1,8 +1,31 @@
 import React from "react";
+import { DefaultTemplate } from "@payloadcms/next/templates";
 import { getCMS } from "@/lib/payload";
 import { BRAND_ASSET_CATEGORIES } from "@/payload/collections/BrandAssets";
 import type { BrandAsset } from "@/payload/payload-types";
 import { ICON_ANIMATIONS, ANIMATION_KEYFRAMES } from "@/payload/brand-icon-animations";
+
+// Minimal slice of Payload's AdminViewServerProps — the fields
+// DefaultTemplate needs to render the standard admin shell (sidebar nav,
+// header) around this custom view. Confirmed against Root/index.js's
+// actual RenderServerComponent call (the ServerProps type from `payload`
+// is a general shape, not what's really sent here): only `i18n`,
+// `payload`, `params`, and `searchParams` are top-level — `permissions`,
+// `locale`, `visibleEntities`, and the request/user live nested under
+// `initPageResult`, which is why an earlier version of this component
+// crashed reading `visibleEntities.collections` off `undefined`.
+type BrandIdentityViewProps = {
+  i18n: unknown;
+  initPageResult?: {
+    locale?: unknown;
+    permissions?: unknown;
+    req?: { user?: unknown };
+    visibleEntities?: { collections: string[]; globals: string[] };
+  };
+  params?: Record<string, string | string[] | undefined>;
+  payload: unknown;
+  searchParams?: Record<string, string | string[] | undefined>;
+};
 
 // Custom top-level admin view (registered at /admin/brand-identity via
 // payload.config.ts's admin.components.views). A living one-pager
@@ -75,7 +98,10 @@ function formatBytes(bytes?: number | null) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export async function BrandIdentityView() {
+export async function BrandIdentityView(props: BrandIdentityViewProps) {
+  const { i18n, params, payload: adminPayload, searchParams, initPageResult } = props;
+  const { locale, permissions, req, visibleEntities } = initPageResult ?? {};
+  const user = req?.user;
   const payload = await getCMS();
   const [tokens, branding, assetsResult] = await Promise.all([
     payload.findGlobal({ slug: "design-tokens" }),
@@ -98,6 +124,10 @@ export async function BrandIdentityView() {
   };
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <DefaultTemplate
+      {...({ i18n, locale, params, payload: adminPayload, permissions, searchParams, user, visibleEntities } as any)}
+    >
     <div style={{ maxWidth: 980, margin: "0 auto", padding: "40px 32px 80px" }}>
       {/* Scoped @font-face so the specimen below renders in the real
           brand typeface, without touching the admin app's own fonts. */}
@@ -516,6 +546,7 @@ export async function BrandIdentityView() {
         BRANDING / BRAND ELEMENTS).
       </p>
     </div>
+    </DefaultTemplate>
   );
 }
 
