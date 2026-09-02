@@ -10,6 +10,7 @@ import { TeamMembers } from "./payload/collections/TeamMembers";
 import { Testimonials } from "./payload/collections/Testimonials";
 import { FAQItems } from "./payload/collections/FAQItems";
 import { ClientLogos } from "./payload/collections/ClientLogos";
+import { BrandAssets } from "./payload/collections/BrandAssets";
 
 import { HomeGlobal } from "./payload/globals/HomeGlobal";
 import { AboutGlobal } from "./payload/globals/AboutGlobal";
@@ -66,6 +67,17 @@ export default buildConfig({
       // the live site, so a non-technical editor isn't dropped straight
       // into a bare list of internal collection names.
       beforeDashboard: ["@/payload/components/AdminDashboardWelcome#AdminDashboardWelcome"],
+      // Custom "Brand Identity" page (registered under views below) doesn't
+      // get an automatic sidebar link, so this adds one after the default
+      // nav groups.
+      afterNavLinks: ["@/payload/components/BrandIdentityNav#BrandIdentityNav"],
+      views: {
+        brandIdentity: {
+          Component: "@/payload/components/BrandIdentityView#BrandIdentityView",
+          path: "/brand-identity",
+          meta: { title: "Brand Identity" },
+        },
+      },
     },
     livePreview: {
       globals: Object.keys(PAGE_ROUTE_BY_GLOBAL_SLUG),
@@ -80,7 +92,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos],
+  collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos, BrandAssets],
   globals: [
     BrandingGlobal,
     DesignTokensGlobal,
@@ -131,6 +143,7 @@ export default buildConfig({
         // Media is publicly readable already — serve straight from the Blob
         // CDN instead of proxying every image through our own Next server.
         media: { disablePayloadAccessControl: true },
+        "brand-assets": { disablePayloadAccessControl: true },
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || "",
       // Vercel's serverless functions cap request bodies at 4.5MB, which

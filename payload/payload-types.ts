@@ -73,6 +73,7 @@ export interface Config {
     testimonials: Testimonial;
     'faq-items': FaqItem;
     'client-logos': ClientLogo;
+    'brand-assets': BrandAsset;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     'faq-items': FaqItemsSelect<false> | FaqItemsSelect<true>;
     'client-logos': ClientLogosSelect<false> | ClientLogosSelect<true>;
+    'brand-assets': BrandAssetsSelect<false> | BrandAssetsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -266,6 +268,33 @@ export interface ClientLogo {
   deletedAt?: string | null;
 }
 /**
+ * Downloadable brand files shown on the Brand Identity page — logo packs, icon/numeral sets, fonts, templates. Source originals live in the Drive brand folder.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-assets".
+ */
+export interface BrandAsset {
+  id: number;
+  title: string;
+  category: 'logos' | 'icons' | 'numerals' | 'colors' | 'fonts' | 'photography' | 'animations' | 'documents' | 'social';
+  /**
+   * One line shown under the title on the Brand Identity page.
+   */
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -312,6 +341,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'client-logos';
         value: number | ClientLogo;
+      } | null)
+    | ({
+        relationTo: 'brand-assets';
+        value: number | BrandAsset;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -449,6 +482,27 @@ export interface ClientLogosSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brand-assets_select".
+ */
+export interface BrandAssetsSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
