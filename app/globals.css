@@ -2035,8 +2035,12 @@ p { margin: 0; }
 @media (max-width: 900px) {
   .v2-stats-grid { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-700); }
 }
+/* Stays two-up even on the narrowest phones: the values are 1-3 digits, so
+   a single column just turned four numbers into a 1,100px scroll. */
 @media (max-width: 480px) {
-  .v2-stats-grid { grid-template-columns: 1fr; }
+  .v2-stats-grid { column-gap: var(--space-400); row-gap: var(--space-600); }
+  .v2-stat-number.v2-counter-text { font-size: clamp(44px, 13vw, 64px); }
+  .v2-stat-label { font-size: 0.9rem; }
 }
 
 /* ---- Dark CTA strip ---- */
@@ -2338,4 +2342,60 @@ p { margin: 0; }
   .team-card:hover .team-photo img { transform: none; }
   .v2-pill-link:hover span,
   .link-arrow:hover span { transform: none; }
+}
+
+/* =========================== RESPONSIVE FIXES =========================== */
+
+/* Team cards go horizontal on phones. Two square-photo columns squeezed the
+   bios down to two or three words a line; one row-wise card per person gives
+   the text a readable measure without turning the page into a column of
+   giant portraits. */
+@media (max-width: 560px) {
+  .team-grid { grid-template-columns: 1fr; gap: var(--space-400); }
+  .team-card { display: grid; grid-template-columns: 38% 1fr; align-items: stretch; }
+  .team-photo { height: 100%; aspect-ratio: auto; min-height: 100%; }
+  .team-body { padding: var(--space-400); align-self: center; }
+  .team-body p { font-size: 0.82rem; }
+}
+
+/* Touch targets: several controls were visually correct but far under the
+   ~44px minimum, so they were easy to miss on a phone. Padding grows the hit
+   box and the matching negative margin keeps the layout identical, so none
+   of them move or resize. */
+.v2-header-bar .logo {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 10px;
+  margin: -14px -10px;
+}
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 8px;
+  margin-block: -8px;
+}
+/* The carousel dots were an 8px-tall strip — far too small to hit reliably.
+   Padding grows the button's hit box; content-box keeps the painted dot at
+   its original size, and the matching negative margin keeps the row's
+   spacing and alignment pixel-identical to before. */
+.scroll-dot {
+  box-sizing: content-box;
+  padding: 16px 9px;
+  margin: -16px -9px;
+  background-clip: content-box;
+}
+
+/* Footer links sat at 23px tall in a centred row — same padding/negative
+   margin treatment so they're comfortably tappable without the row growing. */
+.v2-footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 11px;
+  margin-block: -11px;
+}
+.v2-footer-bottom .logo {
+  display: inline-flex;
+  align-items: center;
+  padding: 15px 10px;
+  margin: -15px -10px;
 }
