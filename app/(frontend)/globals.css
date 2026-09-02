@@ -2238,6 +2238,36 @@ p { margin: 0; }
 .abstract-panel-inner { position: absolute; inset: -6% 0; }
 .abstract-panel img { display: block; }
 
+/* Fixed/pinned background video (as opposed to the drift Parallax gives
+   images): the video is genuinely `position: fixed` to the real viewport —
+   NOT confined via a transformed ancestor, which would make it behave like
+   `position: absolute` instead and defeat the pinned effect entirely.
+   `.abstract-panel`'s own `overflow: hidden` (plus its animated clip-path)
+   is what clips the fixed video down to a "window" onto this panel as the
+   page scrolls past it. */
+.abstract-panel-video-fixed { position: absolute; inset: 0; }
+.abstract-panel-video-fixed video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  /* Fixed-position video is unreliable on mobile browsers and reads as
+     unwanted motion under reduced-motion — falls back to scrolling with
+     the page like a normal cover video, filling this panel instead of the
+     viewport. */
+  .abstract-panel-video-fixed video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .abstract-panel--band {
   width: 100%;
   aspect-ratio: 21 / 7;

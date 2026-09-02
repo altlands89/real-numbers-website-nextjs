@@ -762,6 +762,15 @@ export interface Home {
   difference?: {
     heading?: string | null;
   };
+  /**
+   * The decorative full-width strip between the stats and the dark banner below it. Upload a video for a looping fixed background video; leave empty to keep the default image.
+   */
+  divider?: {
+    /**
+     * MP4 recommended. Plays muted, on loop, with a fixed background effect. Leave empty to show the default image instead.
+     */
+    video?: (number | null) | Media;
+  };
   ctaDark?: {
     heading?: string | null;
     ctaLabel?: string | null;
@@ -1280,6 +1289,11 @@ export interface HomeSelect<T extends boolean = true> {
     | T
     | {
         heading?: T;
+      };
+  divider?:
+    | T
+    | {
+        video?: T;
       };
   ctaDark?:
     | T

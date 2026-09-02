@@ -95,6 +95,31 @@ export const HomeGlobal: GlobalConfig = {
           ],
         },
         {
+          label: "Video Background Section",
+          fields: [
+            {
+              name: "divider",
+              type: "group",
+              label: false,
+              admin: {
+                description:
+                  "The decorative full-width strip between the stats and the dark banner below it. Upload a video for a looping fixed background video; leave empty to keep the default image.",
+              },
+              fields: [
+                {
+                  name: "video",
+                  type: "upload",
+                  label: "Background Video",
+                  relationTo: "media",
+                  admin: {
+                    description: "MP4 recommended. Plays muted, on loop, with a fixed background effect. Leave empty to show the default image instead.",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: "Dark Banner",
           fields: [
             {

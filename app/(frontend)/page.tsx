@@ -27,6 +27,11 @@ export default async function Home() {
     .map((entry) => (typeof entry.image === "object" && entry.image && "url" in entry.image ? (entry.image as { url: string }).url : ""))
     .filter(Boolean);
 
+  const dividerVideo =
+    typeof home.divider?.video === "object" && home.divider.video && "url" in home.divider.video
+      ? (home.divider.video as { url: string }).url
+      : undefined;
+
   return (
     <>
       <HeaderV2 />
@@ -47,8 +52,10 @@ export default async function Home() {
         stats={(stats.stats || []).map((s) => ({ label: s.label, value: s.value, color: s.color as "red" | "blue" | "jet" | "horizon" }))}
       />
       {/* Visual breath between the stats and the dark CTA, and a hand-off
-          from the light half of the page into the dark one. */}
-      <AbstractPanel src="/img/abstract/wide-14.jpg" variant="band" strength={30} />
+          from the light half of the page into the dark one. Editable from
+          /admin's "Video Background Section" tab — falls back to the
+          static image below when no video is uploaded. */}
+      <AbstractPanel src="/img/abstract/wide-14.jpg" video={dividerVideo} variant="band" strength={30} />
       <CtaDarkV2 heading={home.ctaDark?.heading || ""} ctaLabel={home.ctaDark?.ctaLabel || "Discover more"} />
       <AudienceV2
         heading={home.audience?.heading || ""}
