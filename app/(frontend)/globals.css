@@ -1968,7 +1968,7 @@ p { margin: 0; }
 }
 
 /* ---- Difference (white, pill-word headline + decoding sentence) ---- */
-.v2-difference { background: var(--offwhite); padding: var(--space-800) 0; }
+.v2-difference { background: var(--offwhite); padding: var(--section-y) 0; }
 .v2-difference h2 {
   font-size: calc(var(--type-h2-computed) * 1.45);
   line-height: 0.98;
@@ -2015,7 +2015,7 @@ p { margin: 0; }
 }
 
 /* ---- Stats (digit-glyph numerals, one column per stat) ---- */
-.v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }
+.v2-stats { background: var(--offwhite); padding: var(--section-y) 0; }
 .v2-stats h2 { font-size: calc(var(--type-h2-computed) * 1.17); }
 .v2-stats-grid {
   margin-top: var(--space-700);
@@ -2088,7 +2088,7 @@ p { margin: 0; }
   position: relative;
   background: var(--black);
   overflow: hidden;
-  padding: var(--space-900) 0;
+  padding: var(--section-y) 0;
   text-align: center;
 }
 .v2-cta-dark h2 {
@@ -2104,7 +2104,7 @@ p { margin: 0; }
 }
 
 /* ---- Audience card grid ---- */
-.v2-audience { position: relative; background: var(--blue); overflow: hidden; padding: var(--space-800) 0; }
+.v2-audience { position: relative; background: var(--blue); overflow: hidden; padding: var(--section-y) 0; }
 .v2-audience-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .v2-audience h2 {
   position: relative;
