@@ -2412,3 +2412,22 @@ p { margin: 0; }
   mix-blend-mode: soft-light;
   opacity: 0.5;
 }
+
+/* Testimonials block was running to ~1,060px: 288px of it was section
+   padding, and every card was stretched to the height of the single
+   longest quote, leaving a dead gap under the shorter ones. Tighter
+   vertical rhythm plus a slightly denser card brings it in by roughly a
+   third without touching the quotes themselves. */
+.stories { padding: clamp(56px, 6vw, 96px) 0; }
+.stories .section-head { margin-bottom: var(--space-500); }
+.story-card {
+  padding: var(--space-500);
+  gap: var(--space-400);
+  min-height: 0;
+}
+/* The closing mark belongs to the quote, so the text no longer stretches:
+   the mark sits directly under it and only the attribution is pushed to the
+   bottom edge, keeping attributions aligned across cards. */
+.story-text { font-size: 0.92rem; line-height: 1.55; flex: 0 0 auto; }
+.story-card .attribution { margin-top: auto; }
+.story-quote-mark--close { margin-top: calc(var(--space-300) * -1); }
