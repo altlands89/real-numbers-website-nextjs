@@ -600,6 +600,64 @@ convenient to download than paging through hundreds of rows. Uses the
 same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
 downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
 `content-type`/`content-disposition`, 200).
+
+**Icon animations + per-icon/bulk downloads — done, verified live
+(2026-09-02 session, continued)**: follow-up to the Brand Identity page
+above. `payload/brand-icon-animations.ts` is the single source of truth
+for both sides of this feature — `ICON_ANIMATIONS` (icon number → one of
+12 named recipes: pulse, rotate360, swing, bounceY, tilt, blinkOpacity,
+flipY, growX, wobble, typeCount, driftY, popIn) and `ANIMATION_KEYFRAMES`
+(the CSS `@keyframes` body per recipe) are read directly by
+`BrandIdentityView.tsx` to animate the live icon grid (each `<img>` gets
+`brand-icon-anim-<recipe>`, all wrapped in `@media (prefers-reduced-motion:
+no-preference)`); `sampleSvgTransform(recipe, t, cx, cy)` — a numeric
+sibling of the same recipes, returning an SVG-attribute transform string
+— is used by `payload/build-icon-download-packs.ts` to bake per-frame
+static SVGs for the GIF pack. Recipe assignment matches the icon's
+subject only where confirmed (18 icons via `AdminBrandStyles.tsx`'s
+`NAV_ICONS` map); the rest is a reasonable visual read of the icon sheet,
+not guaranteed — noted as such in the source comment rather than
+overclaiming precision.
+- Every icon is individually click-to-download (plain `<a download>` to
+  its existing `/icons/brand/*.svg` file — no new asset needed).
+- Three "download all" packs, generated once by
+  `build-icon-download-packs.ts` and uploaded to `brand-assets` under
+  titles `BrandIdentityView.tsx` looks up directly (`Icon Set — Static SVG
+  (as shown)`, `Icon Set — Animated SVG Pack`, `Icon Set — Animated GIF
+  Pack (Transparent)`): the static pack is just the 48 files zipped; the
+  animated SVG pack wraps each icon's path in `<g class="a">` with an
+  embedded `<style>@keyframes...</style>` so the animation plays when the
+  file is opened on its own, not just inside this admin page; the GIF
+  pack renders 24 frames per icon (4s loop) via `sharp` rasterizing a
+  static SVG snapshot per frame (librsvg has no CSS-animation support, so
+  the animated-SVG files can't be reused directly for this), quantized
+  and encoded with `gifenc` (new dependency, ~5KB, pure JS).
+- **`gifenc` import gotcha**: its published build has no `exports` map and
+  ships only a `main` (CJS) bundle with no static named exports Node's
+  ESM/CJS interop can detect — under this repo's `"type": "module"`,
+  `import { GIFEncoder } from "gifenc"` fails at runtime
+  (`does not provide an export named 'GIFEncoder'`) even though
+  `import gifenc from "gifenc"` and destructuring off that default works
+  fine. `payload/gifenc.d.ts` (a small hand-written ambient module
+  declaration, since gifenc ships no types) documents this and types the
+  default-export shape accordingly — always default-import gifenc here.
+- **GIF transparency false alarm, worth remembering**: a first look at a
+  rendered transparent-icon GIF in the browser showed what looked like a
+  flat light-gray/white square instead of true transparency — turned out
+  to be Chrome's own transparency checkerboard pattern reading as a flat
+  color at small icon scale in a screenshot, not a bug. Confirmed via
+  `canvas.getImageData` on the actual `<img>` (corner pixel `[0,0,0,0]`,
+  icon-colored pixels elsewhere with alpha 255) that transparency was
+  correct all along — verify GIF/PNG alpha via pixel data, not by eye, at
+  small sizes.
+- The composition preview tiles' background was flipped from near-black
+  to the off-white brand token — the compositions themselves use the
+  brand blue (`#353E5B`) for strokes, which was invisible against the old
+  dark tile (this preview section existed before the icon-animation work,
+  fixed alongside it in the same pass). The Numerals section now also
+  shows every digit style/color variant that actually exists in
+  `public/img/digits` (outline, solid, and solid in jet/blue/red/horizon)
+  instead of only solid-jet.
 - The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`. **The wider `REAL NUMBERS BRANDING/` folder** (one level up, at `.../My Drive/01_Workflow/H2O/REAL NUMBERS/REAL NUMBERS BRANDING/`, accessible locally via Google Drive Desktop sync) also holds `BRAND DELIVERABLES/` (email signature, presentation/proposal templates, A4 letterhead, LinkedIn social assets), `COLORS/`, `FONTS/` (TASA Orbiter + Google Sans for Hebrew), `LOGO/`, and `OUTLOOK SIGNATURE TEMPLATE/` — the source for the `brand-assets` collection above.
 - No screenshot/browser-preview tooling is available from a sandboxed environment — verification has relied on `npm run build` passing cleanly plus manual review of the diff. If Claude Code has real screenshot/browser access, use it to visually QA before/after changes — that's a real upgrade over how this was built so far.
 - Contact form (`components/FinalCta.tsx` and `ContactForm.tsx`) is client-side only; Supabase is scaffolded (`lib/supabase.ts`, keys in `.env.local`) but no `leads` table exists yet — see `README.md` for the exact SQL to add it.
