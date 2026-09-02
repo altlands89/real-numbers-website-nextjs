@@ -49,6 +49,17 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
+      // The DATABASE_URI points at Supabase's Session Pooler, which caps
+      // total concurrent connections at 15. On Vercel each serverless
+      // function instance opens its own pool (node-postgres defaults to
+      // max: 10 per pool) — a couple of concurrent instances alone can
+      // exhaust the pooler, after which background page regeneration
+      // fails to connect and Next.js silently keeps serving the stale
+      // cached page instead of the new content (looks like "edits aren't
+      // saving" when they actually are — the DB write succeeds, only the
+      // re-render after it fails). Keeping each instance's pool small
+      // leaves headroom for multiple concurrent instances.
+      max: 3,
     },
     // Explicit migrations only — this Postgres instance also holds the
     // site's own `contact_submissions` table (unrelated to Payload). Letting
