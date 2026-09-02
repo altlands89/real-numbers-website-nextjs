@@ -96,6 +96,41 @@ since there are no plain `.js`/`.cjs` config files at the repo root that
 assume CommonJS. If a future dependency needs CJS `require()` semantics,
 revisit this.
 
+**"Site Design" admin section — done, verified live**: a dedicated sidebar
+group (`admin.group: "Site Design"` on each Global) holding 4 Globals —
+`Colors` (was Design Tokens, now 11 colors including `white`/`clay`),
+`Typography` (new, `payload/globals/TypographyGlobal.ts`), `Layout & Motion`
+(new, `payload/globals/LayoutMotionGlobal.ts`), and `Logo` (was Branding).
+Typography exposes 6 shared text styles (H1/H2/H3/Eyebrow/Lede/Body) —
+**deliberately shared styles, not per-field overrides**: the client initially
+asked for per-field typography controls, but that would mean hundreds of
+extra controls across every heading/paragraph and would let the site drift
+visually inconsistent field-by-field; talked through it and agreed on a
+smaller set of reusable roles instead, matching how the CSS itself already
+works (every heading already runs through shared `h1`/`h2`/`h3`/`.eyebrow`/
+`.lede` rules). Each style has: `sizeScale` (a "1–5" select, not a literal
+slider — Payload has no native range-slider field, and a labeled 5-step
+select reads just as clearly in the admin) mapped to a multiplier
+(`SIZE_SCALE_MULTIPLIER` in `app/(frontend)/layout.tsx`) applied on TOP of
+the existing responsive `clamp()` sizing, so text stays fluid on mobile at
+every step; plus line-height, letter-spacing, and a weight dropdown (400–800,
+matching TASA Orbiter's actual shipped weights). Layout & Motion has 4
+site-wide multiplier controls: container width (the `--max` var already used
+for the earlier 80%→92% requests), corner roundness (scales
+`--radius-control`/`--radius-card` only — `--radius-pill` is deliberately
+excluded, fully-round buttons are a fixed brand shape, not something
+"roundness" should flatten), spacing density (scales the entire
+`--space-100`...`--space-1000` scale plus `--section-y` together), and
+animation speed (scales `--fast`/`--standard`/`--editorial` together). All
+of `globals.css`'s actual typography/radius/spacing/motion rules were
+rewritten to read these CSS custom properties via `calc()`, with fallback
+values matching today's design exactly — confirmed via a full visual
+diff (pixel-identical at every default) before touching anything live.
+Verified 3 separate live edits via the real REST API against local `next
+dev`: H1 sizeScale → 5 (confirmed `--type-h1-scale` computed to 1.35 in the
+browser), cornerRoundness → 0 (confirmed cards go sharp-cornered while
+buttons stay pill-shaped), then reverted both.
+
 **Multi-photo fading slideshows — done, verified live**: the 5 "mood/
 atmosphere" photo spots (About's Our Story, Why Real Numbers' What Makes
 Different, Our Expertise's Integrated Partnership, Use Cases' and Q&A's

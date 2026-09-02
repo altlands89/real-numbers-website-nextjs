@@ -12,33 +12,86 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// sizeScale is a 1–5 dropdown (1 = smallest, 3 = the site's current
+// default, 5 = largest) — mapped to a multiplier applied on top of the
+// existing responsive clamp() sizing, so text stays fluid across screen
+// sizes no matter which step is chosen.
+const SIZE_SCALE_MULTIPLIER: Record<string, number> = {
+  "1": 0.75,
+  "2": 0.875,
+  "3": 1,
+  "4": 1.15,
+  "5": 1.35,
+};
+
+type TypeStyle = {
+  sizeScale?: string | null;
+  lineHeight?: number | null;
+  letterSpacing?: number | null;
+  weight?: string | null;
+} | null | undefined;
+
+function typeVars(role: string, style: TypeStyle): string[] {
+  if (!style) return [];
+  const scale = style.sizeScale ? SIZE_SCALE_MULTIPLIER[style.sizeScale] : undefined;
+  return [
+    scale !== undefined && `--type-${role}-scale:${scale} !important;`,
+    style.lineHeight != null && `--type-${role}-line-height:${style.lineHeight} !important;`,
+    style.letterSpacing != null && `--type-${role}-letter-spacing:${style.letterSpacing}em !important;`,
+    style.weight && `--type-${role}-weight:${style.weight} !important;`,
+  ].filter((v): v is string => Boolean(v));
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const payload = await getCMS();
-  const tokens = await payload.findGlobal({ slug: "design-tokens" });
+  const [tokens, typography, layoutMotion] = await Promise.all([
+    payload.findGlobal({ slug: "design-tokens" }),
+    payload.findGlobal({ slug: "typography" }),
+    payload.findGlobal({ slug: "layout-motion" }),
+  ]);
   const c = tokens.colors;
 
-  // Overrides the brand palette defined in globals.css — editable live from
-  // /admin (Design Tokens global) without a redeploy. Falls back silently
-  // to the stylesheet's own defaults if a field is somehow empty.
-  const cssVars = c
-    ? `:root{${[
+  const colorVars = c
+    ? [
         c.black && `--black:${c.black} !important;`,
         c.offwhite && `--offwhite:${c.offwhite} !important;`,
+        c.white && `--white:${c.white} !important;`,
         c.red && `--red:${c.red} !important;`,
         c.redDark && `--red-dark:${c.redDark} !important;`,
         c.blue && `--blue:${c.blue} !important;`,
         c.blueDark && `--blue-dark:${c.blueDark} !important;`,
         c.stone && `--stone:${c.stone} !important;`,
         c.horizon && `--horizon:${c.horizon} !important;`,
+        c.clay && `--clay:${c.clay} !important;`,
         c.jet && `--jet:${c.jet} !important;`,
-      ]
-        .filter(Boolean)
-        .join("")}}`
-    : "";
+      ].filter((v): v is string => Boolean(v))
+    : [];
+
+  const typographyVars = [
+    ...typeVars("h1", typography.h1),
+    ...typeVars("h2", typography.h2),
+    ...typeVars("h3", typography.h3),
+    ...typeVars("eyebrow", typography.eyebrow),
+    ...typeVars("lede", typography.lede),
+    ...typeVars("body", typography.body),
+  ];
+
+  const layoutVars = [
+    layoutMotion.containerWidth && `--max:${layoutMotion.containerWidth}% !important;`,
+    layoutMotion.cornerRoundness && `--roundness-scale:${Number(layoutMotion.cornerRoundness) / 100} !important;`,
+    layoutMotion.spacingDensity && `--density-scale:${Number(layoutMotion.spacingDensity) / 100} !important;`,
+    layoutMotion.motionSpeed && `--motion-scale:${Number(layoutMotion.motionSpeed) / 100} !important;`,
+  ].filter((v): v is string => Boolean(v));
+
+  const allVars = [...colorVars, ...typographyVars, ...layoutVars];
+  // Overrides the design system defined in globals.css — editable live from
+  // /admin (Site Design section) without a redeploy. Falls back silently to
+  // the stylesheet's own defaults if a field is somehow empty.
+  const cssVars = allVars.length ? `:root{${allVars.join("")}}` : "";
 
   return (
     <html lang="en" className={tasaOrbiter.variable}>

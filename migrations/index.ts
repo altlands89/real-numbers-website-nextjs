@@ -3,6 +3,7 @@ import * as migration_20260902_034013_content_collections from './20260902_03401
 import * as migration_20260902_034435_why_real_numbers_photo from './20260902_034435_why_real_numbers_photo';
 import * as migration_20260902_041825_design_tokens from './20260902_041825_design_tokens';
 import * as migration_20260902_050727_multi_photo_slideshows from './20260902_050727_multi_photo_slideshows';
+import * as migration_20260902_061627_site_design from './20260902_061627_site_design';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20260902_050727_multi_photo_slideshows.up,
     down: migration_20260902_050727_multi_photo_slideshows.down,
-    name: '20260902_050727_multi_photo_slideshows'
+    name: '20260902_050727_multi_photo_slideshows',
+  },
+  {
+    up: migration_20260902_061627_site_design.up,
+    down: migration_20260902_061627_site_design.down,
+    name: '20260902_061627_site_design'
   },
 ];

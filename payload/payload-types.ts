@@ -98,6 +98,8 @@ export interface Config {
   globals: {
     branding: Branding;
     'design-tokens': DesignToken;
+    typography: Typography;
+    'layout-motion': LayoutMotion;
     stats: Stat;
     home: Home;
     'about-page': AboutPage;
@@ -111,6 +113,8 @@ export interface Config {
   globalsSelect: {
     branding: BrandingSelect<false> | BrandingSelect<true>;
     'design-tokens': DesignTokensSelect<false> | DesignTokensSelect<true>;
+    typography: TypographySelect<false> | TypographySelect<true>;
+    'layout-motion': LayoutMotionSelect<false> | LayoutMotionSelect<true>;
     stats: StatsSelect<false> | StatsSelect<true>;
     home: HomeSelect<false> | HomeSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
@@ -516,6 +520,10 @@ export interface DesignToken {
     /**
      * Hex color, e.g. #b85840.
      */
+    white?: string | null;
+    /**
+     * Hex color, e.g. #b85840.
+     */
     red?: string | null;
     /**
      * Hex color, e.g. #b85840.
@@ -540,8 +548,140 @@ export interface DesignToken {
     /**
      * Hex color, e.g. #b85840.
      */
+    clay?: string | null;
+    /**
+     * Hex color, e.g. #b85840.
+     */
     jet?: string | null;
   };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Shared text styles used everywhere on the site — change one here and every heading/paragraph using it updates together, so the site stays visually consistent. These aren't per-field overrides on purpose: individually resizing every single paragraph would make the site look inconsistent fast.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "typography".
+ */
+export interface Typography {
+  id: number;
+  h1?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 0.92. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: -0.035. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  h2?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 1. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: -0.028. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  h3?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 1.15. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: -0.016. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  eyebrow?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 1.333. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: 0.14. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  lede?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 1.5. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: 0. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  body?: {
+    /**
+     * 1 = smallest, 3 = default (current site design), 5 = largest. Scales the existing responsive size up or down — stays fluid on mobile either way.
+     */
+    sizeScale?: ('1' | '2' | '3' | '4' | '5') | null;
+    /**
+     * Space between lines of text. Default: 1.625. Lower = tighter, higher = airier.
+     */
+    lineHeight?: number | null;
+    /**
+     * Space between letters, in em. Default: 0. Negative = tighter, positive = wider.
+     */
+    letterSpacing?: number | null;
+    weight?: ('400' | '500' | '600' | '700' | '800') | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Site-wide structural and motion controls. Each of these affects every page at once.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "layout-motion".
+ */
+export interface LayoutMotion {
+  id: number;
+  /**
+   * How wide the main content area is on desktop screens. Doesn't affect mobile.
+   */
+  containerWidth?: ('80' | '86' | '92' | '96' | '100') | null;
+  /**
+   * How rounded cards, photos, and form fields are. Buttons stay fully round regardless — that's a deliberate brand shape, not affected by this.
+   */
+  cornerRoundness?: ('0' | '50' | '100' | '150' | '200') | null;
+  /**
+   * How much breathing room is between sections and elements site-wide.
+   */
+  spacingDensity?: ('80' | '90' | '100' | '115' | '130') | null;
+  /**
+   * How fast hover effects, reveals, and transitions play across the site.
+   */
+  motionSpeed?: ('150' | '125' | '100' | '75' | '50') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -981,14 +1121,86 @@ export interface DesignTokensSelect<T extends boolean = true> {
     | {
         black?: T;
         offwhite?: T;
+        white?: T;
         red?: T;
         redDark?: T;
         blue?: T;
         blueDark?: T;
         stone?: T;
         horizon?: T;
+        clay?: T;
         jet?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "typography_select".
+ */
+export interface TypographySelect<T extends boolean = true> {
+  h1?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  h2?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  h3?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  eyebrow?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  lede?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  body?:
+    | T
+    | {
+        sizeScale?: T;
+        lineHeight?: T;
+        letterSpacing?: T;
+        weight?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "layout-motion_select".
+ */
+export interface LayoutMotionSelect<T extends boolean = true> {
+  containerWidth?: T;
+  cornerRoundness?: T;
+  spacingDensity?: T;
+  motionSpeed?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

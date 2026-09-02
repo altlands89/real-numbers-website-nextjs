@@ -22,6 +22,8 @@ import { QuestionsFoundersAskGlobal } from "./payload/globals/QuestionsFoundersA
 import { StatsGlobal } from "./payload/globals/StatsGlobal";
 import { BrandingGlobal } from "./payload/globals/BrandingGlobal";
 import { DesignTokensGlobal } from "./payload/globals/DesignTokensGlobal";
+import { TypographyGlobal } from "./payload/globals/TypographyGlobal";
+import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
 
 export default buildConfig({
   admin: {
@@ -31,6 +33,8 @@ export default buildConfig({
   globals: [
     BrandingGlobal,
     DesignTokensGlobal,
+    TypographyGlobal,
+    LayoutMotionGlobal,
     StatsGlobal,
     HomeGlobal,
     AboutGlobal,

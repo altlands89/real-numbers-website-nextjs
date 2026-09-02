@@ -3,7 +3,8 @@ import { revalidateGlobalOnChange } from "../revalidate";
 
 export const BrandingGlobal: GlobalConfig = {
   slug: "branding",
-  admin: { description: "Site-wide logo files and footer copyright line." },
+  label: "Logo",
+  admin: { group: "Site Design", description: "Site-wide logo files and footer copyright line." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },

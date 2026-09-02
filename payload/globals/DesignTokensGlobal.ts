@@ -17,7 +17,9 @@ const hexField = (name: string, label: string, defaultValue: string) => ({
 
 export const DesignTokensGlobal: GlobalConfig = {
   slug: "design-tokens",
+  label: "Colors",
   admin: {
+    group: "Site Design",
     description:
       "Site-wide brand colors — changes apply everywhere immediately, no redeploy needed. Handle with care: these are the core brand palette used across every page.",
   },
@@ -34,12 +36,14 @@ export const DesignTokensGlobal: GlobalConfig = {
       fields: [
         hexField("black", "Black (primary text / dark backgrounds)", "#191716"),
         hexField("offwhite", "Off-white (primary background)", "#f0efe8"),
+        hexField("white", "White (raised surfaces, text on red)", "#ffffff"),
         hexField("red", "Red (accent / primary CTA)", "#b85840"),
         hexField("redDark", "Red — dark (hover/pressed)", "#9c4933"),
         hexField("blue", "Blue (secondary dark background)", "#353e5b"),
         hexField("blueDark", "Blue — dark (hover/pressed)", "#2a3148"),
         hexField("stone", "Stone (neutral tint / dividers)", "#cfc9bc"),
         hexField("horizon", "Horizon (muted blue accent)", "#5c6787"),
+        hexField("clay", "Clay (warm red tint / emphasis)", "#ce8570"),
         hexField("jet", "Jet (near-black accent, hero glow)", "#0d0d0d"),
       ],
     },

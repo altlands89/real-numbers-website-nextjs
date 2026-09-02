@@ -39,31 +39,39 @@
   --gutter-tablet: 32px;
   --gutter-mobile: 20px;
 
+  /* ---- Site Design scale multipliers (overridden live from /admin's
+     Layout & Motion global — see app/(frontend)/layout.tsx). --radius-pill
+     deliberately does NOT use --roundness-scale: fully-round buttons/pills
+     are a fixed brand shape, not something "roundness" should flatten. ---- */
+  --roundness-scale: 1;
+  --density-scale: 1;
+  --motion-scale: 1;
+
   /* ---- Radii ---- */
-  --radius-control: 12px;
-  --radius-card: 18px;
+  --radius-control: calc(12px * var(--roundness-scale));
+  --radius-card: calc(18px * var(--roundness-scale));
   --radius-pill: 999px;
 
   /* ---- Motion — cubic-bezier(.22,1,.36,1) throughout ---- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --fast: 160ms;
-  --standard: 240ms;
-  --editorial: 400ms;
+  --fast: calc(160ms * var(--motion-scale));
+  --standard: calc(240ms * var(--motion-scale));
+  --editorial: calc(400ms * var(--motion-scale));
 
   /* ---- 4px spacing scale ---- */
-  --space-100: 4px;
-  --space-200: 8px;
-  --space-300: 12px;
-  --space-400: 16px;
-  --space-500: 24px;
-  --space-600: 32px;
-  --space-700: 48px;
-  --space-800: 64px;
-  --space-900: 96px;
-  --space-1000: 128px;
+  --space-100: calc(4px * var(--density-scale));
+  --space-200: calc(8px * var(--density-scale));
+  --space-300: calc(12px * var(--density-scale));
+  --space-400: calc(16px * var(--density-scale));
+  --space-500: calc(24px * var(--density-scale));
+  --space-600: calc(32px * var(--density-scale));
+  --space-700: calc(48px * var(--density-scale));
+  --space-800: calc(64px * var(--density-scale));
+  --space-900: calc(96px * var(--density-scale));
+  --space-1000: calc(128px * var(--density-scale));
 
   /* ---- Section rhythm: 160px on desktop, fluid below ---- */
-  --section-y: clamp(72px, 10vw, 160px);
+  --section-y: calc(clamp(72px, 10vw, 160px) * var(--density-scale));
 
   --radius: var(--radius-card); /* legacy alias used below */
   font-size: 16px;
@@ -85,8 +93,10 @@ body {
   background: var(--offwhite);
   color: var(--black);
   font-family: var(--font-tasa), -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 400;
-  line-height: 1.625; /* Body / Default — 16/26 */
+  font-size: calc(1rem * var(--type-body-scale, 1));
+  font-weight: var(--type-body-weight, 400);
+  line-height: var(--type-body-line-height, 1.625); /* Body / Default — 16/26 */
+  letter-spacing: var(--type-body-letter-spacing, 0);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -127,10 +137,10 @@ section { position: relative; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.75rem;
-  line-height: 1.333;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: calc(0.75rem * var(--type-eyebrow-scale, 1));
+  line-height: var(--type-eyebrow-line-height, 1.333);
+  font-weight: var(--type-eyebrow-weight, 700);
+  letter-spacing: var(--type-eyebrow-letter-spacing, 0.14em);
   text-transform: uppercase;
   color: var(--red);
   opacity: 1;
@@ -157,37 +167,38 @@ h1, h2, h3, h4 {
 /* Display / XL — hero master line only: tight leading, tight
    tracking, near-maximum confidence for a one-to-two-line statement */
 h1 {
-  font-size: clamp(2.75rem, 4.6vw + 1.4rem, 6.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
-  font-weight: 800;
+  font-size: calc(clamp(2.75rem, 4.6vw + 1.4rem, 6.5rem) * var(--type-h1-scale, 1));
+  line-height: var(--type-h1-line-height, 0.92);
+  letter-spacing: var(--type-h1-letter-spacing, -0.035em);
+  font-weight: var(--type-h1-weight, 800);
 }
 
 /* Heading / 02 — section headlines: leading closed to 100%,
    tracking tightened for the same declarative, spec-sheet feel */
 h2 {
-  font-size: clamp(2.3rem, 2vw + 1.75rem, 3.85rem);
-  line-height: 1;
-  letter-spacing: -0.028em;
-  font-weight: 700;
+  font-size: calc(clamp(2.3rem, 2vw + 1.75rem, 3.85rem) * var(--type-h2-scale, 1));
+  line-height: var(--type-h2-line-height, 1);
+  letter-spacing: var(--type-h2-letter-spacing, -0.028em);
+  font-weight: var(--type-h2-weight, 700);
 }
 
 /* Card / item titles — scaled down from Heading/03 to suit dense
    repeated grids rather than full-bleed editorial statements */
 h3 {
-  font-size: clamp(1.15rem, 0.4vw + 1.05rem, 1.35rem);
-  line-height: 1.15;
-  letter-spacing: -0.016em;
-  font-weight: 700;
+  font-size: calc(clamp(1.15rem, 0.4vw + 1.05rem, 1.35rem) * var(--type-h3-scale, 1));
+  line-height: var(--type-h3-line-height, 1.15);
+  letter-spacing: var(--type-h3-letter-spacing, -0.016em);
+  font-weight: var(--type-h3-weight, 700);
 }
 
 p { margin: 0; }
 
 /* Body / Large — 20/30 */
 .lede {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  font-weight: 400;
+  font-size: calc(1.25rem * var(--type-lede-scale, 1));
+  line-height: var(--type-lede-line-height, 1.5);
+  font-weight: var(--type-lede-weight, 400);
+  letter-spacing: var(--type-lede-letter-spacing, 0);
   opacity: 0.86;
   max-width: 62ch;
 }
