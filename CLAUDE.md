@@ -601,6 +601,28 @@ same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
 downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
 `content-type`/`content-disposition`, 200).
 
+**Brand Identity page missing the admin sidebar — fixed, verified live
+(2026-09-02 session, continued)**: custom views registered via
+`admin.components.views` (like `/admin/brand-identity`) render with no
+template wrapper at all by default — only a handful of built-in view keys
+(e.g. `account`) get Payload's own `DefaultTemplate` automatically; a
+genuinely new custom view does not, so the page had no sidebar nav and no
+way back to the rest of `/admin`. Fixed by having
+`BrandIdentityView.tsx` import `DefaultTemplate` from
+`@payloadcms/next/templates` and wrap its own content in it. **Gotcha hit
+while fixing this**: the general `ServerProps` type (from `payload`)
+suggests `permissions`/`locale`/`visibleEntities`/`user` are top-level
+props on any admin server component, but for a component rendered via
+`admin.components.views` specifically, tracing the actual call in
+`@payloadcms/next/dist/views/Root/index.js` shows only `i18n`, `payload`,
+`params`, and `searchParams` are top-level — the rest live nested under
+`initPageResult` (`initPageResult.permissions`, `.locale`,
+`.visibleEntities`, `.req.user`). Trusting the general type first caused
+a real crash (`Cannot read properties of undefined (reading
+'collections')`, since `visibleEntities` was `undefined` at the top
+level) — if another custom view ever needs `DefaultTemplate`, source
+these from `initPageResult`, not directly off props.
+
 **Icon animations + per-icon/bulk downloads — done, verified live
 (2026-09-02 session, continued)**: follow-up to the Brand Identity page
 above. `payload/brand-icon-animations.ts` is the single source of truth
