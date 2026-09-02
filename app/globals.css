@@ -29,8 +29,12 @@
   --line: rgba(240, 239, 232, 0.18);
   --line-dark: rgba(36, 30, 28, 0.16);
 
-  /* ---- Layout: 1280px container / 12-8-4 columns / 64-32-20 gutters ---- */
-  --max: 1280px;
+  /* ---- Layout: container tracks 80% of the viewport on desktop (it was a
+     fixed 1280px, which left large empty margins on wide monitors), then
+     falls back to full width with gutters on tablet and phone. Body copy
+     keeps its own reading-width caps, so the wider container mainly gives
+     the grids, rails and header more room. ---- */
+  --max: 80%;
   --gutter: 6px;
   --gutter-tablet: 32px;
   --gutter-mobile: 20px;
@@ -111,7 +115,7 @@ section { position: relative; }
   border: 0;
 }
 @media (max-width: 1024px) {
-  .wrap { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
+  .wrap { max-width: 100%; padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
 }
 @media (max-width: 640px) {
   .wrap { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
@@ -1680,7 +1684,7 @@ p { margin: 0; }
      over the bar (and the toggle button on it), leaving no visible way
      to close the menu at all. */
   z-index: 101;
-  max-width: 1280px;
+  max-width: var(--max);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -2433,3 +2437,11 @@ p { margin: 0; }
 .story-text { font-size: 0.92rem; line-height: 1.55; flex: 0 0 auto; }
 .story-card .attribution { margin-top: auto; }
 .story-quote-mark--close { margin-top: calc(var(--space-300) * -1); }
+
+/* Below the desktop breakpoint the container is full-width with gutters, so
+   the header bar has to match. This lives at the end of the file because
+   .v2-header-bar sets its own max-width further up and media queries don't
+   add specificity — an earlier override would simply lose the cascade. */
+@media (max-width: 1024px) {
+  .v2-header-bar { max-width: 100%; }
+}
