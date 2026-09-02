@@ -1,4 +1,5 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { getCMS } from "@/lib/payload";
 import { BRAND_ASSET_CATEGORIES } from "@/payload/collections/BrandAssets";
@@ -102,6 +103,14 @@ export async function BrandIdentityView(props: BrandIdentityViewProps) {
   const { i18n, params, payload: adminPayload, searchParams, initPageResult } = props;
   const { locale, permissions, req, visibleEntities } = initPageResult ?? {};
   const user = req?.user;
+
+  // Custom views registered under admin.components.views do NOT inherit
+  // Payload's auth gate — unlike /admin/globals/*, an unauthenticated
+  // visitor reaches this component directly, and the Local API below
+  // bypasses access control by design. Without this check the full brand
+  // library (including asset download links) rendered to anyone.
+  if (!user) redirect("/admin/login?redirect=%2Fadmin%2Fbrand-identity");
+
   const payload = await getCMS();
   const [tokens, branding, assetsResult] = await Promise.all([
     payload.findGlobal({ slug: "design-tokens" }),

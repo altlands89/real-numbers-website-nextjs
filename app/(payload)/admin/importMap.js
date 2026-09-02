@@ -8,6 +8,7 @@ import { AdminDashboardWelcome as AdminDashboardWelcome_68e44e360ebdad48060ae327
 import { AdminLoginBackground as AdminLoginBackground_116160b7f0d983358e2e1bc4249c15b2 } from '@/payload/components/AdminLoginBackground'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { BrandIdentityView as BrandIdentityView_f202879c5b03c8b134468ed160d5a45d } from '@/payload/components/BrandIdentityView'
+import { AboutVisualEditorView as AboutVisualEditorView_16045fbc452172628d113612d56314d7 } from '@/payload/components/AboutVisualEditorView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -22,5 +23,6 @@ export const importMap = {
   "@/payload/components/AdminLoginBackground#AdminLoginBackground": AdminLoginBackground_116160b7f0d983358e2e1bc4249c15b2,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@/payload/components/BrandIdentityView#BrandIdentityView": BrandIdentityView_f202879c5b03c8b134468ed160d5a45d,
+  "@/payload/components/AboutVisualEditorView#AboutVisualEditorView": AboutVisualEditorView_16045fbc452172628d113612d56314d7,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

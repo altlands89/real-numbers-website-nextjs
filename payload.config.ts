@@ -78,6 +78,14 @@ export default buildConfig({
           path: "/brand-identity",
           meta: { title: "Brand Identity" },
         },
+        // Experiment — a spatial alternative to the About page's normal
+        // edit form (see AboutVisualEditorView.tsx). The standard form at
+        // /admin/globals/about-page stays the authoritative editor.
+        aboutVisualEditor: {
+          Component: "@/payload/components/AboutVisualEditorView#AboutVisualEditorView",
+          path: "/visual-editor/about",
+          meta: { title: "About — Visual Editor" },
+        },
       },
     },
     livePreview: {

@@ -37,6 +37,37 @@ export function BrandIdentityNav() {
         <img src="/icons/brand/RN_ICON_BLUE_9.svg" alt="" aria-hidden="true" style={{ width: 16, height: 16, opacity: 0.65 }} />
         Brand Identity
       </a>
+      <a
+        href="/admin/visual-editor/about"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "8px 6px",
+          borderRadius: "var(--style-radius-s, 4px)",
+          color: "var(--theme-text)",
+          textDecoration: "none",
+          fontSize: 13,
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/brand/RN_ICON_BLUE_21.svg" alt="" aria-hidden="true" style={{ width: 16, height: 16, opacity: 0.65 }} />
+        About — Visual Editor
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            background: "var(--theme-elevation-150)",
+            color: "var(--theme-elevation-600)",
+            borderRadius: 3,
+            padding: "1px 4px",
+          }}
+        >
+          Beta
+        </span>
+      </a>
     </div>
   );
 }
