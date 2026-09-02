@@ -58,6 +58,11 @@ export default buildConfig({
       // the login screen needs its own copy of the same style injector so
       // the brand color override applies there too.
       beforeLogin: ["@/payload/components/AdminBrandStyles#AdminBrandStyles"],
+      // Friendly landing panel above the default collections/globals grid —
+      // a greeting, one-click links to the 8 content pages, and a link to
+      // the live site, so a non-technical editor isn't dropped straight
+      // into a bare list of internal collection names.
+      beforeDashboard: ["@/payload/components/AdminDashboardWelcome#AdminDashboardWelcome"],
     },
     livePreview: {
       globals: Object.keys(PAGE_ROUTE_BY_GLOBAL_SLUG),
