@@ -48,7 +48,6 @@ export default function HeaderV2Client({ logoSrc, logoAlt }: Props) {
             alt={logoAlt}
             width={140}
             height={20}
-            style={{ height: 16, width: "auto" }}
             priority
           />
         </a>

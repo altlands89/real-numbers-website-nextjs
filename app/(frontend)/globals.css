@@ -2195,8 +2195,14 @@ p { margin: 0; }
   .v2-photo-feature { aspect-ratio: 4/5; }
 }
 @media (max-width: 640px) {
-  .v2-header { padding: 14px var(--gutter-mobile); }
-  .v2-header-bar { padding: 10px 10px 10px 18px; }
+  /* Slightly narrower side padding than the shared --gutter-mobile
+     (used everywhere else) so just the header pill sits a bit wider on
+     phones, without affecting any other section's edge padding. */
+  .v2-header { padding: 14px 16px; }
+  /* Thinner bar (less top/bottom padding) and a touch more left padding
+     to give the logo breathing room against the pill's rounded edge. */
+  .v2-header-bar { padding: 8px 10px 8px 19px; }
+  .v2-header-bar .logo img { height: 14px; }
   .v2-hero-inner { padding-top: 132px; }
   .v2-hero-headline { font-size: clamp(3.2rem, 13vw, 5rem); }
   .v2-hero-desc { font-size: 1.05rem; line-height: 1.4; }
