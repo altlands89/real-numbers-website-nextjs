@@ -28,6 +28,23 @@ import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
 export default buildConfig({
   admin: {
     user: Users.slug,
+    meta: {
+      title: "Real Numbers Admin",
+      titleSuffix: " · Real Numbers",
+      description: "Content management for the Real Numbers marketing site.",
+      icons: [{ rel: "icon", type: "image/svg+xml", url: "/img/symbol-red.svg" }],
+    },
+    components: {
+      graphics: {
+        Icon: "@/payload/components/RNIcon#RNIcon",
+        Logo: "@/payload/components/RNLogo#RNLogo",
+      },
+      header: ["@/payload/components/AdminBrandStyles#AdminBrandStyles"],
+      // The header slot only renders inside the authenticated app shell —
+      // the login screen needs its own copy of the same style injector so
+      // the brand color override applies there too.
+      beforeLogin: ["@/payload/components/AdminBrandStyles#AdminBrandStyles"],
+    },
   },
   collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos],
   globals: [
