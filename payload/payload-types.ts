@@ -716,30 +716,39 @@ export interface Stat {
   createdAt?: string | null;
 }
 /**
- * Home page copy. Testimonials, stats, and client logos are managed in their own collections.
+ * Home page copy. Drag the section rows below to reorder the page. Testimonials, stats, and client logos are managed in their own collections.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".
  */
 export interface Home {
   id: number;
-  hero: {
-    /**
-     * Words that cycle after "Real" in the headline, e.g. "Numbers.", "Clarity.", "Confidence."
-     */
-    rotatingWords?:
-      | {
-          word: string;
-          id?: string | null;
-        }[]
-      | null;
-    description: string;
-    primaryCtaLabel?: string | null;
-    secondaryCtaLabel?: string | null;
-  };
   /**
-   * Overlay on the rotating photo slideshow.
+   * Drag the handle on each row to reorder sections on the live page. Header and footer aren't listed here — they're the same on every page.
    */
+  sections?:
+    (HeroBlock | DifferenceBlock | StatsBlock | DividerBlock | CtaDarkBlock | AudienceBlock | StoriesBlock)[] | null;
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  /**
+   * Words that cycle after "Real" in the headline, e.g. "Numbers.", "Clarity.", "Confidence."
+   */
+  rotatingWords?:
+    | {
+        word: string;
+        id?: string | null;
+      }[]
+    | null;
+  description: string;
+  primaryCtaLabel?: string | null;
+  secondaryCtaLabel?: string | null;
   featuredPhoto?: {
     heading?: string | null;
     ctaLabel?: string | null;
@@ -753,51 +762,92 @@ export interface Home {
         }[]
       | null;
   };
-  /**
-   * Client logos come from the Client Logos collection.
-   */
   logosStrip?: {
-    ctaLabel?: string | null;
-  };
-  difference?: {
-    heading?: string | null;
-  };
-  /**
-   * The decorative full-width strip between the stats and the dark banner below it. Upload a video for a looping fixed background video; leave empty to keep the default image.
-   */
-  divider?: {
     /**
-     * MP4 recommended. Plays muted, on loop, with a fixed background effect. Leave empty to show the default image instead.
+     * The logos themselves come from the Client Logos collection, not here.
      */
-    video?: (number | null) | Media;
-  };
-  ctaDark?: {
-    heading?: string | null;
     ctaLabel?: string | null;
   };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DifferenceBlock".
+ */
+export interface DifferenceBlock {
+  heading?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'diff';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock".
+ */
+export interface StatsBlock {
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stats';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DividerBlock".
+ */
+export interface DividerBlock {
+  /**
+   * Decorative full-width strip. MP4 recommended. Plays muted, on loop, with a fixed background effect. Leave empty to show the default image instead.
+   */
+  video?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'divider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaDarkBlock".
+ */
+export interface CtaDarkBlock {
+  heading?: string | null;
+  ctaLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AudienceBlock".
+ */
+export interface AudienceBlock {
   /**
    * "One partnership for every stage of growth" — dark navy section.
    */
-  audience?: {
-    heading?: string | null;
-    areas?:
-      | {
-          title: string;
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
+  heading?: string | null;
+  areas?:
+    | {
+        title: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'audience';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesBlock".
+ */
+export interface StoriesBlock {
   /**
-   * Testimonials come from the Testimonials collection.
+   * Testimonials themselves come from the Testimonials collection, not here.
    */
-  stories?: {
-    eyebrow?: string | null;
-    heading?: string | null;
-  };
-  _status?: ('draft' | 'published') | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
+  eyebrow?: string | null;
+  heading?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stories';
 }
 /**
  * About page copy.
@@ -1255,19 +1305,36 @@ export interface StatsSelect<T extends boolean = true> {
  * via the `definition` "home_select".
  */
 export interface HomeSelect<T extends boolean = true> {
-  hero?:
+  sections?:
     | T
     | {
-        rotatingWords?:
-          | T
-          | {
-              word?: T;
-              id?: T;
-            };
-        description?: T;
-        primaryCtaLabel?: T;
-        secondaryCtaLabel?: T;
+        hero?: T | HeroBlockSelect<T>;
+        diff?: T | DifferenceBlockSelect<T>;
+        stats?: T | StatsBlockSelect<T>;
+        divider?: T | DividerBlockSelect<T>;
+        cta?: T | CtaDarkBlockSelect<T>;
+        audience?: T | AudienceBlockSelect<T>;
+        stories?: T | StoriesBlockSelect<T>;
       };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  rotatingWords?:
+    | T
+    | {
+        word?: T;
+        id?: T;
+      };
+  description?: T;
+  primaryCtaLabel?: T;
+  secondaryCtaLabel?: T;
   featuredPhoto?:
     | T
     | {
@@ -1285,44 +1352,70 @@ export interface HomeSelect<T extends boolean = true> {
     | {
         ctaLabel?: T;
       };
-  difference?:
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DifferenceBlock_select".
+ */
+export interface DifferenceBlockSelect<T extends boolean = true> {
+  heading?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock_select".
+ */
+export interface StatsBlockSelect<T extends boolean = true> {
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DividerBlock_select".
+ */
+export interface DividerBlockSelect<T extends boolean = true> {
+  video?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaDarkBlock_select".
+ */
+export interface CtaDarkBlockSelect<T extends boolean = true> {
+  heading?: T;
+  ctaLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AudienceBlock_select".
+ */
+export interface AudienceBlockSelect<T extends boolean = true> {
+  heading?: T;
+  areas?:
     | T
     | {
-        heading?: T;
+        title?: T;
+        text?: T;
+        id?: T;
       };
-  divider?:
-    | T
-    | {
-        video?: T;
-      };
-  ctaDark?:
-    | T
-    | {
-        heading?: T;
-        ctaLabel?: T;
-      };
-  audience?:
-    | T
-    | {
-        heading?: T;
-        areas?:
-          | T
-          | {
-              title?: T;
-              text?: T;
-              id?: T;
-            };
-      };
-  stories?:
-    | T
-    | {
-        eyebrow?: T;
-        heading?: T;
-      };
-  _status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesBlock_select".
+ */
+export interface StoriesBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

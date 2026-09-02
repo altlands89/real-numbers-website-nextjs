@@ -8,10 +8,12 @@ export default async function Stories() {
     payload.find({ collection: "testimonials", sort: "order", limit: 50 }),
   ]);
 
+  const storiesSection = (home.sections ?? []).find((s) => s.blockType === "stories");
+
   return (
     <StoriesClient
-      eyebrow={home.stories?.eyebrow || "Client Stories"}
-      heading={home.stories?.heading || ""}
+      eyebrow={storiesSection?.eyebrow || "Client Stories"}
+      heading={storiesSection?.heading || ""}
       stories={testimonials.docs.map((t) => ({ quote: t.quote, name: t.name, role: t.role || "" }))}
     />
   );

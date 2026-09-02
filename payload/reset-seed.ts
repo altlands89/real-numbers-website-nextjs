@@ -8,7 +8,7 @@ async function run() {
   // Clear every Media relationship first — the home page's slideshow array
   // has a required image field, which would otherwise violate a NOT NULL
   // constraint when the referenced Media doc is deleted.
-  await payload.updateGlobal({ slug: "home", data: { featuredPhoto: { images: [] } } });
+  await payload.updateGlobal({ slug: "home", data: { sections: [] } });
   await payload.updateGlobal({ slug: "about-page", data: { ourStory: { photos: [] } } });
   await payload.updateGlobal({ slug: "why-real-numbers-page", data: { whatMakesDifferent: { photos: [] } } });
   await payload.updateGlobal({ slug: "our-expertise-page", data: { integrated: { photos: [] } } });

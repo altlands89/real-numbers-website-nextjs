@@ -23,45 +23,71 @@ export default async function Home() {
     href: l.href || undefined,
   }));
 
-  const featuredImages = (home.featuredPhoto?.images ?? [])
-    .map((entry) => (typeof entry.image === "object" && entry.image && "url" in entry.image ? (entry.image as { url: string }).url : ""))
-    .filter(Boolean);
-
-  const dividerVideo =
-    typeof home.divider?.video === "object" && home.divider.video && "url" in home.divider.video
-      ? (home.divider.video as { url: string }).url
-      : undefined;
+  const sections = home.sections ?? [];
 
   return (
     <>
       <HeaderV2 />
-      <HeroV2
-        rotatingWords={(home.hero?.rotatingWords || []).map((w) => w.word)}
-        description={home.hero?.description || ""}
-        primaryCtaLabel={home.hero?.primaryCtaLabel || "Let's Talk"}
-        secondaryCtaLabel={home.hero?.secondaryCtaLabel || "Our Expertise"}
-        featuredHeading={home.featuredPhoto?.heading || ""}
-        featuredCtaLabel={home.featuredPhoto?.ctaLabel || "Our approach"}
-        featuredImages={featuredImages}
-        logos={logos}
-        logosCtaLabel={home.logosStrip?.ctaLabel || "Why Real Numbers"}
-      />
-      <DifferenceV2 heading={home.difference?.heading || ""} />
-      <StatsV2
-        heading={stats.heading || "Proof in numbers"}
-        stats={(stats.stats || []).map((s) => ({ label: s.label, value: s.value, color: s.color as "red" | "blue" | "jet" | "horizon" }))}
-      />
-      {/* Visual breath between the stats and the dark CTA, and a hand-off
-          from the light half of the page into the dark one. Editable from
-          /admin's "Video Background Section" tab — falls back to the
-          static image below when no video is uploaded. */}
-      <AbstractPanel src="/img/abstract/wide-14.jpg" video={dividerVideo} variant="band" strength={30} />
-      <CtaDarkV2 heading={home.ctaDark?.heading || ""} ctaLabel={home.ctaDark?.ctaLabel || "Discover more"} />
-      <AudienceV2
-        heading={home.audience?.heading || ""}
-        areas={(home.audience?.areas || []).map((a) => ({ title: a.title, text: a.text }))}
-      />
-      <Stories />
+      {sections.map((section) => {
+        switch (section.blockType) {
+          case "hero": {
+            const featuredImages = (section.featuredPhoto?.images ?? [])
+              .map((entry) => (typeof entry.image === "object" && entry.image && "url" in entry.image ? (entry.image as { url: string }).url : ""))
+              .filter(Boolean);
+            return (
+              <HeroV2
+                key={section.id}
+                rotatingWords={(section.rotatingWords || []).map((w) => w.word)}
+                description={section.description || ""}
+                primaryCtaLabel={section.primaryCtaLabel || "Let's Talk"}
+                secondaryCtaLabel={section.secondaryCtaLabel || "Our Expertise"}
+                featuredHeading={section.featuredPhoto?.heading || ""}
+                featuredCtaLabel={section.featuredPhoto?.ctaLabel || "Our approach"}
+                featuredImages={featuredImages}
+                logos={logos}
+                logosCtaLabel={section.logosStrip?.ctaLabel || "Why Real Numbers"}
+              />
+            );
+          }
+          case "diff":
+            return <DifferenceV2 key={section.id} heading={section.heading || ""} />;
+          case "stats":
+            return (
+              <StatsV2
+                key={section.id}
+                heading={stats.heading || "Proof in numbers"}
+                stats={(stats.stats || []).map((s) => ({ label: s.label, value: s.value, color: s.color as "red" | "blue" | "jet" | "horizon" }))}
+              />
+            );
+          case "divider": {
+            // Visual breath between two sections, and a hand-off from the
+            // light half of the page into the dark one when it sits where
+            // it does by default. Falls back to the static image when no
+            // video is uploaded.
+            const dividerVideo =
+              typeof section.video === "object" && section.video && "url" in section.video
+                ? (section.video as { url: string }).url
+                : undefined;
+            return <AbstractPanel key={section.id} src="/img/abstract/wide-14.jpg" video={dividerVideo} variant="band" strength={30} />;
+          }
+          case "cta":
+            return <CtaDarkV2 key={section.id} heading={section.heading || ""} ctaLabel={section.ctaLabel || "Discover more"} />;
+          case "audience":
+            return (
+              <AudienceV2
+                key={section.id}
+                heading={section.heading || ""}
+                areas={(section.areas || []).map((a) => ({ title: a.title, text: a.text }))}
+              />
+            );
+          case "stories":
+            // Self-fetching — reads its own copy + the testimonials
+            // collection directly, no props needed.
+            return <Stories key={section.id} />;
+          default:
+            return null;
+        }
+      })}
       <FooterV2 />
     </>
   );

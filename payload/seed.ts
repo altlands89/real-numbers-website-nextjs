@@ -288,31 +288,37 @@ async function run() {
   await payload.updateGlobal({
     slug: "home",
     data: {
-      hero: {
-        rotatingWords: [{ word: "Numbers." }, { word: "Clarity." }, { word: "Confidence." }],
-        description:
-          "Real Numbers is a financial partnership platform that backs growing companies and turns financial complexity into clear, confident decisions, at every stage.",
-        primaryCtaLabel: "Let's Talk",
-        secondaryCtaLabel: "Our Expertise",
-      },
-      featuredPhoto: {
-        heading: "A partnership\nthat works",
-        ctaLabel: "Our approach",
-        images: heroSlideshow.map((img) => ({ image: img.id })),
-      },
-      logosStrip: { ctaLabel: "Why Real Numbers" },
-      difference: { heading: "The numbers that\nmake the difference" },
-      ctaDark: { heading: "From ambition to\ntangible results", ctaLabel: "Discover more" },
-      audience: {
-        heading: "One partnership\nfor every stage of growth",
-        areas: [
-          { title: "Financial Operations", text: "The foundations every growing business depends on: bookkeeping, payroll, compliance, and control." },
-          { title: "Strategic Finance", text: "Turning financial information into business direction: budgeting, forecasting, and board-ready reporting." },
-          { title: "Fundraising & Growth", text: "Building the credibility investors expect to see, long before the first pitch deck opens." },
-          { title: "Business Performance", text: "Dashboards, profitability analysis, and executive insight that turn data into decisions." },
-        ],
-      },
-      stories: { eyebrow: "Client Stories", heading: "What happens when the numbers start working for you" },
+      sections: [
+        {
+          blockType: "hero",
+          rotatingWords: [{ word: "Numbers." }, { word: "Clarity." }, { word: "Confidence." }],
+          description:
+            "Real Numbers is a financial partnership platform that backs growing companies and turns financial complexity into clear, confident decisions, at every stage.",
+          primaryCtaLabel: "Let's Talk",
+          secondaryCtaLabel: "Our Expertise",
+          featuredPhoto: {
+            heading: "A partnership\nthat works",
+            ctaLabel: "Our approach",
+            images: heroSlideshow.map((img) => ({ image: img.id })),
+          },
+          logosStrip: { ctaLabel: "Why Real Numbers" },
+        },
+        { blockType: "diff", heading: "The numbers that\nmake the difference" },
+        { blockType: "stats" },
+        { blockType: "divider" },
+        { blockType: "cta", heading: "From ambition to\ntangible results", ctaLabel: "Discover more" },
+        {
+          blockType: "audience",
+          heading: "One partnership\nfor every stage of growth",
+          areas: [
+            { title: "Financial Operations", text: "The foundations every growing business depends on: bookkeeping, payroll, compliance, and control." },
+            { title: "Strategic Finance", text: "Turning financial information into business direction: budgeting, forecasting, and board-ready reporting." },
+            { title: "Fundraising & Growth", text: "Building the credibility investors expect to see, long before the first pitch deck opens." },
+            { title: "Business Performance", text: "Dashboards, profitability analysis, and executive insight that turn data into decisions." },
+          ],
+        },
+        { blockType: "stories", eyebrow: "Client Stories", heading: "What happens when the numbers start working for you" },
+      ],
     },
   });
 
