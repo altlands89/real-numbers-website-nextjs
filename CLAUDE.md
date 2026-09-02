@@ -318,6 +318,92 @@ needs a walkthrough of `/admin` before full handoff — this session verified
 everything works technically, but the client hasn't had a guided tour of the
 finished CMS yet.
 
+**Video upload bug — fixed, verified live (2026-09-02 session)**: the client
+reported "can't upload video" for the home hero's background video. Root
+cause: `vercelBlobStorage()` in `payload.config.ts` didn't have
+`clientUploads: true`, so every upload was proxied through our own Next API
+route — which Vercel serverless functions cap at 4.5MB. Any real video
+blew past that silently. Fix is one line (`clientUploads: true`), which
+routes the upload straight from the browser to Vercel Blob instead. Verified
+against the real dev database mid-session: while investigating, found the
+client's own actual stuck upload attempt (`RN-HERO-BACK-VID_1_1.mp4`) sitting
+in Payload's local unsaved-draft cache in the browser — cleared it (nothing
+was ever saved, safe to discard) and, moments after the fix deployed, the
+client's own retry succeeded for real: a 14MB video, confirmed both via the
+Payload API and a direct `curl` against the resulting Blob URL.
+
+**Admin safety net — Drafts + Trash, done, verified live (2026-09-02
+session)**: researched CMS UX best practices for non-technical clients and
+proposed 4 improvements; client picked the safety net as highest priority.
+- All 8 page Globals now have `versions: { drafts: true }`. Editing a page
+  saves a **Draft** first — the live site keeps serving the last
+  **Published** version until an editor explicitly clicks "Publish changes".
+  Every past published version is kept and browsable/revertible via the
+  Global's new "Versions" tab. `payload/revalidate.ts`'s
+  `revalidateGlobalOnChange` now checks `doc._status` and skips
+  `revalidatePath` on a pure draft save (nothing on the live site actually
+  changed) — only fires on an actual publish.
+- 5 collections (`Media`, `TeamMembers`, `Testimonials`, `FAQItems`,
+  `ClientLogos`) now have `trash: true`. Deleting sends a document to a
+  dedicated **Trash** view (with a restore option) instead of removing it
+  immediately — Payload's own `deletedAt`-based soft-delete, confirmed live
+  (a "Trash" tab now appears next to "All FAQ Items" etc.). `Users` was
+  deliberately left without trash (account deletion should stay a real,
+  deliberate action).
+- **Migration story worth remembering**: enabling drafts generates a
+  parallel `_v`-suffixed versions table per Global, including one per nested
+  array field — and `why-real-numbers-page`'s `whatMakesDifferent.paragraphs`
+  /`.photos` array table names were long enough that the versions-table
+  variant exceeded Postgres's **63-character identifier limit**. Fixed by
+  giving those 2 array fields short explicit `dbName`s
+  (`why_rn_wmd_paragraphs`/`why_rn_wmd_photos`) in
+  `WhyRealNumbersGlobal.ts`. Renaming a field's `dbName` renames the **live**
+  table too (it's the same field definition backing both), which put
+  `payload migrate:create` into its interactive "is this table created or
+  renamed from another table?" prompt — a real hazard here, since a wrong
+  answer either drops a live-data table (treating a genuine rename as
+  "create new") or fails outright (treating an already-renamed table as
+  "still needs renaming"). This machine's tooling can't reliably drive that
+  kind of arrow-key TUI prompt, so the whole change was split into 3
+  migrations applied in this order specifically to keep every step
+  unambiguous: **(1)** `20260902_071500_rename_wmd_arrays` — hand-written
+  pure `ALTER TABLE ... RENAME TO ...` SQL (no interactive tool involved),
+  applied first, verified via direct `pg` query that both tables still held
+  their original row counts after the rename; **(2)**
+  `20260902_081439_add_trash_support` — plain additive `ADD COLUMN`s, no
+  ambiguity, safe to auto-generate; **(3)** `20260902_081519_add_drafts` —
+  now unambiguous too, since no old-named table existed anymore to confuse
+  the diff. **Necessary extra step**: migration `(1)` being hand-written
+  meant it had no accompanying schema-snapshot `.json` (Payload's
+  `migrate:create` diffs against the latest snapshot file, not the live DB,
+  to decide what changed) — without one, step `(2)`'s `migrate:create` hit
+  the exact same interactive rename prompt again, for a rename that had
+  already actually happened. Fixed by hand-generating a correct
+  `20260902_071500_rename_wmd_arrays.json` snapshot (Python script: copy the
+  prior snapshot, rename the 2 table keys, update their internal `name` and
+  foreign-key `tableFrom` fields, bump `id`/`prevId`) — after that, steps
+  `(2)` and `(3)` generated cleanly via the normal interactive tool with no
+  prompts at all. **One more real gotcha, caught and fixed**: Payload's own
+  drafts migration backfills every pre-existing Global row's new `_status`
+  column to `'draft'`, not `'published'` — even though that content was
+  already genuinely live before this change. Confirmed the live site itself
+  was unaffected (a plain `findGlobal` without `draft: true` reads the main
+  table directly regardless of `_status`, so nothing was ever hidden from
+  visitors), but the admin UI would have shown a misleading "Draft" badge on
+  pages that are actually published. Corrected with one direct SQL
+  `UPDATE ... SET _status = 'published'` across all 8 tables right after
+  applying, so `/admin` now accurately shows "Status: Published" on
+  everything that's actually live.
+
+**Admin dashboard — friendly welcome panel, done, verified live (2026-09-02
+session)**: `payload/components/AdminDashboardWelcome.tsx`, registered via
+`admin.components.beforeDashboard` (additive — renders above Payload's own
+collections/globals grid, doesn't replace it). Greets the logged-in editor
+by the local part of their email, a red "View Live Site ↗" button
+(`lib/site-url.ts`'s `getSiteUrl()`), and a one-click link grid to all 8
+content pages' `/admin/globals/:slug` edit views. Verified live: clicking a
+page card navigates correctly, greeting reflects the real logged-in user.
+
 ## Working notes
 
 - The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`.
