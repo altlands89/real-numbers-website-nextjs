@@ -13,6 +13,9 @@ export const Media: CollectionConfig = {
   access: {
     read: () => true,
   },
+  // Deleting sends the file to Trash instead of removing it right away,
+  // so a wrong click is recoverable instead of permanent.
+  trash: true,
   fields: [
     {
       name: "alt",

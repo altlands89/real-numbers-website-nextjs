@@ -11,6 +11,10 @@ export const OurExpertiseGlobal: GlobalConfig = {
   access: {
     read: () => true,
   },
+  // Edits save as a Draft first — the live site keeps showing the last
+  // Published version until an editor explicitly clicks Publish, and every
+  // past published version stays available to revert to.
+  versions: { drafts: true },
   fields: [
     {
       type: "tabs",

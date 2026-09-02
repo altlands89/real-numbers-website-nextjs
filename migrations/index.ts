@@ -4,6 +4,9 @@ import * as migration_20260902_034435_why_real_numbers_photo from './20260902_03
 import * as migration_20260902_041825_design_tokens from './20260902_041825_design_tokens';
 import * as migration_20260902_050727_multi_photo_slideshows from './20260902_050727_multi_photo_slideshows';
 import * as migration_20260902_061627_site_design from './20260902_061627_site_design';
+import * as migration_20260902_071500_rename_wmd_arrays from './20260902_071500_rename_wmd_arrays';
+import * as migration_20260902_081439_add_trash_support from './20260902_081439_add_trash_support';
+import * as migration_20260902_081519_add_drafts from './20260902_081519_add_drafts';
 
 export const migrations = [
   {
@@ -34,6 +37,21 @@ export const migrations = [
   {
     up: migration_20260902_061627_site_design.up,
     down: migration_20260902_061627_site_design.down,
-    name: '20260902_061627_site_design'
+    name: '20260902_061627_site_design',
+  },
+  {
+    up: migration_20260902_071500_rename_wmd_arrays.up,
+    down: migration_20260902_071500_rename_wmd_arrays.down,
+    name: '20260902_071500_rename_wmd_arrays',
+  },
+  {
+    up: migration_20260902_081439_add_trash_support.up,
+    down: migration_20260902_081439_add_trash_support.down,
+    name: '20260902_081439_add_trash_support',
+  },
+  {
+    up: migration_20260902_081519_add_drafts.up,
+    down: migration_20260902_081519_add_drafts.down,
+    name: '20260902_081519_add_drafts'
   },
 ];

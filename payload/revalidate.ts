@@ -1,6 +1,8 @@
 import { revalidatePath } from "next/cache";
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, GlobalAfterChangeHook } from "payload";
 
+type MaybeDraftDoc = { _status?: "draft" | "published" };
+
 // Every page reads Payload content at request time in production (no ISR
 // window), but Next still caches the render — so an edit in /admin needs an
 // explicit revalidation to show up without a full redeploy. This is a
@@ -41,6 +43,10 @@ export const revalidateOnDelete: CollectionAfterDeleteHook = () => {
   revalidateAll();
 };
 
-export const revalidateGlobalOnChange: GlobalAfterChangeHook = () => {
+export const revalidateGlobalOnChange: GlobalAfterChangeHook = ({ doc }) => {
+  // Globals with drafts enabled save a "draft" version on every edit that
+  // isn't published yet — nothing actually changed on the live site, so
+  // skip the (otherwise harmless but pointless) cache invalidation.
+  if ((doc as MaybeDraftDoc)?._status === "draft") return;
   revalidateAll();
 };

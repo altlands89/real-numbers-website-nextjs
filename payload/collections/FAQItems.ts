@@ -11,6 +11,9 @@ export const FAQItems: CollectionConfig = {
   access: {
     read: () => true,
   },
+  // Deleting sends the document to Trash instead of removing it right away,
+  // so a wrong click is recoverable instead of permanent.
+  trash: true,
   hooks: {
     afterChange: [revalidateOnChange],
     afterDelete: [revalidateOnDelete],

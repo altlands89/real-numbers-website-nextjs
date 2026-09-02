@@ -11,6 +11,10 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
   access: {
     read: () => true,
   },
+  // Edits save as a Draft first — the live site keeps showing the last
+  // Published version until an editor explicitly clicks Publish, and every
+  // past published version stays available to revert to.
+  versions: { drafts: true },
   fields: [
     {
       type: "tabs",
@@ -93,6 +97,10 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
                   label: "Paragraphs",
                   labels: { singular: "Paragraph", plural: "Paragraphs" },
                   minRows: 1,
+                  // Shortened so the auto-generated versions-table name
+                  // (needed once drafts are enabled) stays under Postgres's
+                  // 63-character identifier limit.
+                  dbName: "why_rn_wmd_paragraphs",
                   fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }],
                 },
                 {
@@ -101,6 +109,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
                   label: "Photos",
                   labels: { singular: "Photo", plural: "Photos" },
                   admin: { description: "Upload one photo for a static image, or several for an auto-playing fading slideshow." },
+                  dbName: "why_rn_wmd_photos",
                   fields: [{ name: "image", type: "upload", label: "Photo", relationTo: "media", required: true }],
                 },
               ],

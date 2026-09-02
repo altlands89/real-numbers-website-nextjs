@@ -187,6 +187,7 @@ export interface Media {
   alt: string;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -215,6 +216,7 @@ export interface TeamMember {
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -231,6 +233,7 @@ export interface Testimonial {
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -243,6 +246,7 @@ export interface FaqItem {
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -259,6 +263,7 @@ export interface ClientLogo {
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -380,6 +385,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -404,6 +410,7 @@ export interface TeamMembersSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -416,6 +423,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -427,6 +435,7 @@ export interface FaqItemsSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -439,6 +448,7 @@ export interface ClientLogosSelect<T extends boolean = true> {
   order?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -776,6 +786,7 @@ export interface Home {
     eyebrow?: string | null;
     heading?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -847,6 +858,7 @@ export interface AboutPage {
     note?: string | null;
     teamLinkLabel?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -869,6 +881,7 @@ export interface TeamPage {
     closingLine?: string | null;
     buttonLabel?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -899,6 +912,7 @@ export interface ContactPage {
     heading: string;
     text?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -963,6 +977,7 @@ export interface WhyRealNumbersPage {
     closingLine?: string | null;
     buttonLabel?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1031,6 +1046,7 @@ export interface OurExpertisePage {
     closingLine?: string | null;
     buttonLabel?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1072,6 +1088,7 @@ export interface UseCasesPage {
     heading: string;
     buttonLabel?: string | null;
   };
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1096,6 +1113,7 @@ export interface QuestionsFoundersAskPage {
         id?: string | null;
       }[]
     | null;
+  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1287,6 +1305,7 @@ export interface HomeSelect<T extends boolean = true> {
         eyebrow?: T;
         heading?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1360,6 +1379,7 @@ export interface AboutPageSelect<T extends boolean = true> {
         note?: T;
         teamLinkLabel?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1384,6 +1404,7 @@ export interface TeamPageSelect<T extends boolean = true> {
         closingLine?: T;
         buttonLabel?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1412,6 +1433,7 @@ export interface ContactPageSelect<T extends boolean = true> {
         heading?: T;
         text?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1476,6 +1498,7 @@ export interface WhyRealNumbersPageSelect<T extends boolean = true> {
         closingLine?: T;
         buttonLabel?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1536,6 +1559,7 @@ export interface OurExpertisePageSelect<T extends boolean = true> {
         closingLine?: T;
         buttonLabel?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1573,6 +1597,7 @@ export interface UseCasesPageSelect<T extends boolean = true> {
         heading?: T;
         buttonLabel?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1594,6 +1619,7 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
