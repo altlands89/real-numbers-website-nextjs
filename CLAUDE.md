@@ -261,12 +261,62 @@ drag-and-drop) evaluation if real Elementor-style visual editing is revisited
 later — it would need each section turned into a swappable block, a real
 re-architecture, not attempted this session.
 
-**Still open**: production deploy of this branch hasn't happened yet — when
-it does, double check `PAYLOAD_SECRET` and `DATABASE_URI` are present in the
-Vercel project's env vars (Blob vars already are, from the Storage
-connection). Also: the client still needs a walkthrough of `/admin` before
-handoff (this session only verified it works, an actual editor account for
-them was created ad hoc during testing).
+**Admin UX pass — done, verified live (2026-09-02 session)**: four
+improvements the client asked for after trying `/admin` for the first time
+(also: `auth.tokenExpiration` bumped to 30 days, multi-photo slideshows on
+the 5 atmosphere-photo spots, the whole "Site Design" section, and the
+brand-swatch `ColorPickerField` — all from the same round of feedback, see
+above).
+- **"Pages" grouping + tabs**: all 8 content Globals now carry
+  `admin.group: "Pages"` so they cluster under one sidebar heading (mirrors
+  the existing "Site Design" group). Each Global's top-level section groups
+  (Top Banner, Our Story, etc.) are wrapped in an **unnamed** `type: "tabs"`
+  field — unnamed tabs are purely an admin-UI grouping and add no nesting to
+  the underlying data, so this needed zero migration and moved zero existing
+  data. `HomeGlobal.ts` (7 tabs) and `AboutGlobal.ts` (5 tabs) got the most
+  benefit; `QuestionsFoundersAskGlobal.ts` was left flat (only 2 fields, not
+  "long"). Verified live: every tab renders the correct pre-existing seeded
+  content with no data loss.
+- **Admin branding**: `payload/components/RNLogo.tsx` /
+  `RNIcon.tsx` replace the generic Payload login logo and nav icon with the
+  real wordmark (`/public/img/logo-black.svg`) and compact symbol mark
+  (`/public/img/symbol-red.svg`), registered via `admin.components.graphics`.
+  `admin.meta` sets the page title (`Real Numbers Admin · Real Numbers`) and
+  favicon. `payload/components/AdminBrandStyles.tsx` overrides Payload's
+  entire 19-step "success" color scale (`--theme-success-*` — drives the save
+  button accent, active nav state, links, and toasts) with a ramp built from
+  the brand red `#b85840`, both light and dark mode. **Gotcha**: this style
+  component has to be registered in **both** `admin.components.header` (the
+  authenticated app shell) **and** `admin.components.beforeLogin` (the public
+  login screen) — the header slot alone doesn't render on `/admin/login`, so
+  the override silently didn't apply there until added to both. Verified via
+  `getComputedStyle(document.documentElement).getPropertyValue('--theme-success-500')`
+  on the actual login page.
+- **Live Preview**: `admin.livePreview` configured with Mobile/Tablet/Desktop
+  breakpoints and a `url` function mapping each Global's slug to its real
+  route (`payload.config.ts`'s `PAGE_ROUTE_BY_GLOBAL_SLUG`). New
+  `components/LivePreviewListener.tsx` (mounted in
+  `app/(frontend)/layout.tsx`) uses `RefreshRouteOnSave` from the newly added
+  `@payloadcms/live-preview-react` package to refresh the iframe the instant
+  an editor hits Save. **Honest scope note, given to the client too**: these
+  pages are Server Components reading straight from Postgres, not client
+  components merging unsaved form state — so this is "refreshes right after
+  Save," not true keystroke-by-keystroke live merge. That would need
+  converting each page to fetch client-side via `useLivePreview()`, a real
+  architecture change, not attempted here. New env var
+  `NEXT_PUBLIC_SITE_URL` (falls back to `VERCEL_URL`, then localhost) added
+  to `.env.local`/`.env.example` and to Vercel (production + preview).
+  Verified live: opened Live Preview on the Home global, confirmed all 3
+  custom breakpoints appear and the iframe renders the actual live homepage.
+
+**Deploy status (updated 2026-09-02)**: `design-v2` is live in production on
+the `real-numbers-design-v2` Vercel project — https://real-numbers-design-v2.vercel.app
+— confirmed via `vercel ls`/`curl` after every push this session. All env
+vars (`PAYLOAD_SECRET`, `DATABASE_URI`, Blob vars, `NEXT_PUBLIC_SITE_URL`)
+are set for both Production and Preview. **Still open**: the client still
+needs a walkthrough of `/admin` before full handoff — this session verified
+everything works technically, but the client hasn't had a guided tour of the
+finished CMS yet.
 
 ## Working notes
 
