@@ -560,6 +560,46 @@ different) — don't trust a `qlmanage` batch run for visual icon review;
 render them for real through the browser (an `<img src="...">` page
 served by the dev server) instead.
 
-- The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`.
+**Brand Identity & Design Assets admin page — done, verified live (2026-09-02
+session)**: `/admin/brand-identity` (`payload/components/BrandIdentityView.tsx`),
+a custom Payload admin view (registered via `admin.components.views` +
+`admin.components.afterNavLinks` in `payload.config.ts` — a custom view
+doesn't get an automatic sidebar link, so `BrandIdentityNav.tsx` adds one).
+A one-pager reference: colors (fetched live from the `design-tokens`
+Global, not hardcoded — stays in sync automatically), a real TASA Orbiter
+typography specimen (scoped `@font-face` pointing at `/fonts/*.ttf`, no
+change to the admin app's own fonts), the full 48-icon set, numeral
+badges, a composition sample, the site's photography, and a Voice &
+Messaging section built from the actual approved "Real Numbers — Website
+Copy (Final)" document (tagline + 4 pillars: Clarity/Confidence/Growth/
+Visibility) rather than an invented style guide — there was no separate
+brand-voice document in the Drive folder, only the approved copy itself.
+
+**New `brand-assets` collection — downloadable brand file library**:
+separate from `Media` (which is scoped to content images with a required
+alt field) — this holds arbitrary downloadable files (zips, fonts, PDFs,
+docx) with a `category` select, shown grouped by category with one-click
+download links at the top of the Brand Identity page. Seeded once via
+`payload/upload-brand-assets.ts` (kept in the repo as historical
+documentation, same pattern as `payload/seed.ts`/`reset-seed.ts`) from the
+Drive brand folder at `.../REAL NUMBERS BRANDING/` (a different, larger
+folder than `BRAND ELEMENTS` alone — see below). **Deliberately curated,
+not exhaustive**: the full Drive folder is ~1.9k files / 1.5GB, most of it
+raw working material (unfinished AI image-generation exploration, a
+per-digit-per-style-per-color masking working set alone was 783MB,
+unsorted stock photography) — confirmed with the user before uploading
+and scoped to just the final-deliverable subset (~80MB): logo packs,
+the full icon and numeral sets, color swatches, fonts, presentation/
+proposal/letterhead/social templates, and email/Outlook signatures.
+**Large same-category folders are bundled into single zip downloads**
+(e.g. 192 icon SVGs → one `RN-Icon-Set-SVG.zip`, 200 numeral SVGs → one
+`RN-Numeral-Badges-SVG.zip`, 47 LinkedIn asset files → one
+`RN-LinkedIn-Assets.zip`) via a small `zip` shell-out in the upload
+script, rather than one collection row per file — genuinely more
+convenient to download than paging through hundreds of rows. Uses the
+same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
+downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
+`content-type`/`content-disposition`, 200).
+- The canonical brand asset folder (fonts, full-res photography, PDFs, brand colors) lives outside this repo, in Google Drive: `REAL NUMBERS BRANDING/BRAND ELEMENTS`. Pull from there if new assets are needed; don't expect them to already be in `public/`. **The wider `REAL NUMBERS BRANDING/` folder** (one level up, at `.../My Drive/01_Workflow/H2O/REAL NUMBERS/REAL NUMBERS BRANDING/`, accessible locally via Google Drive Desktop sync) also holds `BRAND DELIVERABLES/` (email signature, presentation/proposal templates, A4 letterhead, LinkedIn social assets), `COLORS/`, `FONTS/` (TASA Orbiter + Google Sans for Hebrew), `LOGO/`, and `OUTLOOK SIGNATURE TEMPLATE/` — the source for the `brand-assets` collection above.
 - No screenshot/browser-preview tooling is available from a sandboxed environment — verification has relied on `npm run build` passing cleanly plus manual review of the diff. If Claude Code has real screenshot/browser access, use it to visually QA before/after changes — that's a real upgrade over how this was built so far.
 - Contact form (`components/FinalCta.tsx` and `ContactForm.tsx`) is client-side only; Supabase is scaffolded (`lib/supabase.ts`, keys in `.env.local`) but no `leads` table exists yet — see `README.md` for the exact SQL to add it.
