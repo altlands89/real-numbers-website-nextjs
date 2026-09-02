@@ -96,6 +96,22 @@ since there are no plain `.js`/`.cjs` config files at the repo root that
 assume CommonJS. If a future dependency needs CJS `require()` semantics,
 revisit this.
 
+**Color picker on every Colors field — done, verified live**:
+`payload/components/ColorPickerField.tsx` is a custom Payload field
+component (native `<input type="color">` swatch + hex text input + a fixed
+row of all 11 brand colors as one-click swatches, the currently-matching one
+ringed) registered via `admin.components.Field` on each `hexField()` in
+`DesignTokensGlobal.ts`. Payload has no built-in color-picker field type,
+hence the custom component — registered in the import map via `@/` path
+(matches tsconfig's alias, resolves fine through Payload's own bundler, not
+just Next's). **Whenever a new custom admin component is added, run
+`npx payload generate:importmap` before building** — dev mode
+auto-registers components at runtime, but a production build needs the
+import map already written to `app/(payload)/admin/importMap.js`, or the
+component silently won't resolve. Verified live: clicked a brand swatch on
+the "White" field, watched both the native color box and hex text update
+instantly to the swatch's value.
+
 **"Site Design" admin section — done, verified live**: a dedicated sidebar
 group (`admin.group: "Site Design"` on each Global) holding 4 Globals —
 `Colors` (was Design Tokens, now 11 colors including `white`/`clay`),

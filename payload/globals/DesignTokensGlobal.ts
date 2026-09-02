@@ -6,7 +6,12 @@ const hexField = (name: string, label: string, defaultValue: string) => ({
   type: "text" as const,
   label,
   defaultValue,
-  admin: { description: "Hex color, e.g. #b85840." },
+  admin: {
+    description: "Hex color, e.g. #b85840.",
+    components: {
+      Field: "@/payload/components/ColorPickerField#ColorPickerField",
+    },
+  },
   validate: (value: unknown) => {
     if (typeof value !== "string" || !/^#[0-9a-fA-F]{6}$/.test(value)) {
       return "Enter a 6-digit hex color, e.g. #b85840";
