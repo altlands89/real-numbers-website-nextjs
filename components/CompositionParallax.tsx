@@ -20,7 +20,7 @@ export default function CompositionParallax({
   const ref = useRef<HTMLImageElement>(null);
   const target = useRef(0);
   const current = useRef(0);
-  const rafId = useRef<number>();
+  const rafId = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const el = ref.current;

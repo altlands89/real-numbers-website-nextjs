@@ -1,46 +1,34 @@
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 
-const AREAS = [
-  {
-    num: "1",
-    bgDigit: "8",
-    icon: "/icons/finops.svg",
-    title: "Financial Operations",
-    text: "The foundations every growing business depends on: bookkeeping, payroll, compliance, and control.",
-    href: "/our-expertise",
-  },
-  {
-    num: "2",
-    icon: "/icons/stratfin.svg",
-    title: "Strategic Finance",
-    text: "Turning financial information into business direction: budgeting, forecasting, and board-ready reporting.",
-    href: "/our-expertise",
-  },
-  {
-    num: "3",
-    icon: "/icons/fundraising.svg",
-    title: "Fundraising & Growth",
-    text: "Building the credibility investors expect to see, long before the first pitch deck opens.",
-    href: "/our-expertise",
-  },
-  {
-    num: "4",
-    icon: "/icons/bizperf.svg",
-    title: "Business Performance",
-    text: "Dashboards, profitability analysis, and executive insight that turn data into decisions.",
-    href: "/our-expertise",
-  },
+// Icon + digit-badge + link target are structural/decorative — not content
+// an editor needs to change, so they stay hardcoded and are matched to the
+// CMS-driven title in order.
+const AREA_META = [
+  { icon: "/icons/finops.svg", bgDigit: "8", href: "/our-expertise" },
+  { icon: "/icons/stratfin.svg", href: "/our-expertise" },
+  { icon: "/icons/fundraising.svg", href: "/our-expertise" },
+  { icon: "/icons/bizperf.svg", href: "/our-expertise" },
 ];
 
-export default function AudienceV2() {
+type Area = { title: string; text: string };
+
+export default function AudienceV2({
+  heading,
+  areas,
+  backdropPhotoUrl,
+}: {
+  heading: string;
+  areas: Area[];
+  backdropPhotoUrl?: string;
+}) {
   return (
     <section className="v2-audience">
       <div className="v2-audience-backdrop" aria-hidden="true">
         {/* Brand still-life as surface texture, blended into the navy rather
             than sitting on top of it as a photo. */}
         <Image
-          src="/img/abstract/wide-10.jpg"
+          src={backdropPhotoUrl || "/img/abstract/wide-10.jpg"}
           alt=""
           fill
           sizes="100vw"
@@ -57,38 +45,38 @@ export default function AudienceV2() {
       </div>
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          One partnership
-          <br />
-          for every stage of growth
+          {heading.split("\n").map((line, i, arr) => (
+            <span key={i}>
+              {line}
+              {i < arr.length - 1 && <br />}
+            </span>
+          ))}
         </h2>
         <div className="v2-audience-grid">
-          {AREAS.map((a, i) => (
-            <a
-              href={a.href}
-              className="v2-audience-card"
-              key={a.title}
-              data-reveal
-              style={{ transitionDelay: `${i * 80}ms` }}
-            >
-              <div className="v2-audience-icon">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/img/digits/digit-${a.bgDigit || a.num}.svg`}
-                  alt=""
-                  className="v2-audience-icon-shape"
-                />
-                <Image
-                  src={a.icon}
-                  alt=""
-                  width={22}
-                  height={22}
-                  className="v2-audience-icon-glyph"
-                />
-              </div>
-              <h3>{a.title}</h3>
-              <p>{a.text}</p>
-            </a>
-          ))}
+          {areas.map((a, i) => {
+            const meta = AREA_META[i] || AREA_META[0];
+            return (
+              <a
+                href={meta.href}
+                className="v2-audience-card"
+                key={a.title}
+                data-reveal
+                style={{ transitionDelay: `${i * 80}ms` }}
+              >
+                <div className="v2-audience-icon">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/img/digits/digit-${meta.bgDigit || i + 1}.svg`}
+                    alt=""
+                    className="v2-audience-icon-shape"
+                  />
+                  <Image src={meta.icon} alt="" width={22} height={22} className="v2-audience-icon-glyph" />
+                </div>
+                <h3>{a.title}</h3>
+                <p>{a.text}</p>
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>

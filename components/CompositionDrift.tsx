@@ -47,7 +47,7 @@ export default function CompositionDrift({
   const target = useRef(0);
   const current = useRef(0);
   const active = useRef(true);
-  const rafId = useRef<number>();
+  const rafId = useRef<number | undefined>(undefined);
   const startTime = useRef<number | null>(null);
 
   // Fetch and parse the composition once — each path becomes an independently

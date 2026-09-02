@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Parallax from "./Parallax";
+import PhotoSlideshow from "./PhotoSlideshow";
 
 interface AbstractPanelProps {
-  src: string;
+  /** A single image, or several for an auto-playing crossfade slideshow. */
+  src: string | string[];
   /** Decorative by default — these are brand texture, not content. */
   alt?: string;
   /** "band" = full-bleed strip, "strip" = contained wide strip, "panel" = square-ish block. */
@@ -32,19 +34,25 @@ export default function AbstractPanel({
       ? "(max-width: 900px) 100vw, 45vw"
       : "(max-width: 900px) 100vw, 90vw";
 
+  const images = Array.isArray(src) ? src.filter(Boolean) : [src];
+
   return (
     <div
       className={`abstract-panel abstract-panel--${variant}${className ? ` ${className}` : ""}`}
       data-reveal
     >
       <Parallax className="abstract-panel-inner" strength={strength}>
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes={sizes || defaultSizes}
-          style={{ objectFit: "cover" }}
-        />
+        {images.length > 1 ? (
+          <PhotoSlideshow images={images} />
+        ) : (
+          <Image
+            src={images[0]}
+            alt={alt}
+            fill
+            sizes={sizes || defaultSizes}
+            style={{ objectFit: "cover" }}
+          />
+        )}
       </Parallax>
     </div>
   );

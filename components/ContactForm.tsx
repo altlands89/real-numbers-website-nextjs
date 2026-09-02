@@ -2,7 +2,17 @@
 
 import { useState, FormEvent } from "react";
 
-export default function ContactForm() {
+type Props = {
+  directContactLabel?: string;
+  whatsappNumber?: string;
+  email?: string;
+};
+
+export default function ContactForm({
+  directContactLabel = "Prefer a direct conversation?",
+  whatsappNumber = "972523735059",
+  email = "Uzi@realnumbers.co.il",
+}: Props) {
   const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   function handleSubmit(e: FormEvent) {
@@ -77,10 +87,10 @@ export default function ContactForm() {
         </button>
       </form>
       <div className="contact-direct">
-        <p className="contact-direct-text">Prefer a direct conversation?</p>
+        <p className="contact-direct-text">{directContactLabel}</p>
         <div className="contact-direct-links">
           <a
-            href="https://wa.me/972523735059"
+            href={`https://wa.me/${whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="contact-direct-icon"
@@ -90,7 +100,7 @@ export default function ContactForm() {
             <img src="/icons/ic-whatsapp.svg" alt="" />
           </a>
           <a
-            href="mailto:Uzi@realnumbers.co.il"
+            href={`mailto:${email}`}
             className="contact-direct-icon"
             aria-label="Email us"
           >

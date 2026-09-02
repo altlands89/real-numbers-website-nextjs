@@ -34,7 +34,7 @@ export default function ShatterComposition({
   const targetDispersion = useRef(0);
   const currentDispersion = useRef(0);
   const active = useRef(true);
-  const rafId = useRef<number>();
+  const rafId = useRef<number | undefined>(undefined);
 
   const tiles = useMemo(() => {
     const cells = [];

@@ -3,22 +3,31 @@ import PhotoSlideshow from "./PhotoSlideshow";
 import RotatingWord from "./RotatingWord";
 import LogoMarquee from "./LogoMarquee";
 
-const FEATURE_IMAGES = [
-  "/img/photography/team-hero.jpg",
-  "/img/photography/about-atmosphere.jpg",
-  "/img/photography/faq-atmosphere.jpg",
-  "/img/photography/home-final-cta.jpg",
-  "/img/photography/contact-hero.jpg",
-  "/img/photography/why-hero.jpg",
-];
+type Logo = { src: string; alt: string; href?: string };
 
-const LOGOS = [
-  { src: "/img/logos/fig.svg", alt: "Fig" },
-  { src: "/img/logos/novee.svg", alt: "Novee" },
-  { src: "/img/logos/lines.svg", alt: "Lines" },
-];
+type Props = {
+  rotatingWords: string[];
+  description: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  featuredHeading: string;
+  featuredCtaLabel: string;
+  featuredImages: string[];
+  logos: Logo[];
+  logosCtaLabel: string;
+};
 
-export default function HeroV2() {
+export default function HeroV2({
+  rotatingWords,
+  description,
+  primaryCtaLabel,
+  secondaryCtaLabel,
+  featuredHeading,
+  featuredCtaLabel,
+  featuredImages,
+  logos,
+  logosCtaLabel,
+}: Props) {
   return (
     <section className="v2-hero">
       <div className="v2-hero-backdrop" aria-hidden="true">
@@ -51,20 +60,16 @@ export default function HeroV2() {
         <h1 className="v2-hero-headline" data-reveal>
           Real
           <br />
-          <RotatingWord words={["Numbers.", "Clarity.", "Confidence."]} />
+          <RotatingWord words={rotatingWords} />
         </h1>
         <div className="v2-hero-foot">
-          <p className="v2-hero-desc">
-            Real Numbers is a financial partnership platform that backs
-            growing companies and turns financial complexity into clear,
-            confident decisions, at every stage.
-          </p>
+          <p className="v2-hero-desc">{description}</p>
           <div className="v2-hero-ctas">
             <a href="/contact" className="v2-pill-link v2-pill-link--solid">
-              Let&apos;s Talk <span>→</span>
+              {primaryCtaLabel} <span>→</span>
             </a>
             <a href="/our-expertise" className="v2-pill-link">
-              Our Expertise <span>→</span>
+              {secondaryCtaLabel} <span>→</span>
             </a>
           </div>
         </div>
@@ -72,24 +77,27 @@ export default function HeroV2() {
 
       <div className="wrap">
         <div className="v2-photo-feature" data-reveal>
-          <PhotoSlideshow images={FEATURE_IMAGES} />
+          <PhotoSlideshow images={featuredImages} />
           <div className="v2-photo-feature-overlay">
             <h2>
-              A partnership
-              <br />
-              that works
+              {featuredHeading.split("\n").map((line, i, arr) => (
+                <span key={i}>
+                  {line}
+                  {i < arr.length - 1 && <br />}
+                </span>
+              ))}
             </h2>
             <a href="/about" className="v2-pill-link">
-              Our approach <span>→</span>
+              {featuredCtaLabel} <span>→</span>
             </a>
           </div>
         </div>
       </div>
 
       <div className="wrap v2-logos-strip">
-        <LogoMarquee logos={LOGOS} />
+        <LogoMarquee logos={logos} />
         <a href="/why-real-numbers" className="v2-pill-link">
-          Why Real Numbers <span>→</span>
+          {logosCtaLabel} <span>→</span>
         </a>
       </div>
     </section>

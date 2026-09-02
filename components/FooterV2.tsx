@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getCMS } from "@/lib/payload";
 
 const LINKS = [
   { href: "/about", label: "About" },
@@ -10,7 +11,11 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-export default function FooterV2() {
+export default async function FooterV2() {
+  const payload = await getCMS();
+  const branding = await payload.findGlobal({ slug: "branding" });
+  const footerLogo = branding.footerLogo && typeof branding.footerLogo === "object" ? branding.footerLogo : null;
+
   return (
     <footer className="v2-footer">
       <div className="wrap">
@@ -31,15 +36,25 @@ export default function FooterV2() {
 
         <div className="v2-footer-bottom">
           <a href="/" className="logo">
-            <Image
-              src="/img/logo-offwhite.svg"
-              alt="Real Numbers"
-              width={120}
-              height={17}
-              style={{ height: 15, width: "auto" }}
-            />
+            {footerLogo?.url ? (
+              <Image
+                src={footerLogo.url}
+                alt={footerLogo.alt || "Real Numbers"}
+                width={120}
+                height={17}
+                style={{ height: 15, width: "auto" }}
+              />
+            ) : (
+              <Image
+                src="/img/logo-offwhite.svg"
+                alt="Real Numbers"
+                width={120}
+                height={17}
+                style={{ height: 15, width: "auto" }}
+              />
+            )}
           </a>
-          <p>© {new Date().getFullYear()} Real Numbers. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {branding.footerCopyright || "Real Numbers. All rights reserved."}</p>
         </div>
       </div>
     </footer>

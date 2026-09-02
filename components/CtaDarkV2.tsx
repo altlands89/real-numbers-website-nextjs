@@ -1,6 +1,6 @@
 import CompositionDrift from "./CompositionDrift";
 
-export default function CtaDarkV2() {
+export default function CtaDarkV2({ heading, ctaLabel }: { heading: string; ctaLabel: string }) {
   return (
     <section className="v2-cta-dark">
       <CompositionDrift
@@ -17,12 +17,15 @@ export default function CtaDarkV2() {
       />
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          From ambition to
-          <br />
-          tangible results
+          {heading.split("\n").map((line, i, arr) => (
+            <span key={i}>
+              {line}
+              {i < arr.length - 1 && <br />}
+            </span>
+          ))}
         </h2>
         <a href="/why-real-numbers" className="v2-pill-link">
-          Discover more <span>→</span>
+          {ctaLabel} <span>→</span>
         </a>
       </div>
     </section>

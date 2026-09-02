@@ -1,0 +1,71 @@
+import type { Metadata } from "next";
+import HeaderV2 from "@/components/HeaderV2";
+import FooterV2 from "@/components/FooterV2";
+import ContactForm from "@/components/ContactForm";
+import CompositionDrift from "@/components/CompositionDrift";
+import HeroGlow from "@/components/HeroGlow";
+import AbstractPanel from "@/components/AbstractPanel";
+import { getCMS } from "@/lib/payload";
+
+export const metadata: Metadata = {
+  title: "Contact | Real Numbers",
+  description: "Every meaningful partnership starts with a conversation.",
+};
+
+export default async function ContactPage() {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "contact-page" });
+
+  return (
+    <>
+      <HeaderV2 />
+
+      <section
+        className="page-hero bg-photo"
+        style={{ backgroundImage: "url(/img/photography/contact-hero.jpg)" }}
+      >
+        <CompositionDrift
+          src="/compositions/comp-9.svg"
+          distance={170}
+          style={{ left: "-12%", top: "-22%", width: 620, opacity: 0.22, filter: "invert(1) brightness(1.9)" }}
+        />
+        <HeroGlow />
+        <div className="wrap">
+          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <h1 data-reveal className="reveal-heading">
+            {page.hero.heading}
+          </h1>
+        </div>
+      </section>
+
+      <section className="prose-section" data-reveal>
+        <CompositionDrift
+          src="/compositions/comp-1.svg"
+          distance={140}
+          style={{ right: "-10%", bottom: "-12%", width: 500, opacity: 0.14 }}
+        />
+        <div className="wrap contact-layout">
+          <div className="contact-layout-form">
+            <ContactForm
+              directContactLabel={page.directContact?.label || undefined}
+              whatsappNumber={page.directContact?.whatsappNumber || undefined}
+              email={page.directContact?.email || undefined}
+            />
+          </div>
+          {/* Fills the wide empty gutter the centred form used to leave. */}
+          <div className="contact-layout-visual">
+            <AbstractPanel src="/img/abstract/sq-12.jpg" variant="panel" strength={16} />
+          </div>
+        </div>
+        <div className="wrap">
+          <div className="manifesto">
+            <h3>{page.manifesto?.heading}</h3>
+            <p>{page.manifesto?.text}</p>
+          </div>
+        </div>
+      </section>
+
+      <FooterV2 />
+    </>
+  );
+}

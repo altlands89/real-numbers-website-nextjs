@@ -1,6 +1,6 @@
 # Real Numbers — Website
 
-Next.js 14 (App Router + TypeScript) marketing site for Real Numbers, an accounting/CFO firm for startups. Built and iterated in Claude (Cowork) chats; this file exists so any Claude Code session opened on this folder has the same context without re-explaining.
+Next.js 15 (App Router + TypeScript, React 19) marketing site for Real Numbers, an accounting/CFO firm for startups. Built and iterated in Claude (Cowork) chats; this file exists so any Claude Code session opened on this folder has the same context without re-explaining.
 
 ## Status
 
@@ -27,6 +27,195 @@ Brand colors: black `#241E1C`, off-white `#F0EFE8`, red `#B85840`, blue `#353E5B
 - `public/img/logos/` — real client logos (McCann, Fix, Domino's, ASUS, yes), auto-cropped to content bounds, transparent PNGs.
 - `public/compositions/` — the brand's abstract line-art SVG compositions (comp-1.svg … comp-15.svg), source of truth also in `BRAND ELEMENTS/NUMBERS/COMPOSITIONS` in the Drive folder.
 - `public/img/logo-counter-animation.svg` — the animated "Real Numbers" wordmark used as the page preloader.
+
+## Content management — Payload CMS (in progress)
+
+The client asked for full self-serve content editing (all page copy, team
+roster, testimonials, FAQ, stats, logos, photos) without needing a developer.
+Chosen approach: **Payload CMS 3.x, embedded directly in this Next.js app**
+(not a separate service) — admin panel at `/admin`, content read via
+Payload's Local API inside Server Components. Full plan/phases:
+`/Users/omer/.claude/plans/cached-whistling-hopper.md`.
+
+**Why Next 15 / React 19**: every version of Payload 3.x requires Next
+`>=15.2.9` and React `^19.0.0` as peer deps — this forced upgrading the whole
+site from Next 14/React 18 (confirmed with the client before doing it). Pinned
+exact versions: `next@15.4.11`, `react@19`/`react-dom@19` (not caret ranges,
+to stay inside Payload's narrow supported Next version windows — check
+`@payloadcms/next`'s peerDependencies before ever bumping Next further).
+
+**Phase 1 status (done, fully verified end-to-end against the real client
+Supabase project)**: `payload.config.ts` at repo root (`Users` + `Media`
+collections so far), `next.config.mjs` wrapped with `withPayload()`, standard
+Payload/Next route group at `app/(payload)/` (`admin/[[...segments]]`,
+`api/[...slug]`, `api/graphql`, `api/graphql-playground`). `/admin` loads and
+"Create first user" renders correctly against the real Postgres database;
+`npm run build` passes clean, all 8 marketing pages still prerender static
+and pixel-identical to before.
+
+**Important repo-structure change this required**: the marketing site's
+`app/layout.tsx` (+ `fonts.ts`, `globals.css`, every page folder) had to move
+into a new `app/(frontend)/` route group, sibling to `app/(payload)/`, with
+**no layout.tsx left at the true `app/` root**. Reason: Payload's own
+`RootLayout` (from `@payloadcms/next/layouts`) renders its own `<html>`/
+`<body>`, and Next.js only supports that ("multiple root layouts") when each
+top-level route group owns its layout independently — a shared root
+`app/layout.tsx` above them causes real `<html>` nesting and a hydration
+crash. This is Payload's documented, standard integration pattern, not a
+one-off hack — if you ever see the marketing site 404 or `/admin` blank-page
+with hydration errors again, check that no file reintroduced a top-level
+`app/layout.tsx`. When testing `/admin` after a change, always load it in a
+**fresh browser tab** — client-side (soft) navigation from a page that used
+the other root layout throws a hydration error even though the actual
+server-rendered HTML is correct; a full page load resolves it.
+
+**Database reality check that changed the plan**: the `.env.local` values
+inherited from before this session pointed at a Supabase project
+(`pkccfppumlvdglkwhlfs`) the current account has no access to — stale/wrong.
+The real, live project is **`ucmilkvivhvendtdutxn`** ("REAL NUMBERS HOME").
+Fixed `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` accordingly.
+That database already has a **`contact_submissions`** table (id, created_at,
+name, company, email, message — 0 rows, not yet wired to the contact form)
+that is unrelated to Payload — this is presumably the "leads" table
+`README.md` describes, just under a different name. **Payload's schema is
+managed via explicit migrations only** (`db: postgresAdapter({ push: false
+})` in `payload.config.ts`) specifically so its dev-mode auto schema-push
+never gets an interactive "is this an existing table renamed?" prompt near
+`contact_submissions` — always run `npm run payload:migrate:create` after
+schema changes, review the generated SQL in `migrations/`, then
+`npm run payload:migrate` to apply. The Postgres connection uses Supabase's
+**Session Pooler** (`aws-0-eu-west-2.pooler.supabase.com:5432`), not the
+direct `db.<ref>.supabase.co` host — this project's direct host is IPv6-only
+and won't resolve from most networks/CI.
+
+**Local tooling gotcha (fixed)**: `npx payload generate:importmap` /
+`migrate:create` initially crashed on Node 24 with `ERR_REQUIRE_ASYNC_MODULE`
+(tsx/ESM interop issue with `@payloadcms/richtext-lexical`'s top-level
+await). Fixed by adding `"type": "module"` to `package.json` — safe here
+since there are no plain `.js`/`.cjs` config files at the repo root that
+assume CommonJS. If a future dependency needs CJS `require()` semantics,
+revisit this.
+
+**Multi-photo fading slideshows — done, verified live**: the 5 "mood/
+atmosphere" photo spots (About's Our Story, Why Real Numbers' What Makes
+Different, Our Expertise's Integrated Partnership, Use Cases' and Q&A's
+background photo) went from a single `upload` field to an `array` of
+`{ image: upload }` — upload one photo for a static image exactly as before,
+or several and the page auto-plays a crossfading loop between them
+(`components/PhotoSlideshow.tsx`, already used by the Home hero, now reused
+here via a new shared `components/AtmospherePhoto.tsx` wrapper).
+`components/AbstractPanel.tsx` (used for Why Real Numbers' version of this
+spot) got the same multi-image support directly, backward-compatible with
+its other ~14 single-image call sites elsewhere on the site (still just pass
+a string). Team member photos and client logos were deliberately left as
+single images — client confirmed that scope explicitly (a slideshow doesn't
+make sense for one person's headshot or one company's logo).
+
+**Admin session length**: `payload/collections/Users.ts` sets
+`auth.tokenExpiration` to 30 days (Payload's default is 2 hours) — the
+client hit repeated forced re-logins during this session's testing, partly
+real 2-hour expiry over a long session and partly this session's own
+browser-tab cleanup wiping cookies. The tokenExpiration fix is real and
+permanent; the tab-cleanup cause was a one-off mistake, not a recurring
+issue.
+
+**Vercel Blob — done, fully verified end-to-end**: created a Public Blob
+store (`real-numbers-design-v2-blob`) on the `real-numbers-design-v2` Vercel
+project (the one `design-v2` deploys to) via the dashboard. Connecting it
+auto-added `BLOB_READ_WRITE_TOKEN` / `BLOB_STORE_ID` /
+`BLOB_WEBHOOK_PUBLIC_KEY` to that project's Production+Preview env vars —
+**note these are Vercel "sensitive" env vars, which cannot be read back
+through the dashboard OR `vercel env pull` once created**; the only way to
+get the plaintext value locally is the store's own "Quickstart → .env.local →
+Show secret" panel at creation/rotation time. Copied it into local
+`.env.local`. **The Vercel CLI is now installed globally and linked to this
+project** (`vercel link` → `altlands/real-numbers-design-v2`) under the
+account authenticated during this session — useful for `vercel env ls`/
+future lookups, though sensitive vars still won't come through `env pull`.
+
+**Media URLs — `disablePayloadAccessControl` must be per-collection, not
+top-level**: `vercelBlobStorage({ collections: { media: { ... } } })` — the
+plugin silently ignores a top-level `disablePayloadAccessControl` option (it
+only reads it per-collection). Without this, uploaded files' `url` field
+points at Payload's own `/api/media/file/...` proxy route instead of the
+Blob CDN directly — still functionally correct (Payload streams the file
+through from Blob) but an unnecessary hop. Fixed and verified: media URLs
+now read `https://<store>.public.blob.vercel-storage.com/<filename>`
+directly, confirmed both via a direct Postgres query and by loading actual
+photos on the live pages.
+
+**Everything needed for local dev now actually works, verified live**:
+Postgres connection, migrations, `/admin` login, and Blob image uploads all
+confirmed end-to-end against the real Supabase + Vercel infrastructure. Only
+remaining setup step before a **production** deploy of this branch: add
+`PAYLOAD_SECRET` / `DATABASE_URI` / (Blob vars are already there) to Vercel's
+env vars if they aren't already carried over — check
+`vercel env ls production` next session rather than assuming.
+
+**Phases 2–4 — done, fully verified live (2026-09-02 session)**:
+- **Phase 2**: 4 content collections (`payload/collections/`: `TeamMembers`,
+  `Testimonials`, `FAQItems`, `ClientLogos`) + 10 Globals (`payload/globals/`:
+  `Branding`, `Stats`, and one per real page) registered in
+  `payload.config.ts`. Schema applied via 2 migrations in `migrations/`.
+- **Phase 3**: `payload/seed.ts` — idempotent, uploads every real photo from
+  `public/img/...` into Media and populates every collection/global with
+  today's actual site copy (not placeholder text). `payload/reset-seed.ts` is
+  a companion one-off to wipe seeded content for a clean re-seed (used once
+  this session after a plugin-config fix required redoing media URLs — see
+  below). Re-run seeding any time with `npm run payload:seed`.
+- **Phase 4**: every `app/(frontend)/**/page.tsx` and content component
+  (`HeroV2`, `DifferenceV2`, `StatsV2`, `CtaDarkV2`, `AudienceV2`, `Faq`,
+  `ContactForm`) now fetches from Payload's Local API (`lib/payload.ts`'s
+  `getCMS()`) instead of hardcoded consts. `HeaderV2`/`Stories` were each
+  split into a thin async Server wrapper (fetches data) + a `*Client.tsx`
+  file (keeps the original `"use client"` interactivity, now driven by
+  props) — `FooterV2` didn't need this split since it was already a Server
+  Component. **Revalidation**: every collection/global has an `afterChange`/
+  `afterDelete` hook (`payload/revalidate.ts`) that calls `revalidatePath` on
+  all 8 page routes — confirmed live via `next start` (production mode) that
+  an admin edit shows up on the actual page with zero redeploy. Decorative/
+  structural assets (composition SVGs, digit badges, service-area icon
+  choice, AbstractPanel filler images between sections) intentionally stayed
+  hardcoded, matched to CMS array items by index — only genuinely
+  photographic/textual content is CMS-driven, per the "content and assets"
+  scope agreed with the client, not a generic page-builder.
+
+**Admin field labels — done, verified live (same session)**: every field
+across all collections/globals now has an explicit human-readable `label`
+(client caught "Eyebrow" and correctly found it meaningless jargon — same
+issue existed for "Lede", "Cta", auto-derived camelCase labels, etc). Two
+gotchas worth remembering if new fields get added later: (1) a plain
+`label:` on an array field only relabels the array's own header — the
+**collapsed row title** for each item (e.g. "Lede Paragraph 01") is driven
+separately by `labels: { singular, plural }` on that same array field, which
+also had to be set on every array. (2) Renaming `label`/`labels` is
+UI-only metadata, no DB column changes — confirmed via `payload
+migrate:create`, which correctly reported "No schema changes detected."
+
+**Design Tokens global — done, verified live (same session)**: a
+`design-tokens` Global (`payload/globals/DesignTokensGlobal.ts`) exposes the
+9 core brand colors (`--black`, `--offwhite`, `--red`, `--red-dark`, `--blue`,
+`--blue-dark`, `--stone`, `--horizon`, `--jet`) as hex-validated text fields.
+`app/(frontend)/layout.tsx` (now async) fetches this global and injects a
+`:root{...}` `<style>` block with `!important` overrides ahead of
+`globals.css`'s own definitions — `!important` specifically because Next's
+own head-tag ordering isn't something we control, so relying on plain
+cascade order would be fragile. Verified live: flipped `--red` to a
+throwaway color via the REST API, confirmed the "Let's Talk" button changed
+on the actual rendered page with zero redeploy, then reverted. This is a
+deliberately *narrow* "design system" control (global brand colors only) —
+NOT a page builder; spacing/typography/layout stay in code. See the
+2026-09-02 conversation for the fuller Puck.js (open-source React
+drag-and-drop) evaluation if real Elementor-style visual editing is revisited
+later — it would need each section turned into a swappable block, a real
+re-architecture, not attempted this session.
+
+**Still open**: production deploy of this branch hasn't happened yet — when
+it does, double check `PAYLOAD_SECRET` and `DATABASE_URI` are present in the
+Vercel project's env vars (Blob vars already are, from the Storage
+connection). Also: the client still needs a walkthrough of `/admin` before
+handoff (this session only verified it works, an actual editor account for
+them was created ad hoc during testing).
 
 ## Working notes
 
