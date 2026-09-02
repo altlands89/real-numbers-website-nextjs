@@ -601,6 +601,63 @@ same `disablePayloadAccessControl` + Vercel Blob pattern as `Media`, so
 downloads hit the Blob CDN directly (confirmed via `curl -I`: correct
 `content-type`/`content-disposition`, 200).
 
+**Design-system consistency audit — in progress, 1 of 4 stages shipped
+(2026-09-02 session, continued)**: user asked for deep research into
+reference sites plus a full audit of the site's own uniformity (section
+spacing, text sizes, motion), with conclusions and a plan presented before
+any code changed — done via `EnterPlanMode`, plan saved at
+`/Users/omer/.claude/plans/cached-whistling-hopper.md`. **Real finding, not
+just research**: the site already has a solid token system (4px spacing
+scale, one easing curve, 3 motion durations, an admin-editable h1/h2/h3
+type scale) — the actual problem is **partial enforcement**: several
+sections bypass the shared tokens with one-off hardcoded values. Audited
+and confirmed 4 concrete gaps:
+1. **7 headline overrides bypassing the shared h1/h2 scale** (fixed —
+   see below).
+2. **Section vertical padding inconsistency**: the older-style sections
+   (`.philosophy`, `.momentum`, `.why`, `.stories`, `.prose-section`) use
+   the fluid `--section-y` token; every "v2" homepage section
+   (`.v2-difference`, `.v2-stats`, `.v2-audience`, `.v2-footer`) instead
+   uses fixed `--space-800`/`--space-900`, which doesn't compress the same
+   way on mid-size viewports. Not yet fixed.
+3. **~6 "orphan" motion durations** (`350ms`, `700ms`, `900ms` ×5, `300ms`,
+   `1100ms`, `1400ms`) outside the `--fast`/`--standard`/`--editorial`
+   token set — some are likely deliberate (slideshow crossfade, ambient
+   drift), some look like one-off choices. Not yet triaged.
+4. **7 different `max-width` breakpoints** (480/560/640/900/980/1024/1080px),
+   4 of them within 180px of each other — sections can flip to
+   mobile/tablet layout at inconsistent points while scrolling at
+   in-between widths. Not yet fixed.
+Confirmed with the user: fix stage-by-stage with review between each, not
+one large change.
+
+**Stage 1/4 shipped — heading sizes unified onto the shared type scale**:
+`globals.css`'s base `h1`/`h2` rules now expose their full computed
+expression as `--type-h1-computed`/`--type-h2-computed` custom properties
+(not just inlined into `font-size`), so every section-specific override
+can read `calc(var(--type-h1-computed) * <multiplier>)` instead of
+re-deriving its own independent `clamp()` formula. Rewrote all 7 real
+overrides this way (`.v2-hero-headline` ×1.77, `.page-hero h1` ×0.62,
+`.v2-difference h2` ×1.45, `.v2-stats h2`/`.v2-audience h2` ×1.17,
+`.v2-cta-dark h2` ×0.94, `.v2-footer-cta h2` ×0.88 — each multiplier
+derived from that override's original desktop max-value ratio to the
+shared base, so the visual result stays close to what it was before).
+Two other candidates from the initial 9-line grep turned out NOT to be
+real h1/h2 overrides on inspection (`.atmosphere-line` is a pull-quote
+paragraph, `.v2-header.open .v2-header-menu nav a` is mobile nav link
+text) — excluded, since forcing unrelated text roles onto the heading
+scale would have been a real regression, not a fix. Left
+`.v2-hero-headline`'s one existing `@media (max-width:640px)` override
+untouched (already deliberately hand-tuned for small screens, and doesn't
+need to derive from the desktop ratio). **Verified the actual mechanism
+works, not just that it compiles**: injected a test override matching
+what the admin's Typography global's `!important` injection does
+(`document.head` `<style>` with `--type-h1-scale`/`--type-h2-scale`),
+confirmed via `getComputedStyle` that `.v2-hero-headline` and `.v2-stats
+h2` both scaled by exactly the injected factor — before this fix, changing
+those admin sliders had zero visible effect on any of the 7 overridden
+headings.
+
 **Brand Identity page missing the admin sidebar — fixed, verified live
 (2026-09-02 session, continued)**: custom views registered via
 `admin.components.views` (like `/admin/brand-identity`) render with no
