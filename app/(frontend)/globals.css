@@ -167,7 +167,15 @@ h1, h2, h3, h4 {
 /* Display / XL — hero master line only: tight leading, tight
    tracking, near-maximum confidence for a one-to-two-line statement */
 h1 {
-  font-size: calc(clamp(2.75rem, 4.6vw + 1.4rem, 6.5rem) * var(--type-h1-scale, 1));
+  /* Exposed as a custom property (not just inlined into font-size) so
+     every section-specific "hero-sized" or "smaller-h1" override below
+     can scale off this exact value with a plain multiplier instead of
+     re-deriving its own independent clamp() formula — that's what let 7
+     different headline sizes across the site drift out of sync with the
+     shared scale (and with the admin's Typography sliders) in the first
+     place. See CLAUDE.md for the full audit. */
+  --type-h1-computed: calc(clamp(2.75rem, 4.6vw + 1.4rem, 6.5rem) * var(--type-h1-scale, 1));
+  font-size: var(--type-h1-computed);
   line-height: var(--type-h1-line-height, 0.92);
   letter-spacing: var(--type-h1-letter-spacing, -0.035em);
   font-weight: var(--type-h1-weight, 800);
@@ -176,7 +184,9 @@ h1 {
 /* Heading / 02 — section headlines: leading closed to 100%,
    tracking tightened for the same declarative, spec-sheet feel */
 h2 {
-  font-size: calc(clamp(2.3rem, 2vw + 1.75rem, 3.85rem) * var(--type-h2-scale, 1));
+  /* See --type-h1-computed above — same reasoning, for section headlines. */
+  --type-h2-computed: calc(clamp(2.3rem, 2vw + 1.75rem, 3.85rem) * var(--type-h2-scale, 1));
+  font-size: var(--type-h2-computed);
   line-height: var(--type-h2-line-height, 1);
   letter-spacing: var(--type-h2-letter-spacing, -0.028em);
   font-weight: var(--type-h2-weight, 700);
@@ -1095,7 +1105,7 @@ p { margin: 0; }
 .page-hero h1 {
   color: var(--offwhite);
   max-width: 840px;
-  font-size: clamp(2.25rem, 3vw + 1.2rem, 4rem);
+  font-size: calc(var(--type-h1-computed) * 0.62);
   line-height: 0.98;
   letter-spacing: -0.02em;
   font-weight: 800;
@@ -1810,7 +1820,7 @@ p { margin: 0; }
   color: var(--offwhite);
   font-family: var(--font-tasa), sans-serif;
   font-weight: 800;
-  font-size: clamp(4.5rem, 9vw + 1.5rem, 11.5rem);
+  font-size: calc(var(--type-h1-computed) * 1.77);
   line-height: 0.8;
   letter-spacing: -0.03em;
 }
@@ -1960,7 +1970,7 @@ p { margin: 0; }
 /* ---- Difference (white, pill-word headline + decoding sentence) ---- */
 .v2-difference { background: var(--offwhite); padding: var(--space-800) 0; }
 .v2-difference h2 {
-  font-size: clamp(2.6rem, 4.2vw + 1rem, 5.6rem);
+  font-size: calc(var(--type-h2-computed) * 1.45);
   line-height: 0.98;
   letter-spacing: -0.025em;
   max-width: 21ch;
@@ -2006,7 +2016,7 @@ p { margin: 0; }
 
 /* ---- Stats (digit-glyph numerals, one column per stat) ---- */
 .v2-stats { background: var(--offwhite); padding: var(--space-800) 0; }
-.v2-stats h2 { font-size: clamp(2.3rem, 3.5vw + 1rem, 4.5rem); }
+.v2-stats h2 { font-size: calc(var(--type-h2-computed) * 1.17); }
 .v2-stats-grid {
   margin-top: var(--space-700);
   display: grid;
@@ -2085,7 +2095,7 @@ p { margin: 0; }
   position: relative;
   z-index: 1;
   color: var(--offwhite);
-  font-size: clamp(2.2rem, 3.2vw + 1rem, 3.6rem);
+  font-size: calc(var(--type-h2-computed) * 0.94);
 }
 .v2-cta-dark .v2-pill-link {
   position: relative;
@@ -2100,7 +2110,7 @@ p { margin: 0; }
   position: relative;
   z-index: 1;
   color: var(--offwhite);
-  font-size: clamp(2.3rem, 3.5vw + 1rem, 4.5rem);
+  font-size: calc(var(--type-h2-computed) * 1.17);
   max-width: 14ch;
 }
 .v2-audience-grid {
@@ -2150,7 +2160,7 @@ p { margin: 0; }
 /* ---- Footer — clean, minimal ---- */
 .v2-footer { background: var(--black); padding: var(--space-900) 0 var(--space-600); }
 .v2-footer-cta { text-align: center; max-width: 640px; margin: 0 auto; }
-.v2-footer-cta h2 { color: var(--offwhite); font-size: clamp(2rem, 3vw + 1rem, 3.4rem); }
+.v2-footer-cta h2 { color: var(--offwhite); font-size: calc(var(--type-h2-computed) * 0.88); }
 .v2-footer-cta .v2-pill-link { margin-top: var(--space-600); }
 .v2-footer-nav {
   margin-top: var(--space-900);
