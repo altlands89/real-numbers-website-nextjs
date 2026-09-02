@@ -7,12 +7,16 @@ import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Questions Founders Ask | Real Numbers",
-  description:
-    "Honest answers to the questions we hear most, before we start working together.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "questions-founders-ask-page" });
+  return buildPageMetadata(page.seo, {
+    title: "Questions Founders Ask | Real Numbers",
+    description: "Honest answers to the questions we hear most, before we start working together.",
+  });
+}
 
 export default async function QuestionsFoundersAskPage() {
   const payload = await getCMS();

@@ -25,6 +25,7 @@ import { BrandingGlobal } from "./payload/globals/BrandingGlobal";
 import { DesignTokensGlobal } from "./payload/globals/DesignTokensGlobal";
 import { TypographyGlobal } from "./payload/globals/TypographyGlobal";
 import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
+import { SiteSettingsGlobal } from "./payload/globals/SiteSettingsGlobal";
 import { getSiteUrl } from "./lib/site-url";
 
 // Maps each page Global's slug to the live route it renders, so Live
@@ -95,6 +96,7 @@ export default buildConfig({
   collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos, BrandAssets],
   globals: [
     BrandingGlobal,
+    SiteSettingsGlobal,
     DesignTokensGlobal,
     TypographyGlobal,
     LayoutMotionGlobal,

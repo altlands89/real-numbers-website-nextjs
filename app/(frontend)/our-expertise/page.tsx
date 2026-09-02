@@ -7,11 +7,16 @@ import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Our Expertise | Real Numbers",
-  description: "The right expertise at every stage of growth.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "our-expertise-page" });
+  return buildPageMetadata(page.seo, {
+    title: "Our Expertise | Real Numbers",
+    description: "The right expertise at every stage of growth.",
+  });
+}
 
 // Icon per area — decorative/structural, matched to the CMS-driven areas in order.
 const AREA_ICONS = ["/icons/finops.svg", "/icons/stratfin.svg", "/icons/fundraising.svg", "/icons/bizperf.svg"];

@@ -6,11 +6,16 @@ import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Use Cases | Real Numbers",
-  description: "Different companies. Different challenges. One trusted financial partner.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "use-cases-page" });
+  return buildPageMetadata(page.seo, {
+    title: "Use Cases | Real Numbers",
+    description: "Different companies. Different challenges. One trusted financial partner.",
+  });
+}
 
 export default async function UseCasesPage() {
   const payload = await getCMS();

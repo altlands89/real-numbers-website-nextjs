@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
+import { seoFields } from "../fields/seoFields";
 
 export const AboutGlobal: GlobalConfig = {
   slug: "about-page",
@@ -125,6 +126,10 @@ export const AboutGlobal: GlobalConfig = {
               ],
             },
           ],
+        },
+        {
+          label: "SEO",
+          fields: seoFields(),
         },
       ],
     },

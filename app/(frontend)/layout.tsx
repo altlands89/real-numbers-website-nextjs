@@ -4,14 +4,23 @@ import ScrollReveal from "@/components/ScrollReveal";
 import Preloader from "@/components/Preloader";
 import { LivePreviewListener } from "@/components/LivePreviewListener";
 import { getCMS } from "@/lib/payload";
+import { buildRootMetadata } from "@/lib/site-metadata";
 import "./globals.css";
 
-export const metadata: Metadata = {
+const FALLBACK_METADATA = {
   title: "[Design Concept] Real Numbers | Financial Clarity for Growing Companies",
   description:
     "Real Numbers helps startups and technology companies turn financial complexity into clear decisions, scalable planning and confident growth.",
-  robots: { index: false, follow: false },
 };
+
+// Dynamic (not a static `export const metadata`) so the favicon and
+// search-engine indexing toggle — both editable from Site Design → SEO &
+// Site Info — take effect without a redeploy, same as every other
+// admin-driven value on this site.
+export async function generateMetadata(): Promise<Metadata> {
+  const root = await buildRootMetadata();
+  return { ...FALLBACK_METADATA, ...root };
+}
 
 // sizeScale is a 1–5 dropdown (1 = smallest, 3 = the site's current
 // default, 5 = largest) — mapped to a multiplier applied on top of the

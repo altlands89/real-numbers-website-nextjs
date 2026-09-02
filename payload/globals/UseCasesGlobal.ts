@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
+import { seoFields } from "../fields/seoFields";
 
 export const UseCasesGlobal: GlobalConfig = {
   slug: "use-cases-page",
@@ -74,6 +75,10 @@ export const UseCasesGlobal: GlobalConfig = {
               ],
             },
           ],
+        },
+        {
+          label: "SEO",
+          fields: seoFields(),
         },
       ],
     },

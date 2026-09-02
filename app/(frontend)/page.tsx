@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeaderV2 from "@/components/HeaderV2";
 import HeroV2 from "@/components/HeroV2";
 import DifferenceV2 from "@/components/DifferenceV2";
@@ -8,6 +9,17 @@ import Stories from "@/components/Stories";
 import FooterV2 from "@/components/FooterV2";
 import AbstractPanel from "@/components/AbstractPanel";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const home = await payload.findGlobal({ slug: "home" });
+  return buildPageMetadata(home.seo, {
+    title: "[Design Concept] Real Numbers | Financial Clarity for Growing Companies",
+    description:
+      "Real Numbers helps startups and technology companies turn financial complexity into clear decisions, scalable planning and confident growth.",
+  });
+}
 
 export default async function Home() {
   const payload = await getCMS();

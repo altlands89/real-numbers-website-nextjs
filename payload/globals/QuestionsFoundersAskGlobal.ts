@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
+import { seoFields } from "../fields/seoFields";
 
 export const QuestionsFoundersAskGlobal: GlobalConfig = {
   slug: "questions-founders-ask-page",
@@ -33,5 +34,6 @@ export const QuestionsFoundersAskGlobal: GlobalConfig = {
       admin: { description: "Upload one photo for a static image, or several for an auto-playing fading slideshow." },
       fields: [{ name: "image", type: "upload", label: "Photo", relationTo: "media", required: true }],
     },
+    ...seoFields(),
   ],
 };

@@ -5,12 +5,16 @@ import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "About | Real Numbers",
-  description:
-    "We believe every growing company deserves a financial partner it can actually trust.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "about-page" });
+  return buildPageMetadata(page.seo, {
+    title: "About | Real Numbers",
+    description: "We believe every growing company deserves a financial partner it can actually trust.",
+  });
+}
 
 export default async function AboutPage() {
   const payload = await getCMS();

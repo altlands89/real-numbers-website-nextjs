@@ -6,11 +6,16 @@ import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Our Team | Real Numbers",
-  description: "The people behind Real Numbers.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "team-page" });
+  return buildPageMetadata(page.seo, {
+    title: "Our Team | Real Numbers",
+    description: "The people behind Real Numbers.",
+  });
+}
 
 function initials(name: string) {
   return name

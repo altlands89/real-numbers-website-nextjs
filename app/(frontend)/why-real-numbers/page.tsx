@@ -6,12 +6,16 @@ import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import { getCMS } from "@/lib/payload";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Why Real Numbers",
-  description:
-    "More than financial expertise. A trusted partner for the moments that matter most.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const payload = await getCMS();
+  const page = await payload.findGlobal({ slug: "why-real-numbers-page" });
+  return buildPageMetadata(page.seo, {
+    title: "Why Real Numbers",
+    description: "More than financial expertise. A trusted partner for the moments that matter most.",
+  });
+}
 
 // Icon + accent color are structural/decorative — matched to the CMS-driven
 // value props in order, not editable content.

@@ -99,6 +99,7 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     branding: Branding;
+    'site-settings': SiteSetting;
     'design-tokens': DesignToken;
     typography: Typography;
     'layout-motion': LayoutMotion;
@@ -114,6 +115,7 @@ export interface Config {
   };
   globalsSelect: {
     branding: BrandingSelect<false> | BrandingSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'design-tokens': DesignTokensSelect<false> | DesignTokensSelect<true>;
     typography: TypographySelect<false> | TypographySelect<true>;
     'layout-motion': LayoutMotionSelect<false> | LayoutMotionSelect<true>;
@@ -565,6 +567,37 @@ export interface Branding {
   createdAt?: string | null;
 }
 /**
+ * Sitewide info used when a page doesn't set its own — favicon, default social share image, default meta description, and whether search engines can index the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Used after the page title, e.g. "About | Real Numbers".
+   */
+  siteName?: string | null;
+  /**
+   * A short one-line description of the business — used as the fallback meta description when a page doesn't set its own.
+   */
+  tagline?: string | null;
+  /**
+   * The small icon shown in browser tabs. A square image works best (512×512px or larger).
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * Shown when a page is shared on social media and hasn't set its own share image, e.g. via WhatsApp, LinkedIn, or Facebook.
+   */
+  defaultOgImage?: (number | null) | Media;
+  /**
+   * Keep this off while the site is still in progress — turn it on when ready to go live, so Google and other search engines start showing the site in results.
+   */
+  searchEngineIndexing?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Site-wide brand colors — changes apply everywhere immediately, no redeploy needed. Handle with care: these are the core brand palette used across every page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -782,6 +815,23 @@ export interface Home {
    */
   sections?:
     (HeroBlock | DifferenceBlock | StatsBlock | DividerBlock | CtaDarkBlock | AudienceBlock | StoriesBlock)[] | null;
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -971,6 +1021,23 @@ export interface AboutPage {
     note?: string | null;
     teamLinkLabel?: string | null;
   };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -993,6 +1060,23 @@ export interface TeamPage {
     heading: string;
     closingLine?: string | null;
     buttonLabel?: string | null;
+  };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
   };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
@@ -1024,6 +1108,23 @@ export interface ContactPage {
   manifesto: {
     heading: string;
     text?: string | null;
+  };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
   };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
@@ -1089,6 +1190,23 @@ export interface WhyRealNumbersPage {
     heading: string;
     closingLine?: string | null;
     buttonLabel?: string | null;
+  };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
   };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
@@ -1159,6 +1277,23 @@ export interface OurExpertisePage {
     closingLine?: string | null;
     buttonLabel?: string | null;
   };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1201,6 +1336,23 @@ export interface UseCasesPage {
     heading: string;
     buttonLabel?: string | null;
   };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1226,6 +1378,23 @@ export interface QuestionsFoundersAskPage {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1238,6 +1407,20 @@ export interface BrandingSelect<T extends boolean = true> {
   headerLogo?: T;
   footerLogo?: T;
   footerCopyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  tagline?: T;
+  favicon?: T;
+  defaultOgImage?: T;
+  searchEngineIndexing?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1369,6 +1552,13 @@ export interface HomeSelect<T extends boolean = true> {
         cta?: T | CtaDarkBlockSelect<T>;
         audience?: T | AudienceBlockSelect<T>;
         stories?: T | StoriesBlockSelect<T>;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
       };
   _status?: T;
   updatedAt?: T;
@@ -1540,6 +1730,13 @@ export interface AboutPageSelect<T extends boolean = true> {
         note?: T;
         teamLinkLabel?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1564,6 +1761,13 @@ export interface TeamPageSelect<T extends boolean = true> {
         heading?: T;
         closingLine?: T;
         buttonLabel?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
       };
   _status?: T;
   updatedAt?: T;
@@ -1593,6 +1797,13 @@ export interface ContactPageSelect<T extends boolean = true> {
     | {
         heading?: T;
         text?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
       };
   _status?: T;
   updatedAt?: T;
@@ -1659,6 +1870,13 @@ export interface WhyRealNumbersPageSelect<T extends boolean = true> {
         closingLine?: T;
         buttonLabel?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1720,6 +1938,13 @@ export interface OurExpertisePageSelect<T extends boolean = true> {
         closingLine?: T;
         buttonLabel?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1758,6 +1983,13 @@ export interface UseCasesPageSelect<T extends boolean = true> {
         heading?: T;
         buttonLabel?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1779,6 +2011,13 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
     | {
         image?: T;
         id?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
       };
   _status?: T;
   updatedAt?: T;

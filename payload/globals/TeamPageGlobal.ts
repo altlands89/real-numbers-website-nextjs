@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
+import { seoFields } from "../fields/seoFields";
 
 export const TeamPageGlobal: GlobalConfig = {
   slug: "team-page",
@@ -54,6 +55,10 @@ export const TeamPageGlobal: GlobalConfig = {
               ],
             },
           ],
+        },
+        {
+          label: "SEO",
+          fields: seoFields(),
         },
       ],
     },
