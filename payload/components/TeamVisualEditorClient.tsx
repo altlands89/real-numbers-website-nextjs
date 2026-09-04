@@ -10,6 +10,7 @@ import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
 import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style } from "./visual-editor/typeScale";
+import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { photoBtn, type MediaItem } from "./visual-editor/shared";
 import type { BrandColors } from "./visual-editor/serverData";
 
@@ -163,7 +164,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
   };
 
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>
@@ -244,6 +245,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
       )}
 
       {/* ---- The schematic canvas ---- */}
+      <DeviceFrame>
       <div
         className="rn-ve"
         style={{
@@ -434,6 +436,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
           </div>
         </div>
       </div>
+      </DeviceFrame>
 
       {picking !== null && picking !== "new" && (
         <MediaPicker

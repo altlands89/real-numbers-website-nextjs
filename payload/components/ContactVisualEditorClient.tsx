@@ -7,6 +7,7 @@ import { saveContactPage } from "./contactVisualEditorActions";
 import { Field } from "./visual-editor/Field";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { eyebrowStyle, pageHeroH1Style, cardH3Style, bodyTextStyle } from "./visual-editor/typeScale";
+import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import type { BrandColors } from "./visual-editor/serverData";
 
 type Props = {
@@ -74,7 +75,7 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
   };
 
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>
@@ -154,6 +155,7 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
       )}
 
       {/* ---- The schematic canvas ---- */}
+      <DeviceFrame>
       <div
         className="rn-ve"
         style={{
@@ -251,6 +253,7 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
           </div>
         </div>
       </div>
+      </DeviceFrame>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { scaledH2Style, homeHeroHeadlineStyle, bodyTextStyle } from "./visual-editor/typeScale";
+import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -161,7 +162,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
   });
 
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>
@@ -242,6 +243,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
       )}
 
       {/* ---- The schematic canvas — one card per section, in page order ---- */}
+      <DeviceFrame>
       <div
         className="rn-ve"
         style={{
@@ -475,6 +477,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
           );
         })}
       </div>
+      </DeviceFrame>
 
       {picking !== null && picking !== "new" && (
         <MediaPicker
