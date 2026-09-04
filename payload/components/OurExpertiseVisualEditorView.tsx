@@ -4,6 +4,7 @@ import type { OurExpertisePage } from "@/payload/payload-types";
 import { OurExpertiseVisualEditorClient } from "./OurExpertiseVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Our Expertise page's normal edit form — same
@@ -27,6 +28,7 @@ export async function OurExpertiseVisualEditorView(props: AdminViewProps) {
         initialData={page as OurExpertisePage}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/our-expertise`}
       />
     </VisualEditorShell>
   );

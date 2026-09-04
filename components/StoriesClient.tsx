@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
 import QuoteMark from "./QuoteMark";
@@ -8,8 +8,8 @@ import QuoteMark from "./QuoteMark";
 type Story = { quote: string; name: string; role: string };
 
 type Props = {
-  eyebrow: string;
-  heading: string;
+  eyebrow: ReactNode;
+  heading: ReactNode;
   stories: Story[];
 };
 

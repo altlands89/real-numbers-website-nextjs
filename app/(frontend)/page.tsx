@@ -8,6 +8,7 @@ import AudienceV2 from "@/components/AudienceV2";
 import Stories from "@/components/Stories";
 import FooterV2 from "@/components/FooterV2";
 import AbstractPanel from "@/components/AbstractPanel";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -36,11 +37,13 @@ export default async function Home() {
   }));
 
   const sections = home.sections ?? [];
+  const mo = home.mobileOverrides;
 
   return (
     <>
       <HeaderV2 />
-      {sections.map((section) => {
+      {sections.map((section, si) => {
+        const sectionKey = section.id ?? si;
         switch (section.blockType) {
           case "hero": {
             const featuredImages = (section.featuredPhoto?.images ?? [])
@@ -50,19 +53,45 @@ export default async function Home() {
               <HeroV2
                 key={section.id}
                 rotatingWords={(section.rotatingWords || []).map((w) => w.word)}
-                description={section.description || ""}
-                primaryCtaLabel={section.primaryCtaLabel || "Let's Talk"}
-                secondaryCtaLabel={section.secondaryCtaLabel || "Our Expertise"}
-                featuredHeading={section.featuredPhoto?.heading || ""}
-                featuredCtaLabel={section.featuredPhoto?.ctaLabel || "Our approach"}
+                description={
+                  <ResponsiveText desktop={section.description || ""} mobile={getOverride(mo, `${sectionKey}.description`)} />
+                }
+                primaryCtaLabel={
+                  <ResponsiveText desktop={section.primaryCtaLabel || "Let's Talk"} mobile={getOverride(mo, `${sectionKey}.primaryCtaLabel`)} />
+                }
+                secondaryCtaLabel={
+                  <ResponsiveText desktop={section.secondaryCtaLabel || "Our Expertise"} mobile={getOverride(mo, `${sectionKey}.secondaryCtaLabel`)} />
+                }
+                featuredHeading={
+                  <ResponsiveText
+                    desktop={section.featuredPhoto?.heading || ""}
+                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.heading`)}
+                  />
+                }
+                featuredCtaLabel={
+                  <ResponsiveText
+                    desktop={section.featuredPhoto?.ctaLabel || "Our approach"}
+                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.ctaLabel`)}
+                  />
+                }
                 featuredImages={featuredImages}
                 logos={logos}
-                logosCtaLabel={section.logosStrip?.ctaLabel || "Why Real Numbers"}
+                logosCtaLabel={
+                  <ResponsiveText
+                    desktop={section.logosStrip?.ctaLabel || "Why Real Numbers"}
+                    mobile={getOverride(mo, `${sectionKey}.logosStrip.ctaLabel`)}
+                  />
+                }
               />
             );
           }
           case "diff":
-            return <DifferenceV2 key={section.id} heading={section.heading || ""} />;
+            return (
+              <DifferenceV2
+                key={section.id}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+              />
+            );
           case "stats":
             return (
               <StatsV2
@@ -83,13 +112,25 @@ export default async function Home() {
             return <AbstractPanel key={section.id} src="/img/abstract/wide-14.jpg" video={dividerVideo} variant="band" strength={30} />;
           }
           case "cta":
-            return <CtaDarkV2 key={section.id} heading={section.heading || ""} ctaLabel={section.ctaLabel || "Discover more"} />;
+            return (
+              <CtaDarkV2
+                key={section.id}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+                ctaLabel={
+                  <ResponsiveText desktop={section.ctaLabel || "Discover more"} mobile={getOverride(mo, `${sectionKey}.ctaLabel`)} />
+                }
+              />
+            );
           case "audience":
             return (
               <AudienceV2
                 key={section.id}
-                heading={section.heading || ""}
-                areas={(section.areas || []).map((a) => ({ title: a.title, text: a.text }))}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+                areas={(section.areas || []).map((a) => ({
+                  id: a.id,
+                  title: <ResponsiveText desktop={a.title} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.title`)} />,
+                  text: <ResponsiveText desktop={a.text} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.text`)} />,
+                }))}
               />
             );
           case "stories":

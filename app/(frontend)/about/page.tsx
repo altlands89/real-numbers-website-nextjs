@@ -60,7 +60,7 @@ export default async function AboutPage() {
               </h2>
               {(page.ourStory?.paragraphs || []).map((p, i) => (
                 <p key={i}>
-                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `ourStory.paragraphs.${i}.text`)} />
+                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `ourStory.paragraphs.${p.id ?? i}.text`)} />
                 </p>
               ))}
             </div>
@@ -98,10 +98,10 @@ export default async function AboutPage() {
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
                   <strong>
-                    <ResponsiveText desktop={p.lead} mobile={getOverride(mo, `whatWeBelieve.principles.${i}.lead`)} />
+                    <ResponsiveText desktop={p.lead} mobile={getOverride(mo, `whatWeBelieve.principles.${p.id ?? i}.lead`)} />
                   </strong>
                   <p>
-                    <ResponsiveText desktop={p.text} mobile={getOverride(mo, `whatWeBelieve.principles.${i}.text`)} />
+                    <ResponsiveText desktop={p.text} mobile={getOverride(mo, `whatWeBelieve.principles.${p.id ?? i}.text`)} />
                   </p>
                 </div>
               ))}
@@ -114,7 +114,7 @@ export default async function AboutPage() {
             </h2>
             {(page.howWeWork?.paragraphs || []).map((p, i) => (
               <p key={i}>
-                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `howWeWork.paragraphs.${i}.text`)} />
+                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `howWeWork.paragraphs.${p.id ?? i}.text`)} />
               </p>
             ))}
             <div className="prose-mask-photo">
@@ -136,13 +136,13 @@ export default async function AboutPage() {
               {(page.leadership?.cards || []).map((c, i) => (
                 <div className="leadership-card" key={c.name}>
                   <h3>
-                    <ResponsiveText desktop={c.name} mobile={getOverride(mo, `leadership.cards.${i}.name`)} />
+                    <ResponsiveText desktop={c.name} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.name`)} />
                   </h3>
                   <span className="role">
-                    <ResponsiveText desktop={c.role} mobile={getOverride(mo, `leadership.cards.${i}.role`)} />
+                    <ResponsiveText desktop={c.role} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.role`)} />
                   </span>
                   <p className="bio">
-                    <ResponsiveText desktop={c.bio} mobile={getOverride(mo, `leadership.cards.${i}.bio`)} />
+                    <ResponsiveText desktop={c.bio} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.bio`)} />
                   </p>
                 </div>
               ))}

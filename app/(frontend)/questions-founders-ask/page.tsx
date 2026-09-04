@@ -6,6 +6,7 @@ import Faq from "@/components/Faq";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -27,6 +28,7 @@ export default async function QuestionsFoundersAskPage() {
   const atmospherePhotos = (page.atmospherePhotos || [])
     .map((p) => (typeof p.image === "object" && p.image?.url ? p.image.url : ""))
     .filter(Boolean);
+  const mo = page.mobileOverrides;
 
   return (
     <>
@@ -40,9 +42,11 @@ export default async function QuestionsFoundersAskPage() {
         />
         <HeroGlow />
         <div className="wrap">
-          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <span className="eyebrow">
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+          </span>
           <h1 data-reveal className="reveal-heading">
-            {page.hero.heading}
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
           </h1>
         </div>
       </section>
@@ -61,7 +65,13 @@ export default async function QuestionsFoundersAskPage() {
             strength={22}
             style={{ marginTop: 0, marginBottom: "var(--space-600)", aspectRatio: "21/9" }}
           />
-          <Faq items={faqItems.docs.map((f) => ({ question: f.question, answer: f.answer }))} />
+          <Faq
+            items={faqItems.docs.map((f) => ({
+              id: f.id,
+              question: <ResponsiveText desktop={f.question} mobile={getOverride(mo, `faq.${f.id}.question`)} />,
+              answer: <ResponsiveText desktop={f.answer} mobile={getOverride(mo, `faq.${f.id}.answer`)} />,
+            }))}
+          />
         </div>
       </section>
 

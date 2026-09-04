@@ -16,13 +16,14 @@ import type { Home } from "@/payload/payload-types";
  */
 export async function saveHomeSections(
   sections: Home["sections"],
+  mobileOverrides: Record<string, unknown>,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const payload = await getCMS();
   const { user } = await payload.auth({ headers: await nextHeaders() });
   if (!user) return { ok: false, error: "Not signed in — reload the admin and try again." };
 
   try {
-    await payload.updateGlobal({ slug: "home", data: { sections, _status: "published" } });
+    await payload.updateGlobal({ slug: "home", data: { sections, mobileOverrides, _status: "published" } });
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Save failed" };

@@ -4,6 +4,7 @@ import type { WhyRealNumbersPage } from "@/payload/payload-types";
 import { WhyRealNumbersVisualEditorClient } from "./WhyRealNumbersVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Why Real Numbers page's normal edit form —
@@ -28,6 +29,7 @@ export async function WhyRealNumbersVisualEditorView(props: AdminViewProps) {
         initialData={page as WhyRealNumbersPage}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/why-real-numbers`}
       />
     </VisualEditorShell>
   );

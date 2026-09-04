@@ -5,6 +5,7 @@ import ContactForm from "@/components/ContactForm";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AbstractPanel from "@/components/AbstractPanel";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -20,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   const payload = await getCMS();
   const page = await payload.findGlobal({ slug: "contact-page" });
+  const mo = page.mobileOverrides;
 
   return (
     <>
@@ -36,9 +38,11 @@ export default async function ContactPage() {
         />
         <HeroGlow />
         <div className="wrap">
-          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <span className="eyebrow">
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+          </span>
           <h1 data-reveal className="reveal-heading">
-            {page.hero.heading}
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
           </h1>
         </div>
       </section>
@@ -52,7 +56,11 @@ export default async function ContactPage() {
         <div className="wrap contact-layout">
           <div className="contact-layout-form">
             <ContactForm
-              directContactLabel={page.directContact?.label || undefined}
+              directContactLabel={
+                page.directContact?.label ? (
+                  <ResponsiveText desktop={page.directContact.label} mobile={getOverride(mo, "directContact.label")} />
+                ) : undefined
+              }
               whatsappNumber={page.directContact?.whatsappNumber || undefined}
               email={page.directContact?.email || undefined}
             />
@@ -64,8 +72,12 @@ export default async function ContactPage() {
         </div>
         <div className="wrap">
           <div className="manifesto">
-            <h3>{page.manifesto?.heading}</h3>
-            <p>{page.manifesto?.text}</p>
+            <h3>
+              <ResponsiveText desktop={page.manifesto?.heading ?? ""} mobile={getOverride(mo, "manifesto.heading")} />
+            </h3>
+            <p>
+              <ResponsiveText desktop={page.manifesto?.text ?? ""} mobile={getOverride(mo, "manifesto.text")} />
+            </p>
           </div>
         </div>
       </section>

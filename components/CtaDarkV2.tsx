@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
 import CompositionDrift from "./CompositionDrift";
 
-export default function CtaDarkV2({ heading, ctaLabel }: { heading: string; ctaLabel: string }) {
+export default function CtaDarkV2({ heading, ctaLabel }: { heading: ReactNode; ctaLabel: ReactNode }) {
   return (
     <section className="v2-cta-dark">
       <CompositionDrift
@@ -17,12 +18,7 @@ export default function CtaDarkV2({ heading, ctaLabel }: { heading: string; ctaL
       />
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          {heading.split("\n").map((line, i, arr) => (
-            <span key={i}>
-              {line}
-              {i < arr.length - 1 && <br />}
-            </span>
-          ))}
+          {heading}
         </h2>
         <a href="/why-real-numbers" className="v2-pill-link">
           {ctaLabel} <span>→</span>

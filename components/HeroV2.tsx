@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import CompositionDrift from "./CompositionDrift";
 import PhotoSlideshow from "./PhotoSlideshow";
 import RotatingWord from "./RotatingWord";
@@ -6,15 +7,20 @@ import LogoMarquee from "./LogoMarquee";
 type Logo = { src: string; alt: string; href?: string };
 
 type Props = {
+  // Not yet wired to per-field mobile overrides — RotatingWord measures
+  // and animates these as plain strings, so giving individual words a
+  // mobile-only variant would need changes to that animation logic too.
+  // A mobile override set on a rotating word in the editor is stored but
+  // currently has no effect on the live site.
   rotatingWords: string[];
-  description: string;
-  primaryCtaLabel: string;
-  secondaryCtaLabel: string;
-  featuredHeading: string;
-  featuredCtaLabel: string;
+  description: ReactNode;
+  primaryCtaLabel: ReactNode;
+  secondaryCtaLabel: ReactNode;
+  featuredHeading: ReactNode;
+  featuredCtaLabel: ReactNode;
   featuredImages: string[];
   logos: Logo[];
-  logosCtaLabel: string;
+  logosCtaLabel: ReactNode;
 };
 
 export default function HeroV2({
@@ -79,14 +85,7 @@ export default function HeroV2({
         <div className="v2-photo-feature" data-reveal>
           <PhotoSlideshow images={featuredImages} />
           <div className="v2-photo-feature-overlay">
-            <h2>
-              {featuredHeading.split("\n").map((line, i, arr) => (
-                <span key={i}>
-                  {line}
-                  {i < arr.length - 1 && <br />}
-                </span>
-              ))}
-            </h2>
+            <h2>{featuredHeading}</h2>
             <a href="/about" className="v2-pill-link">
               {featuredCtaLabel} <span>→</span>
             </a>

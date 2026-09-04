@@ -4,6 +4,7 @@ import type { QuestionsFoundersAskPage } from "@/payload/payload-types";
 import { QuestionsVisualEditorClient, type FaqEntry } from "./QuestionsVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Questions Founders Ask page's normal edit
@@ -38,6 +39,7 @@ export async function QuestionsVisualEditorView(props: AdminViewProps) {
         initialFaqItems={initialFaqItems}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/questions-founders-ask`}
       />
     </VisualEditorShell>
   );

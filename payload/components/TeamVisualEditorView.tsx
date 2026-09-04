@@ -4,6 +4,7 @@ import type { TeamPage } from "@/payload/payload-types";
 import { TeamVisualEditorClient, type RosterMember } from "./TeamVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Team page's normal edit form. Same pattern
@@ -42,6 +43,7 @@ export async function TeamVisualEditorView(props: AdminViewProps) {
         initialRoster={initialRoster}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/team`}
       />
     </VisualEditorShell>
   );

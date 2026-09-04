@@ -1,5 +1,6 @@
 import { getCMS } from "@/lib/payload";
 import StoriesClient from "./StoriesClient";
+import { ResponsiveText, getOverride } from "./ResponsiveText";
 
 export default async function Stories() {
   const payload = await getCMS();
@@ -9,11 +10,20 @@ export default async function Stories() {
   ]);
 
   const storiesSection = (home.sections ?? []).find((s) => s.blockType === "stories");
+  const mo = home.mobileOverrides;
+  const sectionKey = storiesSection?.id ?? "stories";
 
   return (
     <StoriesClient
-      eyebrow={storiesSection?.eyebrow || "Client Stories"}
-      heading={storiesSection?.heading || ""}
+      eyebrow={
+        <ResponsiveText
+          desktop={storiesSection?.eyebrow || "Client Stories"}
+          mobile={getOverride(mo, `${sectionKey}.eyebrow`)}
+        />
+      }
+      heading={
+        <ResponsiveText desktop={storiesSection?.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />
+      }
       stories={testimonials.docs.map((t) => ({ quote: t.quote, name: t.name, role: t.role || "" }))}
     />
   );

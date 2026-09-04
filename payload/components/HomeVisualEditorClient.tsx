@@ -11,14 +11,16 @@ import type {
   StoriesBlock,
 } from "@/payload/payload-types";
 import { saveHomeSections } from "./homeVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { scaledH2Style, homeHeroHeadlineStyle, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -26,6 +28,7 @@ type Props = {
   initialData: Home;
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
 const BLOCK_LABEL: Record<string, string> = {
@@ -38,10 +41,11 @@ const BLOCK_LABEL: Record<string, string> = {
   stories: "Client Stories",
 };
 
-export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Props) {
+export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const dragIndexRef = useRef<number | null>(null);
   // Which section's PhotoSlots opened the picker — `picking` itself is
@@ -52,8 +56,12 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
 
   const { data, set, dirty, setDirty } = useCloneState<Home>(initialData, () => setStatus({ kind: "idle" }));
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
 
   const sections = data.sections ?? [];
+  const overallDirty = dirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -83,11 +91,13 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
         return section;
       });
 
-      const result = await saveHomeSections(normalized as Home["sections"]);
+      const result = await saveHomeSections(normalized as Home["sections"], overrides);
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -138,19 +148,6 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
     fontFamily: "system-ui, sans-serif",
   };
 
-  const cardBtn: React.CSSProperties = {
-    border: "1px solid rgba(36,30,28,0.2)",
-    background: "rgba(255,255,255,0.7)",
-    borderRadius: 4,
-    width: 22,
-    height: 20,
-    lineHeight: 1,
-    fontSize: 11,
-    cursor: "pointer",
-    color: "#241e1c",
-    fontFamily: "system-ui, sans-serif",
-  };
-
   const placeholderNote = (text: string, light: boolean): React.CSSProperties => ({
     border: `1px dashed ${light ? "rgba(240,239,232,0.3)" : "rgba(36,30,28,0.25)"}`,
     borderRadius: 8,
@@ -181,19 +178,19 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
           <button
             type="button"
             onClick={save}
-            disabled={saving || !dirty}
+            disabled={saving || !overallDirty}
             style={{
               padding: "9px 18px",
               borderRadius: "var(--style-radius-m, 8px)",
               border: "none",
-              background: dirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
-              color: dirty ? "#fff" : "var(--theme-elevation-500)",
+              background: overallDirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
+              color: overallDirty ? "#fff" : "var(--theme-elevation-500)",
               fontWeight: 600,
               fontSize: 13,
-              cursor: dirty && !saving ? "pointer" : "default",
+              cursor: overallDirty && !saving ? "pointer" : "default",
             }}
           >
-            {saving ? "Publishing…" : dirty ? "Publish changes" : "No changes"}
+            {saving ? "Publishing…" : overallDirty ? "Publish changes" : "No changes"}
           </button>
         </div>
       </div>
@@ -242,6 +239,8 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas — one card per section, in page order ---- */}
       <DeviceFrame>
       <div
@@ -254,6 +253,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
       >
         {sections.map((section, i) => {
           const dark = section.blockType === "hero" || section.blockType === "cta" || section.blockType === "audience";
+          const sectionKey = section.id ?? i;
           return (
             <div
               key={section.id ?? i}
@@ -304,11 +304,15 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                       <div>
                         <div style={{ display: "grid", gap: 6 }}>
                           {(s.rotatingWords ?? []).map((w, wi) => (
-                            <Field
+                            <ResponsiveField
                               key={w.id ?? wi}
                               label={`Rotating word ${wi + 1}`}
                               value={w.word ?? ""}
                               onChange={(v) => set((d) => { ((d.sections![i] as HeroBlock).rotatingWords![wi].word) = v; })}
+                              path={`${sectionKey}.rotatingWords.${w.id ?? wi}.word`}
+                              overrides={overrides}
+                              setOverride={setOverride}
+                              clearOverride={clearOverride}
                               style={type.heroRotatingWord}
                             />
                           ))}
@@ -318,39 +322,59 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                           onRemove={(s.rotatingWords?.length ?? 0) > 1 ? () => set((d) => { (d.sections![i] as HeroBlock).rotatingWords!.pop(); }) : undefined}
                         />
                       </div>
-                      <Field
+                      <ResponsiveField
                         label="Description"
                         value={s.description ?? ""}
                         onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).description = v; })}
+                        path={`${sectionKey}.description`}
+                        overrides={overrides}
+                        setOverride={setOverride}
+                        clearOverride={clearOverride}
                         style={type.bodyLight}
                         multiline
                       />
                       <div style={{ display: "flex", gap: 16 }}>
-                        <Field
+                        <ResponsiveField
                           label="Primary button text"
                           value={s.primaryCtaLabel ?? ""}
                           onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).primaryCtaLabel = v; })}
+                          path={`${sectionKey}.primaryCtaLabel`}
+                          overrides={overrides}
+                          setOverride={setOverride}
+                          clearOverride={clearOverride}
                           style={type.smallLight}
                         />
-                        <Field
+                        <ResponsiveField
                           label="Secondary button text"
                           value={s.secondaryCtaLabel ?? ""}
                           onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).secondaryCtaLabel = v; })}
+                          path={`${sectionKey}.secondaryCtaLabel`}
+                          overrides={overrides}
+                          setOverride={setOverride}
+                          clearOverride={clearOverride}
                           style={type.smallLight}
                         />
                       </div>
                       <div style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20 }}>
                         <div style={{ display: "grid", gap: 8 }}>
-                          <Field
+                          <ResponsiveField
                             label="Featured photo · heading"
                             value={s.featuredPhoto?.heading ?? ""}
                             onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.featuredPhoto = { ...hb.featuredPhoto, heading: v }; })}
+                            path={`${sectionKey}.featuredPhoto.heading`}
+                            overrides={overrides}
+                            setOverride={setOverride}
+                            clearOverride={clearOverride}
                             style={type.featuredPhotoHeading}
                           />
-                          <Field
+                          <ResponsiveField
                             label="Featured photo · button text"
                             value={s.featuredPhoto?.ctaLabel ?? ""}
                             onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.featuredPhoto = { ...hb.featuredPhoto, ctaLabel: v }; })}
+                            path={`${sectionKey}.featuredPhoto.ctaLabel`}
+                            overrides={overrides}
+                            setOverride={setOverride}
+                            clearOverride={clearOverride}
                             style={type.smallLight}
                           />
                         </div>
@@ -362,10 +386,14 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                         />
                       </div>
                       <div style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 14, display: "grid", gap: 8 }}>
-                        <Field
+                        <ResponsiveField
                           label="Client logos strip · button text"
                           value={s.logosStrip?.ctaLabel ?? ""}
                           onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.logosStrip = { ...hb.logosStrip, ctaLabel: v }; })}
+                          path={`${sectionKey}.logosStrip.ctaLabel`}
+                          overrides={overrides}
+                          setOverride={setOverride}
+                          clearOverride={clearOverride}
                           style={type.smallLight}
                         />
                         <p style={placeholderNote("", true)}>The logos themselves come from the Client Logos collection, not here.</p>
@@ -375,10 +403,14 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                 })()}
 
                 {section.blockType === "diff" && (
-                  <Field
+                  <ResponsiveField
                     label="Heading"
                     value={(section as DifferenceBlock).heading ?? ""}
                     onChange={(v) => set((d) => { (d.sections![i] as DifferenceBlock).heading = v; })}
+                    path={`${sectionKey}.heading`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.diffHeading}
                     multiline
                   />
@@ -400,17 +432,25 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
 
                 {section.blockType === "cta" && (
                   <div style={{ display: "grid", gap: 8 }}>
-                    <Field
+                    <ResponsiveField
                       label="Heading"
                       value={(section as CtaDarkBlock).heading ?? ""}
                       onChange={(v) => set((d) => { (d.sections![i] as CtaDarkBlock).heading = v; })}
+                      path={`${sectionKey}.heading`}
+                      overrides={overrides}
+                      setOverride={setOverride}
+                      clearOverride={clearOverride}
                       style={type.ctaHeading}
                       multiline
                     />
-                    <Field
+                    <ResponsiveField
                       label="Button text"
                       value={(section as CtaDarkBlock).ctaLabel ?? ""}
                       onChange={(v) => set((d) => { (d.sections![i] as CtaDarkBlock).ctaLabel = v; })}
+                      path={`${sectionKey}.ctaLabel`}
+                      overrides={overrides}
+                      setOverride={setOverride}
+                      clearOverride={clearOverride}
                       style={{ ...type.smallLight, background: colors.red, color: "#fff", display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content", opacity: 1 }}
                     />
                   </div>
@@ -420,26 +460,38 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                   const s = section as AudienceBlock;
                   return (
                     <div style={{ display: "grid", gap: 12 }}>
-                      <Field
+                      <ResponsiveField
                         label="Heading"
                         value={s.heading ?? ""}
                         onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).heading = v; })}
+                        path={`${sectionKey}.heading`}
+                        overrides={overrides}
+                        setOverride={setOverride}
+                        clearOverride={clearOverride}
                         style={type.audienceHeading}
                         multiline
                       />
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         {(s.areas ?? []).map((a, ai) => (
                           <div key={a.id ?? ai} style={{ display: "grid", gap: 4, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: 12 }}>
-                            <Field
+                            <ResponsiveField
                               label={`Area ${ai + 1} · title`}
                               value={a.title ?? ""}
                               onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).areas![ai].title = v; })}
+                              path={`${sectionKey}.areas.${a.id ?? ai}.title`}
+                              overrides={overrides}
+                              setOverride={setOverride}
+                              clearOverride={clearOverride}
                               style={type.smallLight}
                             />
-                            <Field
+                            <ResponsiveField
                               label={`Area ${ai + 1} · description`}
                               value={a.text ?? ""}
                               onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).areas![ai].text = v; })}
+                              path={`${sectionKey}.areas.${a.id ?? ai}.text`}
+                              overrides={overrides}
+                              setOverride={setOverride}
+                              clearOverride={clearOverride}
                               style={type.bodyLight}
                               multiline
                             />
@@ -456,16 +508,24 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
 
                 {section.blockType === "stories" && (
                   <div style={{ display: "grid", gap: 8 }}>
-                    <Field
+                    <ResponsiveField
                       label="Small label"
                       value={(section as StoriesBlock).eyebrow ?? ""}
                       onChange={(v) => set((d) => { (d.sections![i] as StoriesBlock).eyebrow = v; })}
+                      path={`${sectionKey}.eyebrow`}
+                      overrides={overrides}
+                      setOverride={setOverride}
+                      clearOverride={clearOverride}
                       style={type.small}
                     />
-                    <Field
+                    <ResponsiveField
                       label="Heading"
                       value={(section as StoriesBlock).heading ?? ""}
                       onChange={(v) => set((d) => { (d.sections![i] as StoriesBlock).heading = v; })}
+                      path={`${sectionKey}.heading`}
+                      overrides={overrides}
+                      setOverride={setOverride}
+                      clearOverride={clearOverride}
                       style={type.heading}
                       multiline
                     />

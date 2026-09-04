@@ -5,6 +5,7 @@ import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -23,6 +24,7 @@ export default async function UseCasesPage() {
   const atmospherePhotos = (page.atmospherePhotos || [])
     .map((p) => (typeof p.image === "object" && p.image?.url ? p.image.url : ""))
     .filter(Boolean);
+  const mo = page.mobileOverrides;
 
   return (
     <>
@@ -36,11 +38,15 @@ export default async function UseCasesPage() {
         />
         <HeroGlow />
         <div className="wrap">
-          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <span className="eyebrow">
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+          </span>
           <h1 data-reveal className="reveal-heading">
-            {page.hero.heading}
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
           </h1>
-          <p className="lede">{page.hero.lede}</p>
+          <p className="lede">
+            <ResponsiveText desktop={page.hero.lede ?? ""} mobile={getOverride(mo, "hero.lede")} />
+          </p>
         </div>
       </section>
 
@@ -55,10 +61,16 @@ export default async function UseCasesPage() {
             images={atmospherePhotos}
             fallbackSrc="/img/photography/usecases-atmosphere.jpg"
             alt="A team working through a growth decision"
-            caption={page.atmospherePhotoCaption || undefined}
+            caption={
+              page.atmospherePhotoCaption ? (
+                <ResponsiveText desktop={page.atmospherePhotoCaption} mobile={getOverride(mo, "atmospherePhotoCaption")} />
+              ) : undefined
+            }
             style={{ marginTop: 0, marginBottom: "var(--space-600)" }}
           />
-          <p style={{ fontWeight: 600, opacity: 0.85 }}>{page.situationsIntro}</p>
+          <p style={{ fontWeight: 600, opacity: 0.85 }}>
+            <ResponsiveText desktop={page.situationsIntro ?? ""} mobile={getOverride(mo, "situationsIntro")} />
+          </p>
           <div className="usecase-list">
             {(page.situations || []).map((s, i) => (
               <div
@@ -67,8 +79,12 @@ export default async function UseCasesPage() {
                 data-reveal
                 style={{ transitionDelay: `${Math.min(i, 5) * 70}ms` }}
               >
-                <p className="q">{s.question}</p>
-                <p>{s.answer}</p>
+                <p className="q">
+                  <ResponsiveText desktop={s.question} mobile={getOverride(mo, `situations.${s.id ?? i}.question`)} />
+                </p>
+                <p>
+                  <ResponsiveText desktop={s.answer} mobile={getOverride(mo, `situations.${s.id ?? i}.answer`)} />
+                </p>
               </div>
             ))}
           </div>
@@ -79,11 +95,13 @@ export default async function UseCasesPage() {
         <div className="wrap">
           <AbstractPanel src="/img/abstract/wide-7.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
-            <h2>{page.closingCta.heading}</h2>
+            <h2>
+              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} />
+            </h2>
           </div>
           <div className="final-cta-action">
             <a href="/contact" className="btn btn-primary">
-              {page.closingCta.buttonLabel}
+              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} />
             </a>
           </div>
         </div>

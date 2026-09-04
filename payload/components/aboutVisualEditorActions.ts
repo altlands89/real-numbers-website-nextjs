@@ -3,19 +3,28 @@
 import { headers as nextHeaders } from "next/headers";
 import { getCMS } from "@/lib/payload";
 
+// Array items carry their own `id` back so Payload updates the existing DB
+// row instead of deleting and recreating it (its default behavior for an
+// array item with no id) — without this, every array item's id churns on
+// every single save, which would silently orphan any per-item
+// mobileOverrides key (see ResponsiveField.tsx) that used the old id.
 export type AboutEditorPayload = {
   hero: { eyebrow?: string | null; heading: string; lede: string };
   ourStory: {
     heading?: string | null;
-    paragraphs: { text: string }[];
+    paragraphs: { id?: string | null; text: string }[];
     photos: { image: number }[];
     photoCaption?: string | null;
   };
-  whatWeBelieve: { heading?: string | null; intro?: string | null; principles: { lead: string; text: string }[] };
-  howWeWork: { heading?: string | null; paragraphs: { text: string }[] };
+  whatWeBelieve: {
+    heading?: string | null;
+    intro?: string | null;
+    principles: { id?: string | null; lead: string; text: string }[];
+  };
+  howWeWork: { heading?: string | null; paragraphs: { id?: string | null; text: string }[] };
   leadership: {
     heading?: string | null;
-    cards: { name: string; role: string; bio: string }[];
+    cards: { id?: string | null; name: string; role: string; bio: string }[];
     note?: string | null;
     teamLinkLabel?: string | null;
   };

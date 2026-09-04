@@ -4,15 +4,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { OurExpertisePage } from "@/payload/payload-types";
 import { saveOurExpertisePage } from "./ourExpertiseVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -20,14 +22,16 @@ type Props = {
   initialData: OurExpertisePage;
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
 const EMPTY_AREA = { title: "", tagline: "", paragraphs: [{ text: "" }], services: [{ label: "" }] };
 
-export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibrary }: Props) {
+export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const { data, set, dirty, setDirty } = useCloneState<OurExpertisePage>(initialData, () =>
     setStatus({ kind: "idle" }),
@@ -41,6 +45,11 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
       list.splice(to, 0, item);
     }),
   );
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
+
+  const overallDirty = dirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -50,13 +59,14 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
         hero: {
           eyebrow: data.hero?.eyebrow ?? "",
           heading: data.hero?.heading ?? "",
-          ledeParagraphs: (data.hero?.ledeParagraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          ledeParagraphs: (data.hero?.ledeParagraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
         },
         areas: (data.areas ?? []).map((a) => ({
+          id: a.id,
           title: a.title ?? "",
           tagline: a.tagline ?? "",
-          paragraphs: (a.paragraphs ?? []).map((p) => ({ text: p.text ?? "" })),
-          services: (a.services ?? []).map((s) => ({ label: s.label ?? "" })),
+          paragraphs: (a.paragraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
+          services: (a.services ?? []).map((s) => ({ id: s.id, label: s.label ?? "" })),
         })),
         integrated: {
           heading: data.integrated?.heading ?? "",
@@ -71,11 +81,14 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
           closingLine: data.closingCta?.closingLine ?? "",
           buttonLabel: data.closingCta?.buttonLabel ?? "",
         },
+        mobileOverrides: overrides,
       });
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -153,19 +166,19 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
           <button
             type="button"
             onClick={save}
-            disabled={saving || !dirty}
+            disabled={saving || !overallDirty}
             style={{
               padding: "9px 18px",
               borderRadius: "var(--style-radius-m, 8px)",
               border: "none",
-              background: dirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
-              color: dirty ? "#fff" : "var(--theme-elevation-500)",
+              background: overallDirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
+              color: overallDirty ? "#fff" : "var(--theme-elevation-500)",
               fontWeight: 600,
               fontSize: 13,
-              cursor: dirty && !saving ? "pointer" : "default",
+              cursor: overallDirty && !saving ? "pointer" : "default",
             }}
           >
-            {saving ? "Publishing…" : dirty ? "Publish changes" : "No changes"}
+            {saving ? "Publishing…" : overallDirty ? "Publish changes" : "No changes"}
           </button>
         </div>
       </div>
@@ -214,6 +227,8 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -230,26 +245,38 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="Our Expertise"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
             {(data.hero?.ledeParagraphs ?? []).map((p, i) => (
-              <Field
+              <ResponsiveField
                 key={p.id ?? i}
                 label={`Intro paragraph ${i + 1}`}
                 value={p.text ?? ""}
                 onChange={(v) => set((d) => { d.hero.ledeParagraphs![i].text = v; })}
+                path={`hero.ledeParagraphs.${p.id ?? i}.text`}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.lede}
                 multiline
               />
@@ -284,16 +311,24 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
                 outlineOffset: 6,
               }}
             >
-              <Field
+              <ResponsiveField
                 label={`Area ${ai + 1} · title`}
                 value={a.title ?? ""}
                 onChange={(v) => set((d) => { d.areas![ai].title = v; })}
+                path={`areas.${a.id ?? ai}.title`}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.h2}
               />
-              <Field
+              <ResponsiveField
                 label={`Area ${ai + 1} · tagline`}
                 value={a.tagline ?? ""}
                 onChange={(v) => set((d) => { d.areas![ai].tagline = v; })}
+                path={`areas.${a.id ?? ai}.tagline`}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.tagline}
               />
               <span style={{ fontSize: 10.5, color: "rgba(36,30,28,0.4)" }} title="Drag to reorder">
@@ -301,11 +336,15 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
               </span>
               <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
                 {(a.paragraphs ?? []).map((p, pi) => (
-                  <Field
+                  <ResponsiveField
                     key={p.id ?? pi}
                     label={`Area ${ai + 1} · paragraph ${pi + 1}`}
                     value={p.text ?? ""}
                     onChange={(v) => set((d) => { d.areas![ai].paragraphs![pi].text = v; })}
+                    path={`areas.${a.id ?? ai}.paragraphs.${p.id ?? pi}.text`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.body}
                     multiline
                   />
@@ -323,11 +362,15 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12, alignItems: "center" }}>
                 {(a.services ?? []).map((s, si) => (
-                  <Field
+                  <ResponsiveField
                     key={s.id ?? si}
                     label={`Area ${ai + 1} · service tag ${si + 1}`}
                     value={s.label ?? ""}
                     onChange={(v) => set((d) => { d.areas![ai].services![si].label = v; })}
+                    path={`areas.${a.id ?? ai}.services.${s.id ?? si}.label`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={pillInput}
                   />
                 ))}
@@ -364,16 +407,24 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
             <span style={sectionLabel}>3 · Integrated partnership</span>
             <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 26, alignItems: "start" }}>
               <div style={{ display: "grid", gap: 10 }}>
-                <Field
+                <ResponsiveField
                   label="Heading"
                   value={data.integrated?.heading ?? ""}
                   onChange={(v) => set((d) => { d.integrated = { ...d.integrated, heading: v }; })}
+                  path="integrated.heading"
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={type.h2}
                 />
-                <Field
+                <ResponsiveField
                   label="Paragraph"
                   value={data.integrated?.text ?? ""}
                   onChange={(v) => set((d) => { d.integrated = { ...d.integrated, text: v }; })}
+                  path="integrated.text"
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={type.body}
                   multiline
                 />
@@ -390,10 +441,14 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
                   }
                 />
                 <div style={{ marginTop: 8 }}>
-                  <Field
+                  <ResponsiveField
                     label="Photo caption"
                     value={data.integrated?.photoCaption ?? ""}
                     onChange={(v) => set((d) => { d.integrated = { ...d.integrated, photoCaption: v }; })}
+                    path="integrated.photoCaption"
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={{ fontSize: 10.5, color: "rgba(36,30,28,0.6)" }}
                   />
                 </div>
@@ -405,24 +460,36 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
           <div style={{ ...block, background: colors.black, margin: "26px -34px -40px", padding: "34px" }}>
             <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>4 · Closing banner</span>
             <div style={{ display: "grid", gap: 10, maxWidth: 560 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.closingCta?.heading ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, heading: v }; })}
+                path="closingCta.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingH2}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Supporting line"
                 value={data.closingCta?.closingLine ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, closingLine: v }; })}
+                path="closingCta.closingLine"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingLine}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Button text"
                 value={data.closingCta?.buttonLabel ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, buttonLabel: v }; })}
+                path="closingCta.buttonLabel"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={{ ...type.button, background: colors.red, display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content" }}
               />
             </div>

@@ -4,6 +4,7 @@ import type { ContactPage } from "@/payload/payload-types";
 import { ContactVisualEditorClient } from "./ContactVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Contact page's normal edit form — same
@@ -27,7 +28,11 @@ export async function ContactVisualEditorView(props: AdminViewProps) {
 
   return (
     <VisualEditorShell templateProps={templateProps}>
-      <ContactVisualEditorClient initialData={page as ContactPage} colors={resolveBrandColors(tokens)} />
+      <ContactVisualEditorClient
+        initialData={page as ContactPage}
+        colors={resolveBrandColors(tokens)}
+        pageUrl={`${getSiteUrl()}/contact`}
+      />
     </VisualEditorShell>
   );
 }

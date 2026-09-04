@@ -4,13 +4,15 @@ import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { TeamPage } from "@/payload/payload-types";
 import { saveTeamPage, saveTeamRoster } from "./teamVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import { photoBtn, type MediaItem } from "./visual-editor/shared";
 import type { BrandColors } from "./visual-editor/serverData";
 
@@ -28,16 +30,18 @@ type Props = {
   initialRoster: RosterMember[];
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
 function initials(name: string) {
   return name.trim().split(/\s+/).filter(Boolean).map((p) => p[0]?.toUpperCase()).join("") || "?";
 }
 
-export function TeamVisualEditorClient({ initialData, initialRoster, colors, mediaLibrary }: Props) {
+export function TeamVisualEditorClient({ initialData, initialRoster, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const onMutate = () => setStatus({ kind: "idle" });
   const { data, set, dirty, setDirty } = useCloneState<TeamPage>(initialData, onMutate);
@@ -45,8 +49,11 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
     RosterMember[]
   >(initialRoster, onMutate);
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
 
-  const overallDirty = dirty || rosterDirty;
+  const overallDirty = dirty || rosterDirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -64,6 +71,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
           closingLine: data.closingCta?.closingLine ?? "",
           buttonLabel: data.closingCta?.buttonLabel ?? "",
         },
+        mobileOverrides: overrides,
       });
       if (!pageResult.ok) throw new Error(pageResult.error);
 
@@ -81,8 +89,10 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
 
       setDirty(false);
       setRosterDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -244,6 +254,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -260,24 +272,36 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="Our Team"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
-            <Field
+            <ResponsiveField
               label="Intro paragraph"
               value={data.hero?.lede ?? ""}
               onChange={(v) => set((d) => { d.hero.lede = v; })}
+              path="hero.lede"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.lede}
               multiline
             />
@@ -288,19 +312,24 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
         <div style={{ background: colors.offwhite, padding: "30px 34px 40px" }}>
           {/* Section 2 — Team List */}
           <span style={sectionLabel}>2 · Team list</span>
-          <Field
+          <ResponsiveField
             label="Section title"
             value={data.sectionHeading ?? ""}
             onChange={(v) => set((d) => { d.sectionHeading = v; })}
+            path="sectionHeading"
+            overrides={overrides}
+            setOverride={setOverride}
+            clearOverride={clearOverride}
             style={type.h2}
           />
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 16 }}>
             {roster.map((m, i) => {
               const url = resolvePhotoUrl(m.photo);
+              const memberKey = m.id ?? `new-${i}`;
               return (
                 <div
-                  key={m.id ?? `new-${i}`}
+                  key={memberKey}
                   {...dragHandlers(i)}
                   style={{
                     display: "grid",
@@ -335,16 +364,24 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
                       )}
                     </div>
                     <div style={{ display: "grid", gap: 4, flex: 1, minWidth: 0 }}>
-                      <Field
+                      <ResponsiveField
                         label={`Person ${i + 1} · name`}
                         value={m.name}
                         onChange={(v) => setRoster((d) => { d[i].name = v; })}
+                        path={`roster.${memberKey}.name`}
+                        overrides={overrides}
+                        setOverride={setOverride}
+                        clearOverride={clearOverride}
                         style={type.name}
                       />
-                      <Field
+                      <ResponsiveField
                         label={`Person ${i + 1} · job title`}
                         value={m.role}
                         onChange={(v) => setRoster((d) => { d[i].role = v; })}
+                        path={`roster.${memberKey}.role`}
+                        overrides={overrides}
+                        setOverride={setOverride}
+                        clearOverride={clearOverride}
                         style={type.role}
                       />
                     </div>
@@ -363,17 +400,25 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
                       </button>
                     )}
                   </div>
-                  <Field
+                  <ResponsiveField
                     label={`Person ${i + 1} · bio`}
                     value={m.bio}
                     onChange={(v) => setRoster((d) => { d[i].bio = v; })}
+                    path={`roster.${memberKey}.bio`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.bio}
                     multiline
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Person ${i + 1} · education (optional)`}
                     value={m.education}
                     onChange={(v) => setRoster((d) => { d[i].education = v; })}
+                    path={`roster.${memberKey}.education`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.education}
                     placeholder="Education / credential — leave blank to hide"
                   />
@@ -412,24 +457,36 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
           <div style={{ ...block, background: colors.black, margin: "26px -34px -40px", padding: "34px" }}>
             <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>3 · Closing banner</span>
             <div style={{ display: "grid", gap: 10, maxWidth: 560 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.closingCta?.heading ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, heading: v }; })}
+                path="closingCta.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingH2}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Supporting line"
                 value={data.closingCta?.closingLine ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, closingLine: v }; })}
+                path="closingCta.closingLine"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingLine}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Button text"
                 value={data.closingCta?.buttonLabel ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, buttonLabel: v }; })}
+                path="closingCta.buttonLabel"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={{ ...type.button, background: colors.red, display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content" }}
               />
             </div>

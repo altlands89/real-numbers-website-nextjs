@@ -7,6 +7,7 @@ export type TeamPageEditorPayload = {
   hero: { eyebrow?: string | null; heading: string; lede?: string | null };
   sectionHeading?: string | null;
   closingCta: { heading: string; closingLine?: string | null; buttonLabel?: string | null };
+  mobileOverrides: Record<string, unknown>;
 };
 
 /** Saves the Team page's own Global fields — same shape as every other

@@ -4,6 +4,7 @@ import type { Home } from "@/payload/payload-types";
 import { HomeVisualEditorClient } from "./HomeVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial + drag-reorderable alternative to the Home page's normal edit
@@ -39,6 +40,7 @@ export async function HomeVisualEditorView(props: AdminViewProps) {
         initialData={home as Home}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={getSiteUrl()}
       />
     </VisualEditorShell>
   );

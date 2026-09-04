@@ -4,14 +4,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuestionsFoundersAskPage } from "@/payload/payload-types";
 import { saveFaqItems, saveQuestionsPage } from "./questionsVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -22,12 +24,14 @@ type Props = {
   initialFaqItems: FaqEntry[];
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
-export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colors, mediaLibrary }: Props) {
+export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const onMutate = () => setStatus({ kind: "idle" });
   const { data, set, dirty, setDirty } = useCloneState<QuestionsFoundersAskPage>(initialData, onMutate);
@@ -36,8 +40,11 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
     onMutate,
   );
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
 
-  const overallDirty = dirty || faqDirty;
+  const overallDirty = dirty || faqDirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -48,6 +55,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
         atmospherePhotos: (data.atmospherePhotos ?? [])
           .map((p) => ({ image: typeof p.image === "object" ? p.image?.id : p.image }))
           .filter((p): p is { image: number } => typeof p.image === "number"),
+        mobileOverrides: overrides,
       });
       if (!pageResult.ok) throw new Error(pageResult.error);
 
@@ -58,8 +66,10 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
 
       setDirty(false);
       setFaqDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -194,6 +204,8 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -210,17 +222,25 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="Questions Founders Ask"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
@@ -245,44 +265,55 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
 
           <span style={sectionLabel}>3 · Questions</span>
           <div style={{ display: "grid", gap: 14 }}>
-            {faqItems.map((f, i) => (
-              <div
-                key={f.id ?? `new-${i}`}
-                {...dragHandlers(i)}
-                style={{
-                  display: "grid",
-                  gap: 6,
-                  background: "rgba(255,255,255,0.6)",
-                  border: dragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
-                  borderRadius: 8,
-                  padding: 14,
-                  cursor: "grab",
-                }}
-              >
-                <Field
-                  label={`Question ${i + 1}`}
-                  value={f.question}
-                  onChange={(v) => setFaqItems((d) => { d[i].question = v; })}
-                  style={type.question}
-                  multiline
-                />
-                <Field
-                  label={`Question ${i + 1} · answer`}
-                  value={f.answer}
-                  onChange={(v) => setFaqItems((d) => { d[i].answer = v; })}
-                  style={type.answer}
-                  multiline
-                />
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                  <span style={{ fontSize: 11, color: "rgba(36,30,28,0.4)", cursor: "grab" }} title="Drag to reorder">
-                    ⠿ Drag to reorder
-                  </span>
-                  <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
-                    Remove
-                  </button>
+            {faqItems.map((f, i) => {
+              const faqKey = f.id ?? `new-${i}`;
+              return (
+                <div
+                  key={faqKey}
+                  {...dragHandlers(i)}
+                  style={{
+                    display: "grid",
+                    gap: 6,
+                    background: "rgba(255,255,255,0.6)",
+                    border: dragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
+                    borderRadius: 8,
+                    padding: 14,
+                    cursor: "grab",
+                  }}
+                >
+                  <ResponsiveField
+                    label={`Question ${i + 1}`}
+                    value={f.question}
+                    onChange={(v) => setFaqItems((d) => { d[i].question = v; })}
+                    path={`faq.${faqKey}.question`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
+                    style={type.question}
+                    multiline
+                  />
+                  <ResponsiveField
+                    label={`Question ${i + 1} · answer`}
+                    value={f.answer}
+                    onChange={(v) => setFaqItems((d) => { d[i].answer = v; })}
+                    path={`faq.${faqKey}.answer`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
+                    style={type.answer}
+                    multiline
+                  />
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+                    <span style={{ fontSize: 11, color: "rgba(36,30,28,0.4)", cursor: "grab" }} title="Drag to reorder">
+                      ⠿ Drag to reorder
+                    </span>
+                    <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
+                      Remove
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <button
             type="button"

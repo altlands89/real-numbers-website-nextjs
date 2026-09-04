@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 
@@ -11,14 +12,14 @@ const AREA_META = [
   { icon: "/icons/bizperf.svg", href: "/our-expertise" },
 ];
 
-type Area = { title: string; text: string };
+type Area = { id?: number | string | null; title: ReactNode; text: ReactNode };
 
 export default function AudienceV2({
   heading,
   areas,
   backdropPhotoUrl,
 }: {
-  heading: string;
+  heading: ReactNode;
   areas: Area[];
   backdropPhotoUrl?: string;
 }) {
@@ -45,12 +46,7 @@ export default function AudienceV2({
       </div>
       <div className="wrap">
         <h2 data-reveal className="reveal-heading">
-          {heading.split("\n").map((line, i, arr) => (
-            <span key={i}>
-              {line}
-              {i < arr.length - 1 && <br />}
-            </span>
-          ))}
+          {heading}
         </h2>
         <div className="v2-audience-grid">
           {areas.map((a, i) => {
@@ -59,7 +55,7 @@ export default function AudienceV2({
               <a
                 href={meta.href}
                 className="v2-audience-card"
-                key={a.title}
+                key={a.id ?? i}
                 data-reveal
                 style={{ transitionDelay: `${i * 80}ms` }}
               >

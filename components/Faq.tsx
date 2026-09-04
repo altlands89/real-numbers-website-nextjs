@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
-type FaqItem = { question: string; answer: string };
+type FaqItem = { id?: number | string; question: ReactNode; answer: ReactNode };
 
 export default function Faq({ items }: { items: FaqItem[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -12,7 +12,7 @@ export default function Faq({ items }: { items: FaqItem[] }) {
       {items.map((item, i) => {
         const open = openIndex === i;
         return (
-          <div className={`faq-item${open ? " open" : ""}`} key={item.question}>
+          <div className={`faq-item${open ? " open" : ""}`} key={item.id ?? i}>
             <button
               className="faq-question"
               aria-expanded={open}

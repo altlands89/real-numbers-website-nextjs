@@ -3,13 +3,18 @@
 import { headers as nextHeaders } from "next/headers";
 import { getCMS } from "@/lib/payload";
 
+// Array items carry their own `id` back so Payload updates the existing DB
+// row instead of deleting and recreating it — without this, ids churn on
+// every save, which would silently orphan any per-item mobileOverrides key
+// (see visual-editor/ResponsiveField.tsx) using the old id.
 export type UseCasesEditorPayload = {
   hero: { eyebrow?: string | null; heading: string; lede?: string | null };
   atmospherePhotos: { image: number }[];
   atmospherePhotoCaption?: string | null;
   situationsIntro?: string | null;
-  situations: { question: string; answer: string }[];
+  situations: { id?: string | null; question: string; answer: string }[];
   closingCta: { heading: string; buttonLabel?: string | null };
+  mobileOverrides: Record<string, unknown>;
 };
 
 /**

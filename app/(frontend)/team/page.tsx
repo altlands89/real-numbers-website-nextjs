@@ -5,6 +5,7 @@ import FooterV2 from "@/components/FooterV2";
 import AbstractPanel from "@/components/AbstractPanel";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -30,6 +31,7 @@ export default async function TeamPage() {
     payload.findGlobal({ slug: "team-page" }),
     payload.find({ collection: "team-members", sort: "order", limit: 100 }),
   ]);
+  const mo = page.mobileOverrides;
 
   return (
     <>
@@ -52,11 +54,15 @@ export default async function TeamPage() {
         />
         <HeroGlow />
         <div className="wrap">
-          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <span className="eyebrow">
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+          </span>
           <h1 data-reveal className="reveal-heading">
-            {page.hero.heading}
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
           </h1>
-          <p className="lede">{page.hero.lede}</p>
+          <p className="lede">
+            <ResponsiveText desktop={page.hero.lede ?? ""} mobile={getOverride(mo, "hero.lede")} />
+          </p>
         </div>
       </section>
 
@@ -68,7 +74,9 @@ export default async function TeamPage() {
         />
         <div className="wrap">
           <div className="prose-block" style={{ marginTop: 0, borderTop: "none", paddingTop: 0 }}>
-            <h2 data-reveal className="reveal-heading">{page.sectionHeading}</h2>
+            <h2 data-reveal className="reveal-heading">
+              <ResponsiveText desktop={page.sectionHeading ?? ""} mobile={getOverride(mo, "sectionHeading")} />
+            </h2>
             <div className="team-grid">
               {roster.docs.map((p, i) => {
                 const photo = p.photo && typeof p.photo === "object" ? p.photo : null;
@@ -99,12 +107,18 @@ export default async function TeamPage() {
                       )}
                     </div>
                     <div className="team-body">
-                      <h3>{p.name}</h3>
-                      <span className="role">{p.role}</span>
-                      <p>{p.bio}</p>
+                      <h3>
+                        <ResponsiveText desktop={p.name} mobile={getOverride(mo, `roster.${p.id}.name`)} />
+                      </h3>
+                      <span className="role">
+                        <ResponsiveText desktop={p.role} mobile={getOverride(mo, `roster.${p.id}.role`)} />
+                      </span>
+                      <p>
+                        <ResponsiveText desktop={p.bio} mobile={getOverride(mo, `roster.${p.id}.bio`)} />
+                      </p>
                       {p.education && (
                         <p style={{ marginTop: 8, fontWeight: 600, opacity: 0.85 }}>
-                          {p.education}
+                          <ResponsiveText desktop={p.education} mobile={getOverride(mo, `roster.${p.id}.education`)} />
                         </p>
                       )}
                     </div>
@@ -120,12 +134,16 @@ export default async function TeamPage() {
         <div className="wrap">
           <AbstractPanel src="/img/abstract/wide-13.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
-            <h2>{page.closingCta.heading}</h2>
-            <p className="closing-line">{page.closingCta.closingLine}</p>
+            <h2>
+              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} />
+            </h2>
+            <p className="closing-line">
+              <ResponsiveText desktop={page.closingCta.closingLine ?? ""} mobile={getOverride(mo, "closingCta.closingLine")} />
+            </p>
           </div>
           <div className="final-cta-action">
             <a href="/contact" className="btn btn-primary">
-              {page.closingCta.buttonLabel}
+              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} />
             </a>
           </div>
         </div>

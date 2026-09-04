@@ -4,23 +4,33 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ContactPage } from "@/payload/payload-types";
 import { saveContactPage } from "./contactVisualEditorActions";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { Field } from "./visual-editor/Field";
 import { useCloneState } from "./visual-editor/useCloneState";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style, cardH3Style, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 
 type Props = {
   initialData: ContactPage;
   colors: BrandColors;
+  pageUrl: string;
 };
 
-export function ContactVisualEditorClient({ initialData, colors }: Props) {
+export function ContactVisualEditorClient({ initialData, colors, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const { data, set, dirty, setDirty } = useCloneState<ContactPage>(initialData, () => setStatus({ kind: "idle" }));
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
+
+  const overallDirty = dirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -34,11 +44,14 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
           email: data.directContact?.email ?? "",
         },
         manifesto: { heading: data.manifesto?.heading ?? "", text: data.manifesto?.text ?? "" },
+        mobileOverrides: overrides,
       });
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -93,19 +106,19 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
           <button
             type="button"
             onClick={save}
-            disabled={saving || !dirty}
+            disabled={saving || !overallDirty}
             style={{
               padding: "9px 18px",
               borderRadius: "var(--style-radius-m, 8px)",
               border: "none",
-              background: dirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
-              color: dirty ? "#fff" : "var(--theme-elevation-500)",
+              background: overallDirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
+              color: overallDirty ? "#fff" : "var(--theme-elevation-500)",
               fontWeight: 600,
               fontSize: 13,
-              cursor: dirty && !saving ? "pointer" : "default",
+              cursor: overallDirty && !saving ? "pointer" : "default",
             }}
           >
-            {saving ? "Publishing…" : dirty ? "Publish changes" : "No changes"}
+            {saving ? "Publishing…" : overallDirty ? "Publish changes" : "No changes"}
           </button>
         </div>
       </div>
@@ -154,6 +167,8 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -170,17 +185,25 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="Contact"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
@@ -207,13 +230,22 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
               nothing here to edit. Only the direct-contact details on the right are.
             </div>
             <div style={{ display: "grid", gap: 8 }}>
-              <Field
+              <ResponsiveField
                 label="Direct contact — heading"
                 value={data.directContact?.label ?? ""}
                 onChange={(v) => set((d) => { d.directContact = { ...d.directContact, label: v }; })}
+                path="directContact.label"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.directLabel}
                 placeholder="Prefer a direct conversation?"
               />
+              {/* Plain Field, not ResponsiveField — this is the actual phone
+                  number/email used for the WhatsApp deep link and mailto:,
+                  not display copy, so a "different on mobile" override
+                  doesn't make sense here (and could point mobile visitors
+                  at a broken contact). */}
               <Field
                 label="WhatsApp number (digits + country code, e.g. 972501234567)"
                 value={data.directContact?.whatsappNumber ?? ""}
@@ -235,17 +267,25 @@ export function ContactVisualEditorClient({ initialData, colors }: Props) {
           <div style={block}>
             <span style={sectionLabel}>3 · Closing statement</span>
             <div style={{ display: "grid", gap: 8, maxWidth: 620 }}>
-              <Field
+              <ResponsiveField
                 label="Statement"
                 value={data.manifesto?.heading ?? ""}
                 onChange={(v) => set((d) => { d.manifesto = { ...d.manifesto, heading: v }; })}
+                path="manifesto.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.h3}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Supporting text"
                 value={data.manifesto?.text ?? ""}
                 onChange={(v) => set((d) => { d.manifesto = { ...d.manifesto, text: v }; })}
+                path="manifesto.text"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.body}
                 multiline
               />

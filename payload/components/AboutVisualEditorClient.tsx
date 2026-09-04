@@ -53,7 +53,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
         },
         ourStory: {
           heading: data.ourStory?.heading ?? "",
-          paragraphs: (data.ourStory?.paragraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          paragraphs: (data.ourStory?.paragraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
           photos: (data.ourStory?.photos ?? [])
             .map((p) => ({ image: typeof p.image === "object" ? p.image?.id : p.image }))
             .filter((p): p is { image: number } => typeof p.image === "number"),
@@ -62,15 +62,15 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
         whatWeBelieve: {
           heading: data.whatWeBelieve?.heading ?? "",
           intro: data.whatWeBelieve?.intro ?? "",
-          principles: (data.whatWeBelieve?.principles ?? []).map((p) => ({ lead: p.lead ?? "", text: p.text ?? "" })),
+          principles: (data.whatWeBelieve?.principles ?? []).map((p) => ({ id: p.id, lead: p.lead ?? "", text: p.text ?? "" })),
         },
         howWeWork: {
           heading: data.howWeWork?.heading ?? "",
-          paragraphs: (data.howWeWork?.paragraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          paragraphs: (data.howWeWork?.paragraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
         },
         leadership: {
           heading: data.leadership?.heading ?? "",
-          cards: (data.leadership?.cards ?? []).map((c) => ({ name: c.name ?? "", role: c.role ?? "", bio: c.bio ?? "" })),
+          cards: (data.leadership?.cards ?? []).map((c) => ({ id: c.id, name: c.name ?? "", role: c.role ?? "", bio: c.bio ?? "" })),
           note: data.leadership?.note ?? "",
           teamLinkLabel: data.leadership?.teamLinkLabel ?? "",
         },
@@ -281,7 +281,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                   label={`Paragraph ${i + 1}`}
                   value={p.text ?? ""}
                   onChange={(v) => set((d) => { d.ourStory!.paragraphs![i].text = v; })}
-                  path={`ourStory.paragraphs.${i}.text`}
+                  path={`ourStory.paragraphs.${p.id ?? i}.text`}
                   overrides={overrides}
                   setOverride={setOverride}
                   clearOverride={clearOverride}
@@ -360,7 +360,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                     label={`Principle ${i + 1} · title`}
                     value={p.lead ?? ""}
                     onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].lead = v; })}
-                    path={`whatWeBelieve.principles.${i}.lead`}
+                    path={`whatWeBelieve.principles.${p.id ?? i}.lead`}
                     overrides={overrides}
                     setOverride={setOverride}
                     clearOverride={clearOverride}
@@ -370,7 +370,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                     label={`Principle ${i + 1} · text`}
                     value={p.text ?? ""}
                     onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].text = v; })}
-                    path={`whatWeBelieve.principles.${i}.text`}
+                    path={`whatWeBelieve.principles.${p.id ?? i}.text`}
                     overrides={overrides}
                     setOverride={setOverride}
                     clearOverride={clearOverride}
@@ -413,7 +413,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                   label={`Paragraph ${i + 1}`}
                   value={p.text ?? ""}
                   onChange={(v) => set((d) => { d.howWeWork!.paragraphs![i].text = v; })}
-                  path={`howWeWork.paragraphs.${i}.text`}
+                  path={`howWeWork.paragraphs.${p.id ?? i}.text`}
                   overrides={overrides}
                   setOverride={setOverride}
                   clearOverride={clearOverride}
@@ -465,7 +465,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                     label={`Person ${i + 1} · name`}
                     value={c.name ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].name = v; })}
-                    path={`leadership.cards.${i}.name`}
+                    path={`leadership.cards.${c.id ?? i}.name`}
                     overrides={overrides}
                     setOverride={setOverride}
                     clearOverride={clearOverride}
@@ -475,7 +475,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                     label={`Person ${i + 1} · job title`}
                     value={c.role ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].role = v; })}
-                    path={`leadership.cards.${i}.role`}
+                    path={`leadership.cards.${c.id ?? i}.role`}
                     overrides={overrides}
                     setOverride={setOverride}
                     clearOverride={clearOverride}
@@ -485,7 +485,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
                     label={`Person ${i + 1} · bio`}
                     value={c.bio ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].bio = v; })}
-                    path={`leadership.cards.${i}.bio`}
+                    path={`leadership.cards.${c.id ?? i}.bio`}
                     overrides={overrides}
                     setOverride={setOverride}
                     clearOverride={clearOverride}

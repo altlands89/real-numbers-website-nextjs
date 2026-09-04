@@ -4,6 +4,7 @@ import type { UseCasesPage } from "@/payload/payload-types";
 import { UseCasesVisualEditorClient } from "./UseCasesVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Spatial alternative to the Use Cases page's normal edit form — same
@@ -27,6 +28,7 @@ export async function UseCasesVisualEditorView(props: AdminViewProps) {
         initialData={page as UseCasesPage}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/use-cases`}
       />
     </VisualEditorShell>
   );

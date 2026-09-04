@@ -6,6 +6,7 @@ import { getCMS } from "@/lib/payload";
 export type QuestionsPageEditorPayload = {
   hero: { eyebrow?: string | null; heading: string };
   atmospherePhotos: { image: number }[];
+  mobileOverrides: Record<string, unknown>;
 };
 
 /** Saves the Questions Founders Ask page's own Global fields — same shape

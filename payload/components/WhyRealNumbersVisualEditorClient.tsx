@@ -4,15 +4,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WhyRealNumbersPage } from "@/payload/payload-types";
 import { saveWhyRealNumbersPage } from "./whyRealNumbersVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style, cardH3Style, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -20,12 +22,14 @@ type Props = {
   initialData: WhyRealNumbersPage;
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
-export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLibrary }: Props) {
+export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const { data, set, dirty, setDirty } = useCloneState<WhyRealNumbersPage>(initialData, () =>
     setStatus({ kind: "idle" }),
@@ -39,6 +43,11 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
       list.splice(to, 0, item);
     }),
   );
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
+
+  const overallDirty = dirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -48,20 +57,21 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
         hero: {
           eyebrow: data.hero?.eyebrow ?? "",
           heading: data.hero?.heading ?? "",
-          ledeParagraphs: (data.hero?.ledeParagraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          ledeParagraphs: (data.hero?.ledeParagraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
         },
         whyChooseUs: {
           heading: data.whyChooseUs?.heading ?? "",
-          paragraphs: (data.whyChooseUs?.paragraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          paragraphs: (data.whyChooseUs?.paragraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
         },
         valueProps: (data.valueProps ?? []).map((v) => ({
+          id: v.id,
           title: v.title ?? "",
           paragraph1: v.paragraph1 ?? "",
           paragraph2: v.paragraph2 ?? "",
         })),
         whatMakesDifferent: {
           heading: data.whatMakesDifferent?.heading ?? "",
-          paragraphs: (data.whatMakesDifferent?.paragraphs ?? []).map((p) => ({ text: p.text ?? "" })),
+          paragraphs: (data.whatMakesDifferent?.paragraphs ?? []).map((p) => ({ id: p.id, text: p.text ?? "" })),
           photos: (data.whatMakesDifferent?.photos ?? [])
             .map((p) => ({ image: typeof p.image === "object" ? p.image?.id : p.image }))
             .filter((p): p is { image: number } => typeof p.image === "number"),
@@ -71,11 +81,14 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
           closingLine: data.closingCta?.closingLine ?? "",
           buttonLabel: data.closingCta?.buttonLabel ?? "",
         },
+        mobileOverrides: overrides,
       });
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -135,19 +148,19 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
           <button
             type="button"
             onClick={save}
-            disabled={saving || !dirty}
+            disabled={saving || !overallDirty}
             style={{
               padding: "9px 18px",
               borderRadius: "var(--style-radius-m, 8px)",
               border: "none",
-              background: dirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
-              color: dirty ? "#fff" : "var(--theme-elevation-500)",
+              background: overallDirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
+              color: overallDirty ? "#fff" : "var(--theme-elevation-500)",
               fontWeight: 600,
               fontSize: 13,
-              cursor: dirty && !saving ? "pointer" : "default",
+              cursor: overallDirty && !saving ? "pointer" : "default",
             }}
           >
-            {saving ? "Publishing…" : dirty ? "Publish changes" : "No changes"}
+            {saving ? "Publishing…" : overallDirty ? "Publish changes" : "No changes"}
           </button>
         </div>
       </div>
@@ -196,6 +209,8 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -212,26 +227,38 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="Why Real Numbers"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
             {(data.hero?.ledeParagraphs ?? []).map((p, i) => (
-              <Field
+              <ResponsiveField
                 key={p.id ?? i}
                 label={`Intro paragraph ${i + 1}`}
                 value={p.text ?? ""}
                 onChange={(v) => set((d) => { d.hero.ledeParagraphs![i].text = v; })}
+                path={`hero.ledeParagraphs.${p.id ?? i}.text`}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.lede}
                 multiline
               />
@@ -256,18 +283,26 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
           {/* Section 2 — Why Choose Us */}
           <span style={sectionLabel}>2 · Why choose us</span>
           <div style={{ display: "grid", gap: 10, maxWidth: 620 }}>
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.whyChooseUs?.heading ?? ""}
               onChange={(v) => set((d) => { d.whyChooseUs = { ...d.whyChooseUs, heading: v }; })}
+              path="whyChooseUs.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h2}
             />
             {(data.whyChooseUs?.paragraphs ?? []).map((p, i) => (
-              <Field
+              <ResponsiveField
                 key={p.id ?? i}
                 label={`Paragraph ${i + 1}`}
                 value={p.text ?? ""}
                 onChange={(v) => set((d) => { d.whyChooseUs!.paragraphs![i].text = v; })}
+                path={`whyChooseUs.paragraphs.${p.id ?? i}.text`}
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.body}
                 multiline
               />
@@ -303,23 +338,35 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
                     cursor: "grab",
                   }}
                 >
-                  <Field
+                  <ResponsiveField
                     label={`Card ${i + 1} · title`}
                     value={v.title ?? ""}
                     onChange={(val) => set((d) => { d.valueProps![i].title = val; })}
+                    path={`valueProps.${v.id ?? i}.title`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.cardTitle}
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Card ${i + 1} · first paragraph`}
                     value={v.paragraph1 ?? ""}
                     onChange={(val) => set((d) => { d.valueProps![i].paragraph1 = val; })}
+                    path={`valueProps.${v.id ?? i}.paragraph1`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.body}
                     multiline
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Card ${i + 1} · second paragraph`}
                     value={v.paragraph2 ?? ""}
                     onChange={(val) => set((d) => { d.valueProps![i].paragraph2 = val; })}
+                    path={`valueProps.${v.id ?? i}.paragraph2`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.body}
                     multiline
                   />
@@ -350,18 +397,26 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
             <span style={sectionLabel}>4 · What makes us different</span>
             <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 26, alignItems: "start" }}>
               <div style={{ display: "grid", gap: 10 }}>
-                <Field
+                <ResponsiveField
                   label="Heading"
                   value={data.whatMakesDifferent?.heading ?? ""}
                   onChange={(v) => set((d) => { d.whatMakesDifferent = { ...d.whatMakesDifferent, heading: v }; })}
+                  path="whatMakesDifferent.heading"
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={type.h2}
                 />
                 {(data.whatMakesDifferent?.paragraphs ?? []).map((p, i) => (
-                  <Field
+                  <ResponsiveField
                     key={p.id ?? i}
                     label={`Paragraph ${i + 1}`}
                     value={p.text ?? ""}
                     onChange={(v) => set((d) => { d.whatMakesDifferent!.paragraphs![i].text = v; })}
+                    path={`whatMakesDifferent.paragraphs.${p.id ?? i}.text`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.body}
                     multiline
                   />
@@ -395,24 +450,36 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
           <div style={{ ...block, background: colors.black, margin: "26px -34px -40px", padding: "34px" }}>
             <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>5 · Closing banner</span>
             <div style={{ display: "grid", gap: 10, maxWidth: 560 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.closingCta?.heading ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, heading: v }; })}
+                path="closingCta.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingH2}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Supporting line"
                 value={data.closingCta?.closingLine ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, closingLine: v }; })}
+                path="closingCta.closingLine"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.closingLine}
                 multiline
               />
-              <Field
+              <ResponsiveField
                 label="Button text"
                 value={data.closingCta?.buttonLabel ?? ""}
                 onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, buttonLabel: v }; })}
+                path="closingCta.buttonLabel"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={{ ...type.button, background: colors.red, display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content" }}
               />
             </div>

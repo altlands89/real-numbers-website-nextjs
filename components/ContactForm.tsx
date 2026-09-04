@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, ReactNode } from "react";
 
 type Props = {
-  directContactLabel?: string;
+  directContactLabel?: ReactNode;
   whatsappNumber?: string;
   email?: string;
 };
