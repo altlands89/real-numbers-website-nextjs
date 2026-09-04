@@ -17,6 +17,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { scaledH2Style, homeHeroHeadlineStyle, bodyTextStyle } from "./visual-editor/typeScale";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -104,14 +105,28 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
     });
   };
 
+  // Each Home section scales the shared h2 by its own real multiplier
+  // (.v2-difference ×1.45, .v2-stats/.v2-audience ×1.17, .v2-cta-dark ×0.94
+  // — see CLAUDE.md's Stage 1 note / typeScale.ts), so unlike every other
+  // page's editor this one can't use one flat "heading" style for every
+  // block — each block gets its own real-sized heading below.
   const type = {
-    label: { fontSize: 12, fontWeight: 700, color: colors.black },
-    heading: { fontSize: 17, fontWeight: 700, lineHeight: 1.15, color: colors.blue },
-    headingLight: { fontSize: 17, fontWeight: 700, lineHeight: 1.15, color: colors.offwhite },
-    body: { fontSize: 12, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
-    bodyLight: { fontSize: 12, lineHeight: 1.6, color: colors.offwhite, opacity: 0.85 },
-    small: { fontSize: 11, color: colors.blue, fontWeight: 600 },
-    smallLight: { fontSize: 11, color: colors.offwhite, opacity: 0.75, fontWeight: 600 },
+    label: { fontSize: 14, fontWeight: 700, color: colors.black },
+    heading: scaledH2Style(colors, 1),
+    headingLight: scaledH2Style(colors, 1, true),
+    heroRotatingWord: homeHeroHeadlineStyle(colors),
+    // .v2-photo-feature-overlay h2 is an uncapped 8vw in the real CSS (no
+    // clamp — a known "orphan" size, not one of the shared multipliers) —
+    // approximated here against the shared h2 scale instead of raw vw, so
+    // it stays stable inside the editor's fixed-width canvas.
+    featuredPhotoHeading: scaledH2Style(colors, 1.3, true),
+    diffHeading: scaledH2Style(colors, 1.45),
+    ctaHeading: scaledH2Style(colors, 0.94, true),
+    audienceHeading: scaledH2Style(colors, 1.17, true),
+    body: bodyTextStyle(colors),
+    bodyLight: { fontSize: 16, lineHeight: 1.6, color: colors.offwhite, opacity: 0.85 },
+    small: { fontSize: 13, color: colors.blue, fontWeight: 600 },
+    smallLight: { fontSize: 13, color: colors.offwhite, opacity: 0.75, fontWeight: 600 },
   };
 
   const sectionLabel: React.CSSProperties = {
@@ -146,7 +161,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
   });
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>
@@ -292,7 +307,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                               label={`Rotating word ${wi + 1}`}
                               value={w.word ?? ""}
                               onChange={(v) => set((d) => { ((d.sections![i] as HeroBlock).rotatingWords![wi].word) = v; })}
-                              style={type.headingLight}
+                              style={type.heroRotatingWord}
                             />
                           ))}
                         </div>
@@ -328,7 +343,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                             label="Featured photo · heading"
                             value={s.featuredPhoto?.heading ?? ""}
                             onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.featuredPhoto = { ...hb.featuredPhoto, heading: v }; })}
-                            style={type.headingLight}
+                            style={type.featuredPhotoHeading}
                           />
                           <Field
                             label="Featured photo · button text"
@@ -362,7 +377,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                     label="Heading"
                     value={(section as DifferenceBlock).heading ?? ""}
                     onChange={(v) => set((d) => { (d.sections![i] as DifferenceBlock).heading = v; })}
-                    style={type.heading}
+                    style={type.diffHeading}
                     multiline
                   />
                 )}
@@ -387,7 +402,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                       label="Heading"
                       value={(section as CtaDarkBlock).heading ?? ""}
                       onChange={(v) => set((d) => { (d.sections![i] as CtaDarkBlock).heading = v; })}
-                      style={type.headingLight}
+                      style={type.ctaHeading}
                       multiline
                     />
                     <Field
@@ -407,7 +422,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary }: Pr
                         label="Heading"
                         value={s.heading ?? ""}
                         onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).heading = v; })}
-                        style={type.headingLight}
+                        style={type.audienceHeading}
                         multiline
                       />
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>

@@ -10,6 +10,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style, bodyTextStyle } from "./visual-editor/typeScale";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -81,14 +82,14 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
   const type = {
-    eyebrow: { fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: colors.clay },
-    h1: { fontSize: 30, fontWeight: 800, lineHeight: 1.02, letterSpacing: "-0.03em", color: colors.offwhite },
-    lede: { fontSize: 13, lineHeight: 1.5, color: colors.offwhite, opacity: 0.85 },
-    h2: { fontSize: 19, fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: colors.blue },
-    body: { fontSize: 12, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
-    lead: { fontSize: 12.5, fontWeight: 700, color: colors.black },
-    name: { fontSize: 14, fontWeight: 700, color: colors.blue },
-    role: { fontSize: 9.5, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: colors.red },
+    eyebrow: eyebrowStyle(colors),
+    h1: pageHeroH1Style(colors),
+    lede: pageHeroLedeStyle(),
+    h2: sectionH2Style(colors),
+    body: bodyTextStyle(colors),
+    lead: { fontSize: "16.8px", fontWeight: 700, color: colors.black },
+    name: { fontSize: "18.4px", fontWeight: 700, color: colors.blue },
+    role: { fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: colors.red },
   };
 
   const sectionLabel: React.CSSProperties = {
@@ -109,7 +110,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>

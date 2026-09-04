@@ -11,6 +11,7 @@ import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style } from "./visual-editor/typeScale";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -75,14 +76,14 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary }
   // Same page-hero / prose-section type scale as About, Why Real Numbers
   // and Our Expertise.
   const type = {
-    eyebrow: { fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: colors.clay },
-    h1: { fontSize: 30, fontWeight: 800, lineHeight: 1.02, letterSpacing: "-0.03em", color: colors.offwhite },
-    lede: { fontSize: 13, lineHeight: 1.5, color: colors.offwhite, opacity: 0.85 },
-    intro: { fontSize: 13, fontWeight: 700, color: colors.black, opacity: 0.85 },
-    question: { fontSize: 13.5, fontWeight: 700, fontStyle: "italic" as const, color: colors.blue },
-    answer: { fontSize: 12, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
-    closingH2: { fontSize: 19, fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: colors.offwhite },
-    button: { fontSize: 12, fontWeight: 700, color: colors.offwhite },
+    eyebrow: eyebrowStyle(colors),
+    h1: pageHeroH1Style(colors),
+    lede: pageHeroLedeStyle(),
+    intro: { fontSize: "16.8px", fontWeight: 700, color: colors.black, opacity: 0.85 },
+    question: { fontSize: "17.6px", fontWeight: 700, fontStyle: "italic" as const, color: colors.blue },
+    answer: { fontSize: 14, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
+    closingH2: sectionH2Style(colors, true),
+    button: { fontSize: 13, fontWeight: 700, color: colors.offwhite },
   };
 
   const sectionLabel: React.CSSProperties = {
@@ -103,7 +104,7 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary }
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>

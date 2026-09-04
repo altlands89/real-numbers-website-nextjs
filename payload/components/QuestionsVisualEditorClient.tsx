@@ -10,6 +10,7 @@ import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
+import { eyebrowStyle, pageHeroH1Style } from "./visual-editor/typeScale";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -81,10 +82,10 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
   const { dragHandlers, dragOverIndex } = useDragReorder(reorderFaqItems);
 
   const type = {
-    eyebrow: { fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: colors.clay },
-    h1: { fontSize: 30, fontWeight: 800, lineHeight: 1.02, letterSpacing: "-0.03em", color: colors.offwhite },
-    question: { fontSize: 13.5, fontWeight: 700, color: colors.blue },
-    answer: { fontSize: 12, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
+    eyebrow: eyebrowStyle(colors),
+    h1: pageHeroH1Style(colors),
+    question: { fontSize: "17.6px", fontWeight: 700, color: colors.blue },
+    answer: { fontSize: 14, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
   };
 
   const sectionLabel: React.CSSProperties = {
@@ -112,7 +113,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px 80px" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 80px" }}>
       <style>{`
         .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
       `}</style>
