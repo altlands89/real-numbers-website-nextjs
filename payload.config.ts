@@ -112,6 +112,11 @@ export default buildConfig({
           path: "/visual-editor/questions",
           meta: { title: "Questions Founders Ask — Visual Editor" },
         },
+        contactVisualEditor: {
+          Component: "@/payload/components/ContactVisualEditorView#ContactVisualEditorView",
+          path: "/visual-editor/contact",
+          meta: { title: "Contact — Visual Editor" },
+        },
       },
     },
     livePreview: {
