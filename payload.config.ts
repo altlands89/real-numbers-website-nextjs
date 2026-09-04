@@ -102,6 +102,11 @@ export default buildConfig({
           path: "/visual-editor/use-cases",
           meta: { title: "Use Cases — Visual Editor" },
         },
+        teamVisualEditor: {
+          Component: "@/payload/components/TeamVisualEditorView#TeamVisualEditorView",
+          path: "/visual-editor/team",
+          meta: { title: "Team — Visual Editor" },
+        },
       },
     },
     livePreview: {

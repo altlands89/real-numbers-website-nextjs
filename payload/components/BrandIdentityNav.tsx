@@ -10,6 +10,7 @@ const VISUAL_EDITOR_LINKS: { href: string; label: string; icon: string }[] = [
   { href: "/admin/visual-editor/why-real-numbers", label: "Why Real Numbers", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
   { href: "/admin/visual-editor/our-expertise", label: "Our Expertise", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
   { href: "/admin/visual-editor/use-cases", label: "Use Cases", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
+  { href: "/admin/visual-editor/team", label: "Team", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
 ];
 
 export function BrandIdentityNav() {

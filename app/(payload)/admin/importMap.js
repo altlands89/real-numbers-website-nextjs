@@ -12,6 +12,7 @@ import { AboutVisualEditorView as AboutVisualEditorView_16045fbc452172628d113612
 import { WhyRealNumbersVisualEditorView as WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e } from '@/payload/components/WhyRealNumbersVisualEditorView'
 import { OurExpertiseVisualEditorView as OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41 } from '@/payload/components/OurExpertiseVisualEditorView'
 import { UseCasesVisualEditorView as UseCasesVisualEditorView_5c892cfba09d5b55a6419038af9ac98d } from '@/payload/components/UseCasesVisualEditorView'
+import { TeamVisualEditorView as TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398 } from '@/payload/components/TeamVisualEditorView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -30,5 +31,6 @@ export const importMap = {
   "@/payload/components/WhyRealNumbersVisualEditorView#WhyRealNumbersVisualEditorView": WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e,
   "@/payload/components/OurExpertiseVisualEditorView#OurExpertiseVisualEditorView": OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41,
   "@/payload/components/UseCasesVisualEditorView#UseCasesVisualEditorView": UseCasesVisualEditorView_5c892cfba09d5b55a6419038af9ac98d,
+  "@/payload/components/TeamVisualEditorView#TeamVisualEditorView": TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
