@@ -39,13 +39,13 @@ export default async function UseCasesPage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path={"hero.eyebrow"} />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path={"hero.heading"} />
           </h1>
           <p className="lede">
-            <ResponsiveText desktop={page.hero.lede ?? ""} mobile={getOverride(mo, "hero.lede")} />
+            <ResponsiveText desktop={page.hero.lede ?? ""} mobile={getOverride(mo, "hero.lede")} path={"hero.lede"} />
           </p>
         </div>
       </section>
@@ -63,13 +63,13 @@ export default async function UseCasesPage() {
             alt="A team working through a growth decision"
             caption={
               page.atmospherePhotoCaption ? (
-                <ResponsiveText desktop={page.atmospherePhotoCaption} mobile={getOverride(mo, "atmospherePhotoCaption")} />
+                <ResponsiveText desktop={page.atmospherePhotoCaption} mobile={getOverride(mo, "atmospherePhotoCaption")} path={"atmospherePhotoCaption"} />
               ) : undefined
             }
             style={{ marginTop: 0, marginBottom: "var(--space-600)" }}
           />
           <p style={{ fontWeight: 600, opacity: 0.85 }}>
-            <ResponsiveText desktop={page.situationsIntro ?? ""} mobile={getOverride(mo, "situationsIntro")} />
+            <ResponsiveText desktop={page.situationsIntro ?? ""} mobile={getOverride(mo, "situationsIntro")} path={"situationsIntro"} />
           </p>
           <div className="usecase-list">
             {(page.situations || []).map((s, i) => (
@@ -80,10 +80,10 @@ export default async function UseCasesPage() {
                 style={{ transitionDelay: `${Math.min(i, 5) * 70}ms` }}
               >
                 <p className="q">
-                  <ResponsiveText desktop={s.question} mobile={getOverride(mo, `situations.${s.id ?? i}.question`)} />
+                  <ResponsiveText desktop={s.question} mobile={getOverride(mo, `situations.${s.id ?? i}.question`)} path={`situations.${s.id ?? i}.question`} />
                 </p>
                 <p>
-                  <ResponsiveText desktop={s.answer} mobile={getOverride(mo, `situations.${s.id ?? i}.answer`)} />
+                  <ResponsiveText desktop={s.answer} mobile={getOverride(mo, `situations.${s.id ?? i}.answer`)} path={`situations.${s.id ?? i}.answer`} />
                 </p>
               </div>
             ))}
@@ -96,12 +96,12 @@ export default async function UseCasesPage() {
           <AbstractPanel src="/img/abstract/wide-7.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
             <h2>
-              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} />
+              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} path={"closingCta.heading"} />
             </h2>
           </div>
           <div className="final-cta-action">
             <a href="/contact" className="btn btn-primary">
-              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} />
+              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} path={"closingCta.buttonLabel"} />
             </a>
           </div>
         </div>

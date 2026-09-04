@@ -3,6 +3,7 @@ import { tasaOrbiter } from "./fonts";
 import ScrollReveal from "@/components/ScrollReveal";
 import Preloader from "@/components/Preloader";
 import { LivePreviewListener } from "@/components/LivePreviewListener";
+import EditorBridgeListener from "@/components/EditorBridgeListener";
 import { getCMS } from "@/lib/payload";
 import { buildRootMetadata } from "@/lib/site-metadata";
 import "./globals.css";
@@ -112,6 +113,7 @@ export default async function RootLayout({
       )}
       <body>
         <LivePreviewListener />
+        <EditorBridgeListener />
         <Preloader />
         {children}
         <ScrollReveal />

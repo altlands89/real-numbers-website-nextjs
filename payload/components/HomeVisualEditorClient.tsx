@@ -107,6 +107,16 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
+  // Editor bridge: a click inside the mobile-preview iframe (on the live
+  // rendered page) posts {path} back here — scroll the matching field in
+  // the canvas above into view and focus its input.
+  const handleFieldSelect = (path: string) => {
+    const el = document.getElementById(`rn-field-${path}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  };
+
   const reorder = (from: number, to: number) => {
     if (from === to) return;
     set((d) => {
@@ -239,7 +249,7 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
       {/* ---- The schematic canvas — one card per section, in page order ---- */}
       <DeviceFrame>

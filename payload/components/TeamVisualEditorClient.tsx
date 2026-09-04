@@ -102,6 +102,16 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
+  // Editor bridge: a click inside the mobile-preview iframe (on the live
+  // rendered page) posts {path} back here — scroll the matching field in
+  // the canvas above into view and focus its input.
+  const handleFieldSelect = (path: string) => {
+    const el = document.getElementById(`rn-field-${path}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  };
+
   const addMember = () =>
     setRoster((d) => {
       d.push({ id: null, name: "New team member", role: "", bio: "", education: "", photo: null });
@@ -254,7 +264,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>

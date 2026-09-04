@@ -94,6 +94,16 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
+  // Editor bridge: a click inside the mobile-preview iframe (on the live
+  // rendered page) posts {path} back here — scroll the matching field in
+  // the canvas above into view and focus its input.
+  const handleFieldSelect = (path: string) => {
+    const el = document.getElementById(`rn-field-${path}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  };
+
   const type = {
     eyebrow: eyebrowStyle(colors),
     h1: pageHeroH1Style(colors),
@@ -205,7 +215,7 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>

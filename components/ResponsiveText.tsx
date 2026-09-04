@@ -18,13 +18,35 @@ function renderLines(text: string) {
   ));
 }
 
-export function ResponsiveText({ desktop, mobile }: { desktop: string; mobile?: string }) {
-  if (!mobile) return <>{renderLines(desktop)}</>;
+export function ResponsiveText({
+  desktop,
+  mobile,
+  path,
+}: {
+  desktop: string;
+  mobile?: string;
+  // Optional editor-bridge hook (payload/components/EditorBridgeListener.tsx):
+  // when set, wraps the rendered text in a `data-field-path` span so a click
+  // on the live page/mobile-preview iframe can tell the visual editor which
+  // field it landed on. Omitted everywhere except pages wired up for the
+  // bridge — no `path` means no wrapper, byte-identical to before.
+  path?: string;
+}) {
+  if (!path) {
+    if (!mobile) return <>{renderLines(desktop)}</>;
+    return (
+      <>
+        <span className="rn-desktop-only">{renderLines(desktop)}</span>
+        <span className="rn-mobile-only">{renderLines(mobile)}</span>
+      </>
+    );
+  }
+  if (!mobile) return <span data-field-path={path}>{renderLines(desktop)}</span>;
   return (
-    <>
+    <span data-field-path={path}>
       <span className="rn-desktop-only">{renderLines(desktop)}</span>
       <span className="rn-mobile-only">{renderLines(mobile)}</span>
-    </>
+    </span>
   );
 }
 

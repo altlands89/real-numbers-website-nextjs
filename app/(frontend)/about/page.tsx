@@ -40,13 +40,13 @@ export default async function AboutPage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path="hero.eyebrow" />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path="hero.heading" />
           </h1>
           <p className="lede">
-            <ResponsiveText desktop={page.hero.lede} mobile={getOverride(mo, "hero.lede")} />
+            <ResponsiveText desktop={page.hero.lede} mobile={getOverride(mo, "hero.lede")} path="hero.lede" />
           </p>
         </div>
       </section>
@@ -56,13 +56,20 @@ export default async function AboutPage() {
           <div className="prose-block prose-block--story">
             <div className="prose-block-text">
               <h2 data-reveal className="reveal-heading">
-                <ResponsiveText desktop={page.ourStory?.heading ?? ""} mobile={getOverride(mo, "ourStory.heading")} />
+                <ResponsiveText
+                  desktop={page.ourStory?.heading ?? ""}
+                  mobile={getOverride(mo, "ourStory.heading")}
+                  path="ourStory.heading"
+                />
               </h2>
-              {(page.ourStory?.paragraphs || []).map((p, i) => (
-                <p key={i}>
-                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `ourStory.paragraphs.${p.id ?? i}.text`)} />
-                </p>
-              ))}
+              {(page.ourStory?.paragraphs || []).map((p, i) => {
+                const path = `ourStory.paragraphs.${p.id ?? i}.text`;
+                return (
+                  <p key={i}>
+                    <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, path)} path={path} />
+                  </p>
+                );
+              })}
             </div>
             <div className="prose-block-media">
               <AtmospherePhoto
@@ -71,7 +78,11 @@ export default async function AboutPage() {
                 alt="Inside a Real Numbers strategy session"
                 caption={
                   page.ourStory?.photoCaption ? (
-                    <ResponsiveText desktop={page.ourStory.photoCaption} mobile={getOverride(mo, "ourStory.photoCaption")} />
+                    <ResponsiveText
+                      desktop={page.ourStory.photoCaption}
+                      mobile={getOverride(mo, "ourStory.photoCaption")}
+                      path="ourStory.photoCaption"
+                    />
                   ) : undefined
                 }
               />
@@ -80,43 +91,62 @@ export default async function AboutPage() {
 
           <div className="prose-block">
             <h2>
-              <ResponsiveText desktop={page.whatWeBelieve?.heading ?? ""} mobile={getOverride(mo, "whatWeBelieve.heading")} />
+              <ResponsiveText
+                desktop={page.whatWeBelieve?.heading ?? ""}
+                mobile={getOverride(mo, "whatWeBelieve.heading")}
+                path="whatWeBelieve.heading"
+              />
             </h2>
             <p>
-              <ResponsiveText desktop={page.whatWeBelieve?.intro ?? ""} mobile={getOverride(mo, "whatWeBelieve.intro")} />
+              <ResponsiveText
+                desktop={page.whatWeBelieve?.intro ?? ""}
+                mobile={getOverride(mo, "whatWeBelieve.intro")}
+                path="whatWeBelieve.intro"
+              />
             </p>
             <div className="prose-mask-photo align-right">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/img/masked/masked-13.png" alt="" />
             </div>
             <div className="principles-list">
-              {(page.whatWeBelieve?.principles || []).map((p, i) => (
-                <div
-                  className="principle"
-                  key={p.lead}
-                  data-reveal
-                  style={{ transitionDelay: `${i * 80}ms` }}
-                >
-                  <strong>
-                    <ResponsiveText desktop={p.lead} mobile={getOverride(mo, `whatWeBelieve.principles.${p.id ?? i}.lead`)} />
-                  </strong>
-                  <p>
-                    <ResponsiveText desktop={p.text} mobile={getOverride(mo, `whatWeBelieve.principles.${p.id ?? i}.text`)} />
-                  </p>
-                </div>
-              ))}
+              {(page.whatWeBelieve?.principles || []).map((p, i) => {
+                const leadPath = `whatWeBelieve.principles.${p.id ?? i}.lead`;
+                const textPath = `whatWeBelieve.principles.${p.id ?? i}.text`;
+                return (
+                  <div
+                    className="principle"
+                    key={p.lead}
+                    data-reveal
+                    style={{ transitionDelay: `${i * 80}ms` }}
+                  >
+                    <strong>
+                      <ResponsiveText desktop={p.lead} mobile={getOverride(mo, leadPath)} path={leadPath} />
+                    </strong>
+                    <p>
+                      <ResponsiveText desktop={p.text} mobile={getOverride(mo, textPath)} path={textPath} />
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           <div className="prose-block">
             <h2>
-              <ResponsiveText desktop={page.howWeWork?.heading ?? ""} mobile={getOverride(mo, "howWeWork.heading")} />
+              <ResponsiveText
+                desktop={page.howWeWork?.heading ?? ""}
+                mobile={getOverride(mo, "howWeWork.heading")}
+                path="howWeWork.heading"
+              />
             </h2>
-            {(page.howWeWork?.paragraphs || []).map((p, i) => (
-              <p key={i}>
-                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `howWeWork.paragraphs.${p.id ?? i}.text`)} />
-              </p>
-            ))}
+            {(page.howWeWork?.paragraphs || []).map((p, i) => {
+              const path = `howWeWork.paragraphs.${p.id ?? i}.text`;
+              return (
+                <p key={i}>
+                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, path)} path={path} />
+                </p>
+              );
+            })}
             <div className="prose-mask-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/img/masked/masked-3.png" alt="" />
@@ -130,32 +160,50 @@ export default async function AboutPage() {
               style={{ right: "-10%", top: "-6%", width: 480, opacity: 0.18 }}
             />
             <h2 style={{ position: "relative", zIndex: 1 }}>
-              <ResponsiveText desktop={page.leadership?.heading ?? ""} mobile={getOverride(mo, "leadership.heading")} />
+              <ResponsiveText
+                desktop={page.leadership?.heading ?? ""}
+                mobile={getOverride(mo, "leadership.heading")}
+                path="leadership.heading"
+              />
             </h2>
             <div className="leadership-grid" style={{ position: "relative", zIndex: 1 }}>
-              {(page.leadership?.cards || []).map((c, i) => (
-                <div className="leadership-card" key={c.name}>
-                  <h3>
-                    <ResponsiveText desktop={c.name} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.name`)} />
-                  </h3>
-                  <span className="role">
-                    <ResponsiveText desktop={c.role} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.role`)} />
-                  </span>
-                  <p className="bio">
-                    <ResponsiveText desktop={c.bio} mobile={getOverride(mo, `leadership.cards.${c.id ?? i}.bio`)} />
-                  </p>
-                </div>
-              ))}
+              {(page.leadership?.cards || []).map((c, i) => {
+                const namePath = `leadership.cards.${c.id ?? i}.name`;
+                const rolePath = `leadership.cards.${c.id ?? i}.role`;
+                const bioPath = `leadership.cards.${c.id ?? i}.bio`;
+                return (
+                  <div className="leadership-card" key={c.name}>
+                    <h3>
+                      <ResponsiveText desktop={c.name} mobile={getOverride(mo, namePath)} path={namePath} />
+                    </h3>
+                    <span className="role">
+                      <ResponsiveText desktop={c.role} mobile={getOverride(mo, rolePath)} path={rolePath} />
+                    </span>
+                    <p className="bio">
+                      <ResponsiveText desktop={c.bio} mobile={getOverride(mo, bioPath)} path={bioPath} />
+                    </p>
+                  </div>
+                );
+              })}
             </div>
             <p className="leadership-note">
-              <ResponsiveText desktop={page.leadership?.note ?? ""} mobile={getOverride(mo, "leadership.note")} />
+              <ResponsiveText
+                desktop={page.leadership?.note ?? ""}
+                mobile={getOverride(mo, "leadership.note")}
+                path="leadership.note"
+              />
             </p>
             <a
               href="/team"
               className="link-arrow"
               style={{ marginTop: "var(--space-500)", display: "inline-flex" }}
             >
-              <ResponsiveText desktop={page.leadership?.teamLinkLabel ?? ""} mobile={getOverride(mo, "leadership.teamLinkLabel")} /> →
+              <ResponsiveText
+                desktop={page.leadership?.teamLinkLabel ?? ""}
+                mobile={getOverride(mo, "leadership.teamLinkLabel")}
+                path="leadership.teamLinkLabel"
+              />{" "}
+              →
             </a>
           </div>
         </div>

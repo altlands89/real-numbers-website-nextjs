@@ -51,14 +51,14 @@ export default async function WhyRealNumbersPage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path={"hero.eyebrow"} />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path={"hero.heading"} />
           </h1>
           {(page.hero.ledeParagraphs || []).map((p, i) => (
             <p className="lede" key={i}>
-              <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `hero.ledeParagraphs.${p.id ?? i}.text`)} />
+              <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `hero.ledeParagraphs.${p.id ?? i}.text`)} path={`hero.ledeParagraphs.${p.id ?? i}.text`} />
             </p>
           ))}
         </div>
@@ -74,11 +74,11 @@ export default async function WhyRealNumbersPage() {
         <div className="wrap">
           <div className="prose-block">
             <h2>
-              <ResponsiveText desktop={page.whyChooseUs?.heading ?? ""} mobile={getOverride(mo, "whyChooseUs.heading")} />
+              <ResponsiveText desktop={page.whyChooseUs?.heading ?? ""} mobile={getOverride(mo, "whyChooseUs.heading")} path={"whyChooseUs.heading"} />
             </h2>
             {(page.whyChooseUs?.paragraphs || []).map((p, i) => (
               <p key={i}>
-                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `whyChooseUs.paragraphs.${p.id ?? i}.text`)} />
+                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `whyChooseUs.paragraphs.${p.id ?? i}.text`)} path={`whyChooseUs.paragraphs.${p.id ?? i}.text`} />
               </p>
             ))}
           </div>
@@ -106,13 +106,13 @@ export default async function WhyRealNumbersPage() {
                     <Image src={meta.icon} alt="" width={22} height={22} />
                   </div>
                   <h3>
-                    <ResponsiveText desktop={v.title} mobile={getOverride(mo, `valueProps.${v.id ?? i}.title`)} />
+                    <ResponsiveText desktop={v.title} mobile={getOverride(mo, `valueProps.${v.id ?? i}.title`)} path={`valueProps.${v.id ?? i}.title`} />
                   </h3>
                   <p style={{ marginBottom: 12 }}>
-                    <ResponsiveText desktop={v.paragraph1} mobile={getOverride(mo, `valueProps.${v.id ?? i}.paragraph1`)} />
+                    <ResponsiveText desktop={v.paragraph1} mobile={getOverride(mo, `valueProps.${v.id ?? i}.paragraph1`)} path={`valueProps.${v.id ?? i}.paragraph1`} />
                   </p>
                   <p>
-                    <ResponsiveText desktop={v.paragraph2 ?? ""} mobile={getOverride(mo, `valueProps.${v.id ?? i}.paragraph2`)} />
+                    <ResponsiveText desktop={v.paragraph2 ?? ""} mobile={getOverride(mo, `valueProps.${v.id ?? i}.paragraph2`)} path={`valueProps.${v.id ?? i}.paragraph2`} />
                   </p>
                 </div>
               );
@@ -134,11 +134,11 @@ export default async function WhyRealNumbersPage() {
           >
             <div className="prose-block-text">
               <h2 data-reveal className="reveal-heading">
-                <ResponsiveText desktop={page.whatMakesDifferent?.heading ?? ""} mobile={getOverride(mo, "whatMakesDifferent.heading")} />
+                <ResponsiveText desktop={page.whatMakesDifferent?.heading ?? ""} mobile={getOverride(mo, "whatMakesDifferent.heading")} path={"whatMakesDifferent.heading"} />
               </h2>
               {(page.whatMakesDifferent?.paragraphs || []).map((p, i) => (
                 <p key={i}>
-                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `whatMakesDifferent.paragraphs.${p.id ?? i}.text`)} />
+                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `whatMakesDifferent.paragraphs.${p.id ?? i}.text`)} path={`whatMakesDifferent.paragraphs.${p.id ?? i}.text`} />
                 </p>
               ))}
             </div>
@@ -166,15 +166,15 @@ export default async function WhyRealNumbersPage() {
         <div className="wrap">
           <div className="section-head center">
             <h2>
-              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} />
+              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} path={"closingCta.heading"} />
             </h2>
             <p className="closing-line">
-              <ResponsiveText desktop={page.closingCta.closingLine ?? ""} mobile={getOverride(mo, "closingCta.closingLine")} />
+              <ResponsiveText desktop={page.closingCta.closingLine ?? ""} mobile={getOverride(mo, "closingCta.closingLine")} path={"closingCta.closingLine"} />
             </p>
           </div>
           <div className="final-cta-action">
             <a href="/contact" className="btn btn-primary">
-              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} />
+              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} path={"closingCta.buttonLabel"} />
             </a>
           </div>
         </div>

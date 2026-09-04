@@ -43,10 +43,10 @@ export default async function QuestionsFoundersAskPage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path={"hero.eyebrow"} />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path={"hero.heading"} />
           </h1>
         </div>
       </section>
@@ -68,8 +68,8 @@ export default async function QuestionsFoundersAskPage() {
           <Faq
             items={faqItems.docs.map((f) => ({
               id: f.id,
-              question: <ResponsiveText desktop={f.question} mobile={getOverride(mo, `faq.${f.id}.question`)} />,
-              answer: <ResponsiveText desktop={f.answer} mobile={getOverride(mo, `faq.${f.id}.answer`)} />,
+              question: <ResponsiveText desktop={f.question} mobile={getOverride(mo, `faq.${f.id}.question`)} path={`faq.${f.id}.question`} />,
+              answer: <ResponsiveText desktop={f.answer} mobile={getOverride(mo, `faq.${f.id}.answer`)} path={`faq.${f.id}.answer`} />,
             }))}
           />
         </div>

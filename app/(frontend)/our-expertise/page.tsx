@@ -43,14 +43,14 @@ export default async function OurExpertisePage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path={"hero.eyebrow"} />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path={"hero.heading"} />
           </h1>
           {(page.hero.ledeParagraphs || []).map((p, i) => (
             <p className="lede" key={i}>
-              <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `hero.ledeParagraphs.${p.id ?? i}.text`)} />
+              <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `hero.ledeParagraphs.${p.id ?? i}.text`)} path={`hero.ledeParagraphs.${p.id ?? i}.text`} />
             </p>
           ))}
         </div>
@@ -73,14 +73,14 @@ export default async function OurExpertisePage() {
                 <Image src={AREA_ICONS[i] || AREA_ICONS[0]} alt="" width={22} height={22} />
               </div>
               <h2 style={{ marginTop: "var(--space-400)" }}>
-                <ResponsiveText desktop={a.title} mobile={getOverride(mo, `areas.${a.id ?? i}.title`)} />
+                <ResponsiveText desktop={a.title} mobile={getOverride(mo, `areas.${a.id ?? i}.title`)} path={`areas.${a.id ?? i}.title`} />
               </h2>
               <p className="tagline">
-                <ResponsiveText desktop={a.tagline} mobile={getOverride(mo, `areas.${a.id ?? i}.tagline`)} />
+                <ResponsiveText desktop={a.tagline} mobile={getOverride(mo, `areas.${a.id ?? i}.tagline`)} path={`areas.${a.id ?? i}.tagline`} />
               </p>
               {(a.paragraphs || []).map((p, pi) => (
                 <p key={pi}>
-                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `areas.${a.id ?? i}.paragraphs.${p.id ?? pi}.text`)} />
+                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `areas.${a.id ?? i}.paragraphs.${p.id ?? pi}.text`)} path={`areas.${a.id ?? i}.paragraphs.${p.id ?? pi}.text`} />
                 </p>
               ))}
               {i === 0 && (
@@ -92,7 +92,7 @@ export default async function OurExpertisePage() {
               <div className="key-services">
                 {(a.services || []).map((s, si) => (
                   <span key={si}>
-                    <ResponsiveText desktop={s.label} mobile={getOverride(mo, `areas.${a.id ?? i}.services.${s.id ?? si}.label`)} />
+                    <ResponsiveText desktop={s.label} mobile={getOverride(mo, `areas.${a.id ?? i}.services.${s.id ?? si}.label`)} path={`areas.${a.id ?? i}.services.${s.id ?? si}.label`} />
                   </span>
                 ))}
               </div>
@@ -107,10 +107,10 @@ export default async function OurExpertisePage() {
 
           <div className="prose-block">
             <h2 data-reveal className="reveal-heading">
-              <ResponsiveText desktop={page.integrated?.heading ?? ""} mobile={getOverride(mo, "integrated.heading")} />
+              <ResponsiveText desktop={page.integrated?.heading ?? ""} mobile={getOverride(mo, "integrated.heading")} path={"integrated.heading"} />
             </h2>
             <p>
-              <ResponsiveText desktop={page.integrated?.text ?? ""} mobile={getOverride(mo, "integrated.text")} />
+              <ResponsiveText desktop={page.integrated?.text ?? ""} mobile={getOverride(mo, "integrated.text")} path={"integrated.text"} />
             </p>
             <AtmospherePhoto
               images={integratedPhotos}
@@ -118,7 +118,7 @@ export default async function OurExpertisePage() {
               alt="A financial model in progress"
               caption={
                 page.integrated?.photoCaption ? (
-                  <ResponsiveText desktop={page.integrated.photoCaption} mobile={getOverride(mo, "integrated.photoCaption")} />
+                  <ResponsiveText desktop={page.integrated.photoCaption} mobile={getOverride(mo, "integrated.photoCaption")} path={"integrated.photoCaption"} />
                 ) : undefined
               }
             />
@@ -131,15 +131,15 @@ export default async function OurExpertisePage() {
           <AbstractPanel src="/img/abstract/wide-24.jpg" variant="strip" className="final-cta-visual" />
           <div className="section-head center">
             <h2>
-              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} />
+              <ResponsiveText desktop={page.closingCta.heading} mobile={getOverride(mo, "closingCta.heading")} path={"closingCta.heading"} />
             </h2>
             <p className="closing-line">
-              <ResponsiveText desktop={page.closingCta.closingLine ?? ""} mobile={getOverride(mo, "closingCta.closingLine")} />
+              <ResponsiveText desktop={page.closingCta.closingLine ?? ""} mobile={getOverride(mo, "closingCta.closingLine")} path={"closingCta.closingLine"} />
             </p>
           </div>
           <div className="final-cta-action">
             <a href="/contact" className="btn btn-primary">
-              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} />
+              <ResponsiveText desktop={page.closingCta.buttonLabel ?? ""} mobile={getOverride(mo, "closingCta.buttonLabel")} path={"closingCta.buttonLabel"} />
             </a>
           </div>
         </div>

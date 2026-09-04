@@ -18,11 +18,11 @@ export default async function Stories() {
       eyebrow={
         <ResponsiveText
           desktop={storiesSection?.eyebrow || "Client Stories"}
-          mobile={getOverride(mo, `${sectionKey}.eyebrow`)}
+          mobile={getOverride(mo, `${sectionKey}.eyebrow`)} path={`${sectionKey}.eyebrow`}
         />
       }
       heading={
-        <ResponsiveText desktop={storiesSection?.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />
+        <ResponsiveText desktop={storiesSection?.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />
       }
       stories={testimonials.docs.map((t) => ({ quote: t.quote, name: t.name, role: t.role || "" }))}
     />

@@ -14,6 +14,7 @@ export function Field({
   style,
   multiline,
   placeholder,
+  path,
 }: {
   label: string;
   value: string;
@@ -21,6 +22,10 @@ export function Field({
   style?: React.CSSProperties;
   multiline?: boolean;
   placeholder?: string;
+  // Same dot-path used by mobileOverrides/ResponsiveText — when set, becomes
+  // this field's DOM id (`rn-field-<path>`) so the editor-bridge click
+  // handler (MobilePreview.tsx) can scroll to and focus it.
+  path?: string;
 }) {
   const [active, setActive] = useState(false);
   const ref = useRef<HTMLTextAreaElement | null>(null);
@@ -84,7 +89,7 @@ export function Field({
   };
 
   return (
-    <span style={{ position: "relative", display: "block" }}>
+    <span id={path ? `rn-field-${path}` : undefined} style={{ position: "relative", display: "block" }}>
       {active && (
         <span
           style={{

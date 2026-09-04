@@ -54,24 +54,24 @@ export default async function Home() {
                 key={section.id}
                 rotatingWords={(section.rotatingWords || []).map((w) => w.word)}
                 description={
-                  <ResponsiveText desktop={section.description || ""} mobile={getOverride(mo, `${sectionKey}.description`)} />
+                  <ResponsiveText desktop={section.description || ""} mobile={getOverride(mo, `${sectionKey}.description`)} path={`${sectionKey}.description`} />
                 }
                 primaryCtaLabel={
-                  <ResponsiveText desktop={section.primaryCtaLabel || "Let's Talk"} mobile={getOverride(mo, `${sectionKey}.primaryCtaLabel`)} />
+                  <ResponsiveText desktop={section.primaryCtaLabel || "Let's Talk"} mobile={getOverride(mo, `${sectionKey}.primaryCtaLabel`)} path={`${sectionKey}.primaryCtaLabel`} />
                 }
                 secondaryCtaLabel={
-                  <ResponsiveText desktop={section.secondaryCtaLabel || "Our Expertise"} mobile={getOverride(mo, `${sectionKey}.secondaryCtaLabel`)} />
+                  <ResponsiveText desktop={section.secondaryCtaLabel || "Our Expertise"} mobile={getOverride(mo, `${sectionKey}.secondaryCtaLabel`)} path={`${sectionKey}.secondaryCtaLabel`} />
                 }
                 featuredHeading={
                   <ResponsiveText
                     desktop={section.featuredPhoto?.heading || ""}
-                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.heading`)}
+                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.heading`)} path={`${sectionKey}.featuredPhoto.heading`}
                   />
                 }
                 featuredCtaLabel={
                   <ResponsiveText
                     desktop={section.featuredPhoto?.ctaLabel || "Our approach"}
-                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.ctaLabel`)}
+                    mobile={getOverride(mo, `${sectionKey}.featuredPhoto.ctaLabel`)} path={`${sectionKey}.featuredPhoto.ctaLabel`}
                   />
                 }
                 featuredImages={featuredImages}
@@ -79,7 +79,7 @@ export default async function Home() {
                 logosCtaLabel={
                   <ResponsiveText
                     desktop={section.logosStrip?.ctaLabel || "Why Real Numbers"}
-                    mobile={getOverride(mo, `${sectionKey}.logosStrip.ctaLabel`)}
+                    mobile={getOverride(mo, `${sectionKey}.logosStrip.ctaLabel`)} path={`${sectionKey}.logosStrip.ctaLabel`}
                   />
                 }
               />
@@ -89,7 +89,7 @@ export default async function Home() {
             return (
               <DifferenceV2
                 key={section.id}
-                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />}
               />
             );
           case "stats":
@@ -115,9 +115,9 @@ export default async function Home() {
             return (
               <CtaDarkV2
                 key={section.id}
-                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />}
                 ctaLabel={
-                  <ResponsiveText desktop={section.ctaLabel || "Discover more"} mobile={getOverride(mo, `${sectionKey}.ctaLabel`)} />
+                  <ResponsiveText desktop={section.ctaLabel || "Discover more"} mobile={getOverride(mo, `${sectionKey}.ctaLabel`)} path={`${sectionKey}.ctaLabel`} />
                 }
               />
             );
@@ -125,11 +125,11 @@ export default async function Home() {
             return (
               <AudienceV2
                 key={section.id}
-                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} />}
+                heading={<ResponsiveText desktop={section.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />}
                 areas={(section.areas || []).map((a) => ({
                   id: a.id,
-                  title: <ResponsiveText desktop={a.title} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.title`)} />,
-                  text: <ResponsiveText desktop={a.text} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.text`)} />,
+                  title: <ResponsiveText desktop={a.title} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.title`)} path={`${sectionKey}.areas.${a.id ?? ""}.title`} />,
+                  text: <ResponsiveText desktop={a.text} mobile={getOverride(mo, `${sectionKey}.areas.${a.id ?? ""}.text`)} path={`${sectionKey}.areas.${a.id ?? ""}.text`} />,
                 }))}
               />
             );

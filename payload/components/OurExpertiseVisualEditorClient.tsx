@@ -98,6 +98,16 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
+  // Editor bridge: a click inside the mobile-preview iframe (on the live
+  // rendered page) posts {path} back here — scroll the matching field in
+  // the canvas above into view and focus its input.
+  const handleFieldSelect = (path: string) => {
+    const el = document.getElementById(`rn-field-${path}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  };
+
   // Same page-hero / prose-section / h2 type scale as About and Why Real
   // Numbers — all three share the underlying CSS classes.
   const type = {
@@ -227,7 +237,7 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>

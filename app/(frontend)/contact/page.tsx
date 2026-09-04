@@ -39,10 +39,10 @@ export default async function ContactPage() {
         <HeroGlow />
         <div className="wrap">
           <span className="eyebrow">
-            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} path={"hero.eyebrow"} />
           </span>
           <h1 data-reveal className="reveal-heading">
-            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} path={"hero.heading"} />
           </h1>
         </div>
       </section>
@@ -58,7 +58,7 @@ export default async function ContactPage() {
             <ContactForm
               directContactLabel={
                 page.directContact?.label ? (
-                  <ResponsiveText desktop={page.directContact.label} mobile={getOverride(mo, "directContact.label")} />
+                  <ResponsiveText desktop={page.directContact.label} mobile={getOverride(mo, "directContact.label")} path={"directContact.label"} />
                 ) : undefined
               }
               whatsappNumber={page.directContact?.whatsappNumber || undefined}
@@ -73,10 +73,10 @@ export default async function ContactPage() {
         <div className="wrap">
           <div className="manifesto">
             <h3>
-              <ResponsiveText desktop={page.manifesto?.heading ?? ""} mobile={getOverride(mo, "manifesto.heading")} />
+              <ResponsiveText desktop={page.manifesto?.heading ?? ""} mobile={getOverride(mo, "manifesto.heading")} path={"manifesto.heading"} />
             </h3>
             <p>
-              <ResponsiveText desktop={page.manifesto?.text ?? ""} mobile={getOverride(mo, "manifesto.text")} />
+              <ResponsiveText desktop={page.manifesto?.text ?? ""} mobile={getOverride(mo, "manifesto.text")} path={"manifesto.text"} />
             </p>
           </div>
         </div>

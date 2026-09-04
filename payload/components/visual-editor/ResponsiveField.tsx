@@ -59,7 +59,7 @@ export function ResponsiveField({
 
   return (
     <span style={{ display: "block" }}>
-      <Field label={label} value={value} onChange={onChange} style={style} multiline={multiline} placeholder={placeholder} />
+      <Field label={label} value={value} onChange={onChange} style={style} multiline={multiline} placeholder={placeholder} path={path} />
       {hasOverride ? (
         <span
           style={{

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // A real, accurate mobile preview — an iframe of the actual live page at a
 // phone-width viewport (390px, matching Payload's own Live Preview mobile
@@ -16,8 +16,34 @@ import React, { useState } from "react";
 const FRAME_WIDTH = 390;
 const FRAME_HEIGHT = 780;
 
-export function MobilePreview({ pageUrl, refreshKey }: { pageUrl: string; refreshKey: number }) {
+export function MobilePreview({
+  pageUrl,
+  refreshKey,
+  onFieldSelect,
+}: {
+  pageUrl: string;
+  refreshKey: number;
+  // Called with a field's dot-path when the editor-bridge script inside the
+  // iframe (components/EditorBridgeListener.tsx) reports a click on the
+  // live render — lets the caller scroll to and focus that field's input.
+  onFieldSelect?: (path: string) => void;
+}) {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!onFieldSelect) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === "rn-editor-field-click" && typeof e.data.path === "string") {
+        onFieldSelect(e.data.path);
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [onFieldSelect]);
+
+  // rn_editor_bridge=1 is what tells EditorBridgeListener (inert on every
+  // normal page view) to actually attach its click/hover handlers.
+  const frameSrc = `${pageUrl}${pageUrl.includes("?") ? "&" : "?"}rn_editor_bridge=1`;
 
   return (
     <div style={{ marginTop: 10 }}>
@@ -43,6 +69,7 @@ export function MobilePreview({ pageUrl, refreshKey }: { pageUrl: string; refres
           <p style={{ fontSize: 11, color: "var(--theme-elevation-500)", maxWidth: 480, marginBottom: 8 }}>
             The real live page at a phone-width viewport — refreshes automatically after you publish
             changes. Not a live keystroke-by-keystroke preview: publish first to see an edit reflected here.
+            {onFieldSelect && " Click any text below to jump to its field above."}
           </p>
           <div
             style={{
@@ -56,7 +83,7 @@ export function MobilePreview({ pageUrl, refreshKey }: { pageUrl: string; refres
           >
             <iframe
               key={refreshKey}
-              src={pageUrl}
+              src={frameSrc}
               title="Mobile preview"
               style={{ width: "100%", height: "100%", border: "none" }}
             />

@@ -79,6 +79,16 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
+  // Editor bridge: a click inside the mobile-preview iframe (on the live
+  // rendered page) posts {path} back here — scroll the matching field in
+  // the canvas above into view and focus its input.
+  const handleFieldSelect = (path: string) => {
+    const el = document.getElementById(`rn-field-${path}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  };
+
   const addFaqItem = () => setFaqItems((d) => { d.push({ id: null, question: "", answer: "" }); });
   const removeFaqItem = (i: number) => {
     if (!window.confirm("Remove this question? This can't be undone from here.")) return;
@@ -204,7 +214,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
