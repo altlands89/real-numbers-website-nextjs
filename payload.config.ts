@@ -97,6 +97,11 @@ export default buildConfig({
           path: "/visual-editor/our-expertise",
           meta: { title: "Our Expertise — Visual Editor" },
         },
+        useCasesVisualEditor: {
+          Component: "@/payload/components/UseCasesVisualEditorView#UseCasesVisualEditorView",
+          path: "/visual-editor/use-cases",
+          meta: { title: "Use Cases — Visual Editor" },
+        },
       },
     },
     livePreview: {
