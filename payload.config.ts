@@ -78,13 +78,24 @@ export default buildConfig({
           path: "/brand-identity",
           meta: { title: "Brand Identity" },
         },
-        // Experiment — a spatial alternative to the About page's normal
-        // edit form (see AboutVisualEditorView.tsx). The standard form at
-        // /admin/globals/about-page stays the authoritative editor.
+        // Spatial visual editors — see AboutVisualEditorView.tsx for the
+        // rationale (and payload/components/visual-editor/ for the shared
+        // plumbing every one of these imports). Each page's standard form
+        // at /admin/globals/<slug> stays the authoritative editor.
         aboutVisualEditor: {
           Component: "@/payload/components/AboutVisualEditorView#AboutVisualEditorView",
           path: "/visual-editor/about",
           meta: { title: "About — Visual Editor" },
+        },
+        whyRealNumbersVisualEditor: {
+          Component: "@/payload/components/WhyRealNumbersVisualEditorView#WhyRealNumbersVisualEditorView",
+          path: "/visual-editor/why-real-numbers",
+          meta: { title: "Why Real Numbers — Visual Editor" },
+        },
+        ourExpertiseVisualEditor: {
+          Component: "@/payload/components/OurExpertiseVisualEditorView#OurExpertiseVisualEditorView",
+          path: "/visual-editor/our-expertise",
+          meta: { title: "Our Expertise — Visual Editor" },
         },
       },
     },

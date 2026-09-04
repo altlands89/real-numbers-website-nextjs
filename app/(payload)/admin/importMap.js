@@ -9,6 +9,8 @@ import { AdminLoginBackground as AdminLoginBackground_116160b7f0d983358e2e1bc424
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { BrandIdentityView as BrandIdentityView_f202879c5b03c8b134468ed160d5a45d } from '@/payload/components/BrandIdentityView'
 import { AboutVisualEditorView as AboutVisualEditorView_16045fbc452172628d113612d56314d7 } from '@/payload/components/AboutVisualEditorView'
+import { WhyRealNumbersVisualEditorView as WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e } from '@/payload/components/WhyRealNumbersVisualEditorView'
+import { OurExpertiseVisualEditorView as OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41 } from '@/payload/components/OurExpertiseVisualEditorView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -24,5 +26,7 @@ export const importMap = {
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@/payload/components/BrandIdentityView#BrandIdentityView": BrandIdentityView_f202879c5b03c8b134468ed160d5a45d,
   "@/payload/components/AboutVisualEditorView#AboutVisualEditorView": AboutVisualEditorView_16045fbc452172628d113612d56314d7,
+  "@/payload/components/WhyRealNumbersVisualEditorView#WhyRealNumbersVisualEditorView": WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e,
+  "@/payload/components/OurExpertiseVisualEditorView#OurExpertiseVisualEditorView": OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
