@@ -9,6 +9,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useDragReorder } from "./visual-editor/useDragReorder";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -71,13 +72,13 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
     if (!window.confirm("Remove this question? This can't be undone from here.")) return;
     setFaqItems((d) => { d.splice(i, 1); });
   };
-  const moveFaqItem = (i: number, dir: -1 | 1) =>
+  const reorderFaqItems = (from: number, to: number) =>
     setFaqItems((d) => {
-      const j = i + dir;
-      if (j < 0 || j >= d.length) return;
-      const [item] = d.splice(i, 1);
-      d.splice(j, 0, item);
+      if (from === to || from < 0 || from >= d.length) return;
+      const [item] = d.splice(from, 1);
+      d.splice(to, 0, item);
     });
+  const { dragHandlers, dragOverIndex } = useDragReorder(reorderFaqItems);
 
   const type = {
     eyebrow: { fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: colors.clay },
@@ -244,13 +245,15 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
             {faqItems.map((f, i) => (
               <div
                 key={f.id ?? `new-${i}`}
+                {...dragHandlers(i)}
                 style={{
                   display: "grid",
                   gap: 6,
                   background: "rgba(255,255,255,0.6)",
-                  border: "1px solid rgba(36,30,28,0.12)",
+                  border: dragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
                   borderRadius: 8,
                   padding: 14,
+                  cursor: "grab",
                 }}
               >
                 <Field
@@ -267,13 +270,10 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
                   style={type.answer}
                   multiline
                 />
-                <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
-                  <button type="button" onClick={() => moveFaqItem(i, -1)} disabled={i === 0} style={{ ...cardBtn, opacity: i === 0 ? 0.35 : 1 }} title="Move earlier">
-                    ↑
-                  </button>
-                  <button type="button" onClick={() => moveFaqItem(i, 1)} disabled={i === faqItems.length - 1} style={{ ...cardBtn, opacity: i === faqItems.length - 1 ? 0.35 : 1 }} title="Move later">
-                    ↓
-                  </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+                  <span style={{ fontSize: 11, color: "rgba(36,30,28,0.4)", cursor: "grab" }} title="Drag to reorder">
+                    ⠿ Drag to reorder
+                  </span>
                   <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
                     Remove
                   </button>

@@ -10,6 +10,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useDragReorder } from "./visual-editor/useDragReorder";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -28,6 +29,14 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
     setStatus({ kind: "idle" }),
   );
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { dragHandlers: valuePropDragHandlers, dragOverIndex: valuePropDragOverIndex } = useDragReorder((from, to) =>
+    set((d) => {
+      const list = d.valueProps ?? [];
+      if (from === to || from < 0 || from >= list.length) return;
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+    }),
+  );
 
   const save = async () => {
     setSaving(true);
@@ -280,13 +289,15 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
               {(data.valueProps ?? []).map((v, i) => (
                 <div
                   key={v.id ?? i}
+                  {...valuePropDragHandlers(i)}
                   style={{
                     display: "grid",
                     gap: 6,
                     background: "rgba(255,255,255,0.6)",
-                    border: "1px solid rgba(36,30,28,0.12)",
+                    border: valuePropDragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
                     borderRadius: 8,
                     padding: 14,
+                    cursor: "grab",
                   }}
                 >
                   <Field
@@ -309,6 +320,9 @@ export function WhyRealNumbersVisualEditorClient({ initialData, colors, mediaLib
                     style={type.body}
                     multiline
                   />
+                  <span style={{ fontSize: 10.5, color: "rgba(36,30,28,0.4)" }} title="Drag to reorder">
+                    ⠿ Drag to reorder
+                  </span>
                 </div>
               ))}
             </div>

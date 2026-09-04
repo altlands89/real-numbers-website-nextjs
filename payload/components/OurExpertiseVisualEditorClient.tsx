@@ -10,6 +10,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useDragReorder } from "./visual-editor/useDragReorder";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -30,6 +31,14 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
     setStatus({ kind: "idle" }),
   );
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { dragHandlers: areaDragHandlers, dragOverIndex: areaDragOverIndex } = useDragReorder((from, to) =>
+    set((d) => {
+      const list = d.areas ?? [];
+      if (from === to || from < 0 || from >= list.length) return;
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+    }),
+  );
 
   const save = async () => {
     setSaving(true);
@@ -262,7 +271,16 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
           {/* Section 2 — Expertise Areas (up to 4, stacked) */}
           <span style={sectionLabel}>2 · Expertise areas</span>
           {(data.areas ?? []).map((a, ai) => (
-            <div key={a.id ?? ai} style={ai === 0 ? { marginTop: 4 } : areaBlock}>
+            <div
+              key={a.id ?? ai}
+              {...areaDragHandlers(ai)}
+              style={{
+                ...(ai === 0 ? { marginTop: 4 } : areaBlock),
+                cursor: "grab",
+                outline: areaDragOverIndex === ai ? `1px dashed ${colors.blue}` : "none",
+                outlineOffset: 6,
+              }}
+            >
               <Field
                 label={`Area ${ai + 1} · title`}
                 value={a.title ?? ""}
@@ -275,6 +293,9 @@ export function OurExpertiseVisualEditorClient({ initialData, colors, mediaLibra
                 onChange={(v) => set((d) => { d.areas![ai].tagline = v; })}
                 style={type.tagline}
               />
+              <span style={{ fontSize: 10.5, color: "rgba(36,30,28,0.4)" }} title="Drag to reorder">
+                ⠿ Drag to reorder
+              </span>
               <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
                 {(a.paragraphs ?? []).map((p, pi) => (
                   <Field

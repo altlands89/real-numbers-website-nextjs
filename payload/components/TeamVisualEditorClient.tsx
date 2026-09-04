@@ -8,6 +8,7 @@ import { Field } from "./visual-editor/Field";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useDragReorder } from "./visual-editor/useDragReorder";
 import { photoBtn, type MediaItem } from "./visual-editor/shared";
 import type { BrandColors } from "./visual-editor/serverData";
 
@@ -99,13 +100,13 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
       d.splice(i, 1);
     });
   };
-  const moveMember = (i: number, dir: -1 | 1) =>
+  const reorderMembers = (from: number, to: number) =>
     setRoster((d) => {
-      const j = i + dir;
-      if (j < 0 || j >= d.length) return;
-      const [item] = d.splice(i, 1);
-      d.splice(j, 0, item);
+      if (from === to || from < 0 || from >= d.length) return;
+      const [item] = d.splice(from, 1);
+      d.splice(to, 0, item);
     });
+  const { dragHandlers, dragOverIndex } = useDragReorder(reorderMembers);
 
   const resolvePhotoUrl = useCallback(
     (photo: RosterMember["photo"]) => {
@@ -297,13 +298,15 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
               return (
                 <div
                   key={m.id ?? `new-${i}`}
+                  {...dragHandlers(i)}
                   style={{
                     display: "grid",
                     gap: 8,
                     background: "rgba(255,255,255,0.6)",
-                    border: "1px solid rgba(36,30,28,0.12)",
+                    border: dragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
                     borderRadius: 8,
                     padding: 14,
+                    cursor: "grab",
                   }}
                 >
                   <div style={{ display: "flex", gap: 10 }}>
@@ -371,13 +374,10 @@ export function TeamVisualEditorClient({ initialData, initialRoster, colors, med
                     style={type.education}
                     placeholder="Education / credential — leave blank to hide"
                   />
-                  <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
-                    <button type="button" onClick={() => moveMember(i, -1)} disabled={i === 0} style={{ ...cardBtn, opacity: i === 0 ? 0.35 : 1 }} title="Move earlier">
-                      ↑
-                    </button>
-                    <button type="button" onClick={() => moveMember(i, 1)} disabled={i === roster.length - 1} style={{ ...cardBtn, opacity: i === roster.length - 1 ? 0.35 : 1 }} title="Move later">
-                      ↓
-                    </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+                    <span style={{ fontSize: 11, color: "rgba(36,30,28,0.4)", cursor: "grab" }} title="Drag to reorder">
+                      ⠿ Drag to reorder
+                    </span>
                     <button type="button" onClick={() => removeMember(i)} style={cardBtn} title="Remove this person">
                       Remove
                     </button>

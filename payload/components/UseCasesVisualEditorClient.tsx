@@ -10,6 +10,7 @@ import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useDragReorder } from "./visual-editor/useDragReorder";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -28,6 +29,14 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary }
     setStatus({ kind: "idle" }),
   );
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { dragHandlers: situationDragHandlers, dragOverIndex: situationDragOverIndex } = useDragReorder((from, to) =>
+    set((d) => {
+      const list = d.situations ?? [];
+      if (from === to || from < 0 || from >= list.length) return;
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+    }),
+  );
 
   const save = async () => {
     setSaving(true);
@@ -244,7 +253,17 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary }
           />
           <div style={{ display: "grid", gap: 16, marginTop: 16 }}>
             {(data.situations ?? []).map((s, i) => (
-              <div key={s.id ?? i} style={{ display: "grid", gap: 4, borderLeft: `2px solid ${colors.blue}`, paddingLeft: 12 }}>
+              <div
+                key={s.id ?? i}
+                {...situationDragHandlers(i)}
+                style={{
+                  display: "grid",
+                  gap: 4,
+                  borderLeft: `2px solid ${situationDragOverIndex === i ? colors.red : colors.blue}`,
+                  paddingLeft: 12,
+                  cursor: "grab",
+                }}
+              >
                 <Field
                   label={`Situation ${i + 1} · founder quote`}
                   value={s.question ?? ""}
@@ -258,6 +277,9 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary }
                   style={type.answer}
                   multiline
                 />
+                <span style={{ fontSize: 10.5, color: "rgba(36,30,28,0.4)" }} title="Drag to reorder">
+                  ⠿ Drag to reorder
+                </span>
               </div>
             ))}
           </div>
