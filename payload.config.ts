@@ -107,6 +107,11 @@ export default buildConfig({
           path: "/visual-editor/team",
           meta: { title: "Team — Visual Editor" },
         },
+        questionsVisualEditor: {
+          Component: "@/payload/components/QuestionsVisualEditorView#QuestionsVisualEditorView",
+          path: "/visual-editor/questions",
+          meta: { title: "Questions Founders Ask — Visual Editor" },
+        },
       },
     },
     livePreview: {
