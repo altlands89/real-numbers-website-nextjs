@@ -1728,8 +1728,14 @@ p { margin: 0; }
   gap: 5px;
   background: none;
   border: none;
-  width: 44px;
-  height: 44px;
+  /* This button's own size is what actually determines the header bar's
+     height — the bar is a flex row with align-items:center and no
+     explicit height, so it grows to fit its tallest child. Sized down
+     from the original 44px (a comfortable touch target, but taller than
+     the pill wants to be) to keep the bar compact while staying above
+     the ~36-40px minimum usable tap size. */
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   transition: background var(--fast) var(--ease);
 }
@@ -2219,8 +2225,12 @@ p { margin: 0; }
   .v2-header { padding: 14px 16px; }
   /* Thinner bar (less top/bottom padding) and a touch more left padding
      to give the logo breathing room against the pill's rounded edge. */
-  .v2-header-bar { padding: 8px 10px 8px 19px; }
+  .v2-header-bar { padding: 8px 10px 8px 19px; min-height: 56px; }
   .v2-header-bar .logo img { height: 14px; }
+  .v2-header-bar .logo { padding: 6px 10px; margin: -6px -10px; }
+  /* 38px is still slightly taller than the 56px target once padding and
+     the border are added in — shrink it a bit further here specifically. */
+  .v2-nav-toggle { width: 36px; height: 36px; }
   .v2-hero-inner { padding-top: 132px; }
   .v2-hero-headline { font-size: clamp(3.2rem, 13vw, 5rem); }
   .v2-hero-desc { font-size: 1.05rem; line-height: 1.4; }
