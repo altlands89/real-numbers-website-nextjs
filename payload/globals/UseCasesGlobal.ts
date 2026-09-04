@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
+import { mobileOverridesField } from "../fields/mobileOverridesField";
 
 export const UseCasesGlobal: GlobalConfig = {
   slug: "use-cases-page",
@@ -82,5 +83,6 @@ export const UseCasesGlobal: GlobalConfig = {
         },
       ],
     },
+    mobileOverridesField(),
   ],
 };

@@ -131,6 +131,18 @@ section { position: relative; }
   .wrap { padding-left: var(--gutter-mobile); padding-right: var(--gutter-mobile); }
 }
 
+/* ---- Per-field mobile content overrides (components/ResponsiveText.tsx)
+   — a page's visual editor can give one specific text field different
+   copy/line-breaks on mobile; both variants render on the server and this
+   pure CSS toggle shows only one, so there's no client JS and no flash of
+   the wrong text. 640px matches the site's existing phone-tier
+   breakpoint (see .wrap above). ---- */
+.rn-mobile-only { display: none; }
+@media (max-width: 640px) {
+  .rn-desktop-only { display: none; }
+  .rn-mobile-only { display: inline; }
+}
+
 /* ---- Label / Upper — 12/16, +14% tracking, 700, in-color (not
    dimmed) — a confident technical label, not a muted caption ---- */
 .eyebrow {

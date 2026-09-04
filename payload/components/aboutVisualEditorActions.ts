@@ -19,6 +19,7 @@ export type AboutEditorPayload = {
     note?: string | null;
     teamLinkLabel?: string | null;
   };
+  mobileOverrides: Record<string, unknown>;
 };
 
 /**

@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
+import { mobileOverridesField } from "../fields/mobileOverridesField";
 
 export const WhyRealNumbersGlobal: GlobalConfig = {
   slug: "why-real-numbers-page",
@@ -138,5 +139,6 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
         },
       ],
     },
+    mobileOverridesField(),
   ],
 };

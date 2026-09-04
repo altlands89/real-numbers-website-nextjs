@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
+import { mobileOverridesField } from "../fields/mobileOverridesField";
 
 export const QuestionsFoundersAskGlobal: GlobalConfig = {
   slug: "questions-founders-ask-page",
@@ -35,5 +36,6 @@ export const QuestionsFoundersAskGlobal: GlobalConfig = {
       fields: [{ name: "image", type: "upload", label: "Photo", relationTo: "media", required: true }],
     },
     ...seoFields(),
+    mobileOverridesField(),
   ],
 };

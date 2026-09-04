@@ -4,14 +4,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AboutPage } from "@/payload/payload-types";
 import { saveAboutPage } from "./aboutVisualEditorActions";
-import { Field } from "./visual-editor/Field";
+import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
+import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -19,15 +21,22 @@ type Props = {
   initialData: AboutPage;
   colors: BrandColors;
   mediaLibrary: MediaItem[];
+  pageUrl: string;
 };
 
-export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: Props) {
+export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
+  const [previewKey, setPreviewKey] = useState(0);
 
   const { data, set, dirty, setDirty } = useCloneState<AboutPage>(initialData, () => setStatus({ kind: "idle" }));
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  );
+
+  const overallDirty = dirty || overridesDirty;
 
   const save = async () => {
     setSaving(true);
@@ -65,14 +74,17 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           note: data.leadership?.note ?? "",
           teamLinkLabel: data.leadership?.teamLinkLabel ?? "",
         },
+        mobileOverrides: overrides,
       });
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
+      setOverridesDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       // Re-render the server component so what's on screen is what's
       // actually stored, rather than trusting local state to have stayed
       // in sync with the database.
       router.refresh();
+      setPreviewKey((k) => k + 1);
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : "Save failed" });
     } finally {
@@ -129,19 +141,19 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           <button
             type="button"
             onClick={save}
-            disabled={saving || !dirty}
+            disabled={saving || !overallDirty}
             style={{
               padding: "9px 18px",
               borderRadius: "var(--style-radius-m, 8px)",
               border: "none",
-              background: dirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
-              color: dirty ? "#fff" : "var(--theme-elevation-500)",
+              background: overallDirty ? "var(--theme-success-500)" : "var(--theme-elevation-150)",
+              color: overallDirty ? "#fff" : "var(--theme-elevation-500)",
               fontWeight: 600,
               fontSize: 13,
-              cursor: dirty && !saving ? "pointer" : "default",
+              cursor: overallDirty && !saving ? "pointer" : "default",
             }}
           >
-            {saving ? "Publishing…" : dirty ? "Publish changes" : "No changes"}
+            {saving ? "Publishing…" : overallDirty ? "Publish changes" : "No changes"}
           </button>
         </div>
       </div>
@@ -193,6 +205,8 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
         </div>
       )}
 
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} />
+
       {/* ---- The schematic canvas ---- */}
       <DeviceFrame>
       <div
@@ -209,24 +223,36 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
         <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
           <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
           <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <Field
+            <ResponsiveField
               label="Small label"
               value={data.hero?.eyebrow ?? ""}
               onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
+              path="hero.eyebrow"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.eyebrow}
               placeholder="About Real Numbers"
             />
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.hero?.heading ?? ""}
               onChange={(v) => set((d) => { d.hero.heading = v; })}
+              path="hero.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h1}
               multiline
             />
-            <Field
+            <ResponsiveField
               label="Intro paragraph"
               value={data.hero?.lede ?? ""}
               onChange={(v) => set((d) => { d.hero.lede = v; })}
+              path="hero.lede"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.lede}
               multiline
             />
@@ -239,18 +265,26 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           <span style={sectionLabel}>2 · Our story</span>
           <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 26, alignItems: "start" }}>
             <div style={{ display: "grid", gap: 10 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.ourStory?.heading ?? ""}
                 onChange={(v) => set((d) => { d.ourStory = { ...d.ourStory, heading: v }; })}
+                path="ourStory.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.h2}
               />
               {(data.ourStory?.paragraphs ?? []).map((p, i) => (
-                <Field
+                <ResponsiveField
                   key={p.id ?? i}
                   label={`Paragraph ${i + 1}`}
                   value={p.text ?? ""}
                   onChange={(v) => set((d) => { d.ourStory!.paragraphs![i].text = v; })}
+                  path={`ourStory.paragraphs.${i}.text`}
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={type.body}
                   multiline
                 />
@@ -279,10 +313,14 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
                 }
               />
               <div style={{ marginTop: 8 }}>
-                <Field
+                <ResponsiveField
                   label="Photo caption"
                   value={data.ourStory?.photoCaption ?? ""}
                   onChange={(v) => set((d) => { d.ourStory = { ...d.ourStory, photoCaption: v }; })}
+                  path="ourStory.photoCaption"
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={{ fontSize: 10.5, color: "rgba(36,30,28,0.6)" }}
                 />
               </div>
@@ -293,16 +331,24 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           <div style={block}>
             <span style={sectionLabel}>3 · What we believe</span>
             <div style={{ display: "grid", gap: 10, maxWidth: 620 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.whatWeBelieve?.heading ?? ""}
                 onChange={(v) => set((d) => { d.whatWeBelieve = { ...d.whatWeBelieve, heading: v }; })}
+                path="whatWeBelieve.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.h2}
               />
-              <Field
+              <ResponsiveField
                 label="Intro paragraph"
                 value={data.whatWeBelieve?.intro ?? ""}
                 onChange={(v) => set((d) => { d.whatWeBelieve = { ...d.whatWeBelieve, intro: v }; })}
+                path="whatWeBelieve.intro"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.body}
                 multiline
               />
@@ -310,16 +356,24 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginTop: 16 }}>
               {(data.whatWeBelieve?.principles ?? []).map((p, i) => (
                 <div key={p.id ?? i} style={{ display: "grid", gap: 5, borderLeft: `2px solid ${colors.red}`, paddingLeft: 12 }}>
-                  <Field
+                  <ResponsiveField
                     label={`Principle ${i + 1} · title`}
                     value={p.lead ?? ""}
                     onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].lead = v; })}
+                    path={`whatWeBelieve.principles.${i}.lead`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.lead}
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Principle ${i + 1} · text`}
                     value={p.text ?? ""}
                     onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].text = v; })}
+                    path={`whatWeBelieve.principles.${i}.text`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.body}
                     multiline
                   />
@@ -343,18 +397,26 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           <div style={block}>
             <span style={sectionLabel}>4 · How we work</span>
             <div style={{ display: "grid", gap: 10, maxWidth: 620 }}>
-              <Field
+              <ResponsiveField
                 label="Heading"
                 value={data.howWeWork?.heading ?? ""}
                 onChange={(v) => set((d) => { d.howWeWork = { ...d.howWeWork, heading: v }; })}
+                path="howWeWork.heading"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.h2}
               />
               {(data.howWeWork?.paragraphs ?? []).map((p, i) => (
-                <Field
+                <ResponsiveField
                   key={p.id ?? i}
                   label={`Paragraph ${i + 1}`}
                   value={p.text ?? ""}
                   onChange={(v) => set((d) => { d.howWeWork!.paragraphs![i].text = v; })}
+                  path={`howWeWork.paragraphs.${i}.text`}
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={type.body}
                   multiline
                 />
@@ -376,10 +438,14 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
           {/* Section 5 — Leadership */}
           <div style={block}>
             <span style={sectionLabel}>5 · Leadership</span>
-            <Field
+            <ResponsiveField
               label="Heading"
               value={data.leadership?.heading ?? ""}
               onChange={(v) => set((d) => { d.leadership = { ...d.leadership, heading: v }; })}
+              path="leadership.heading"
+              overrides={overrides}
+              setOverride={setOverride}
+              clearOverride={clearOverride}
               style={type.h2}
             />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginTop: 16 }}>
@@ -395,22 +461,34 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
                     padding: 14,
                   }}
                 >
-                  <Field
+                  <ResponsiveField
                     label={`Person ${i + 1} · name`}
                     value={c.name ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].name = v; })}
+                    path={`leadership.cards.${i}.name`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.name}
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Person ${i + 1} · job title`}
                     value={c.role ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].role = v; })}
+                    path={`leadership.cards.${i}.role`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={type.role}
                   />
-                  <Field
+                  <ResponsiveField
                     label={`Person ${i + 1} · bio`}
                     value={c.bio ?? ""}
                     onChange={(v) => set((d) => { d.leadership!.cards![i].bio = v; })}
+                    path={`leadership.cards.${i}.bio`}
+                    overrides={overrides}
+                    setOverride={setOverride}
+                    clearOverride={clearOverride}
                     style={{ ...type.body, fontSize: 11.5 }}
                     multiline
                   />
@@ -418,18 +496,26 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary }: P
               ))}
             </div>
             <div style={{ display: "grid", gap: 8, marginTop: 14, maxWidth: 620 }}>
-              <Field
+              <ResponsiveField
                 label="Closing note"
                 value={data.leadership?.note ?? ""}
                 onChange={(v) => set((d) => { d.leadership = { ...d.leadership, note: v }; })}
+                path="leadership.note"
+                overrides={overrides}
+                setOverride={setOverride}
+                clearOverride={clearOverride}
                 style={type.body}
                 multiline
               />
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
-                <Field
+                <ResponsiveField
                   label="Link text"
                   value={data.leadership?.teamLinkLabel ?? ""}
                   onChange={(v) => set((d) => { d.leadership = { ...d.leadership, teamLinkLabel: v }; })}
+                  path="leadership.teamLinkLabel"
+                  overrides={overrides}
+                  setOverride={setOverride}
+                  clearOverride={clearOverride}
                   style={{ fontSize: 12, fontWeight: 700, color: colors.red }}
                 />
                 <span style={{ color: colors.red, fontSize: 12 }}>→</span>

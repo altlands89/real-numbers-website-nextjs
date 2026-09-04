@@ -832,6 +832,15 @@ export interface Home {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1038,6 +1047,15 @@ export interface AboutPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1078,6 +1096,15 @@ export interface TeamPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1126,6 +1153,15 @@ export interface ContactPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1208,6 +1244,15 @@ export interface WhyRealNumbersPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1294,6 +1339,15 @@ export interface OurExpertisePage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1353,6 +1407,15 @@ export interface UseCasesPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1395,6 +1458,15 @@ export interface QuestionsFoundersAskPage {
      */
     ogImage?: (number | null) | Media;
   };
+  mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1560,6 +1632,7 @@ export interface HomeSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1737,6 +1810,7 @@ export interface AboutPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1769,6 +1843,7 @@ export interface TeamPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1805,6 +1880,7 @@ export interface ContactPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1877,6 +1953,7 @@ export interface WhyRealNumbersPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1945,6 +2022,7 @@ export interface OurExpertisePageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1990,6 +2068,7 @@ export interface UseCasesPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2019,6 +2098,7 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
         description?: T;
         ogImage?: T;
       };
+  mobileOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;

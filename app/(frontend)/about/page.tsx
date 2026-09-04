@@ -4,6 +4,7 @@ import FooterV2 from "@/components/FooterV2";
 import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
+import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
@@ -24,6 +25,8 @@ export default async function AboutPage() {
     .map((p) => (typeof p.image === "object" && p.image?.url ? p.image.url : ""))
     .filter(Boolean);
 
+  const mo = page.mobileOverrides;
+
   return (
     <>
       <HeaderV2 />
@@ -36,11 +39,15 @@ export default async function AboutPage() {
         />
         <HeroGlow />
         <div className="wrap">
-          <span className="eyebrow">{page.hero.eyebrow}</span>
+          <span className="eyebrow">
+            <ResponsiveText desktop={page.hero.eyebrow ?? ""} mobile={getOverride(mo, "hero.eyebrow")} />
+          </span>
           <h1 data-reveal className="reveal-heading">
-            {page.hero.heading}
+            <ResponsiveText desktop={page.hero.heading} mobile={getOverride(mo, "hero.heading")} />
           </h1>
-          <p className="lede">{page.hero.lede}</p>
+          <p className="lede">
+            <ResponsiveText desktop={page.hero.lede} mobile={getOverride(mo, "hero.lede")} />
+          </p>
         </div>
       </section>
 
@@ -48,9 +55,13 @@ export default async function AboutPage() {
         <div className="wrap">
           <div className="prose-block prose-block--story">
             <div className="prose-block-text">
-              <h2 data-reveal className="reveal-heading">{page.ourStory?.heading}</h2>
+              <h2 data-reveal className="reveal-heading">
+                <ResponsiveText desktop={page.ourStory?.heading ?? ""} mobile={getOverride(mo, "ourStory.heading")} />
+              </h2>
               {(page.ourStory?.paragraphs || []).map((p, i) => (
-                <p key={i}>{p.text}</p>
+                <p key={i}>
+                  <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `ourStory.paragraphs.${i}.text`)} />
+                </p>
               ))}
             </div>
             <div className="prose-block-media">
@@ -58,14 +69,22 @@ export default async function AboutPage() {
                 images={storyPhotos}
                 fallbackSrc="/img/photography/about-atmosphere.jpg"
                 alt="Inside a Real Numbers strategy session"
-                caption={page.ourStory?.photoCaption || undefined}
+                caption={
+                  page.ourStory?.photoCaption ? (
+                    <ResponsiveText desktop={page.ourStory.photoCaption} mobile={getOverride(mo, "ourStory.photoCaption")} />
+                  ) : undefined
+                }
               />
             </div>
           </div>
 
           <div className="prose-block">
-            <h2>{page.whatWeBelieve?.heading}</h2>
-            <p>{page.whatWeBelieve?.intro}</p>
+            <h2>
+              <ResponsiveText desktop={page.whatWeBelieve?.heading ?? ""} mobile={getOverride(mo, "whatWeBelieve.heading")} />
+            </h2>
+            <p>
+              <ResponsiveText desktop={page.whatWeBelieve?.intro ?? ""} mobile={getOverride(mo, "whatWeBelieve.intro")} />
+            </p>
             <div className="prose-mask-photo align-right">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/img/masked/masked-13.png" alt="" />
@@ -78,17 +97,25 @@ export default async function AboutPage() {
                   data-reveal
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
-                  <strong>{p.lead}</strong>
-                  <p>{p.text}</p>
+                  <strong>
+                    <ResponsiveText desktop={p.lead} mobile={getOverride(mo, `whatWeBelieve.principles.${i}.lead`)} />
+                  </strong>
+                  <p>
+                    <ResponsiveText desktop={p.text} mobile={getOverride(mo, `whatWeBelieve.principles.${i}.text`)} />
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="prose-block">
-            <h2>{page.howWeWork?.heading}</h2>
+            <h2>
+              <ResponsiveText desktop={page.howWeWork?.heading ?? ""} mobile={getOverride(mo, "howWeWork.heading")} />
+            </h2>
             {(page.howWeWork?.paragraphs || []).map((p, i) => (
-              <p key={i}>{p.text}</p>
+              <p key={i}>
+                <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `howWeWork.paragraphs.${i}.text`)} />
+              </p>
             ))}
             <div className="prose-mask-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -102,23 +129,33 @@ export default async function AboutPage() {
               distance={150}
               style={{ right: "-10%", top: "-6%", width: 480, opacity: 0.18 }}
             />
-            <h2 style={{ position: "relative", zIndex: 1 }}>{page.leadership?.heading}</h2>
+            <h2 style={{ position: "relative", zIndex: 1 }}>
+              <ResponsiveText desktop={page.leadership?.heading ?? ""} mobile={getOverride(mo, "leadership.heading")} />
+            </h2>
             <div className="leadership-grid" style={{ position: "relative", zIndex: 1 }}>
-              {(page.leadership?.cards || []).map((c) => (
+              {(page.leadership?.cards || []).map((c, i) => (
                 <div className="leadership-card" key={c.name}>
-                  <h3>{c.name}</h3>
-                  <span className="role">{c.role}</span>
-                  <p className="bio">{c.bio}</p>
+                  <h3>
+                    <ResponsiveText desktop={c.name} mobile={getOverride(mo, `leadership.cards.${i}.name`)} />
+                  </h3>
+                  <span className="role">
+                    <ResponsiveText desktop={c.role} mobile={getOverride(mo, `leadership.cards.${i}.role`)} />
+                  </span>
+                  <p className="bio">
+                    <ResponsiveText desktop={c.bio} mobile={getOverride(mo, `leadership.cards.${i}.bio`)} />
+                  </p>
                 </div>
               ))}
             </div>
-            <p className="leadership-note">{page.leadership?.note}</p>
+            <p className="leadership-note">
+              <ResponsiveText desktop={page.leadership?.note ?? ""} mobile={getOverride(mo, "leadership.note")} />
+            </p>
             <a
               href="/team"
               className="link-arrow"
               style={{ marginTop: "var(--space-500)", display: "inline-flex" }}
             >
-              {page.leadership?.teamLinkLabel} →
+              <ResponsiveText desktop={page.leadership?.teamLinkLabel ?? ""} mobile={getOverride(mo, "leadership.teamLinkLabel")} /> →
             </a>
           </div>
         </div>

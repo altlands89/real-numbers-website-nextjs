@@ -1,11 +1,11 @@
 import Parallax from "./Parallax";
 import PhotoSlideshow from "./PhotoSlideshow";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type Props = {
   images: string[];
   alt: string;
-  caption?: string;
+  caption?: ReactNode;
   fallbackSrc: string;
   className?: string;
   strength?: number;

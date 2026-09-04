@@ -4,6 +4,7 @@ import type { AboutPage } from "@/payload/payload-types";
 import { AboutVisualEditorClient } from "./AboutVisualEditorClient";
 import { type AdminViewProps, requireAdminSession, VisualEditorShell } from "./visual-editor/ViewShell";
 import { fetchMediaLibrary, resolveBrandColors } from "./visual-editor/serverData";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
  * Experiment: a spatial alternative to the About page's normal edit form.
@@ -33,6 +34,7 @@ export async function AboutVisualEditorView(props: AdminViewProps) {
         initialData={page as AboutPage}
         colors={resolveBrandColors(tokens)}
         mediaLibrary={mediaLibrary}
+        pageUrl={`${getSiteUrl()}/about`}
       />
     </VisualEditorShell>
   );

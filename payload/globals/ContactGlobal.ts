@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
+import { mobileOverridesField } from "../fields/mobileOverridesField";
 
 export const ContactGlobal: GlobalConfig = {
   slug: "contact-page",
@@ -70,5 +71,6 @@ export const ContactGlobal: GlobalConfig = {
         },
       ],
     },
+    mobileOverridesField(),
   ],
 };

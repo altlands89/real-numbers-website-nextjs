@@ -13,6 +13,7 @@ import * as migration_20260902_124858_add_brand_assets from './20260902_124858_a
 import * as migration_20260902_150500_remove_home_old_section_fields from './20260902_150500_remove_home_old_section_fields';
 import * as migration_20260902_155046_add_seo_and_site_settings from './20260902_155046_add_seo_and_site_settings';
 import * as migration_20260904_090825 from './20260904_090825';
+import * as migration_20260904_140327_add_mobile_overrides from './20260904_140327_add_mobile_overrides';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20260904_090825.up,
     down: migration_20260904_090825.down,
-    name: '20260904_090825'
+    name: '20260904_090825',
+  },
+  {
+    up: migration_20260904_140327_add_mobile_overrides.up,
+    down: migration_20260904_140327_add_mobile_overrides.down,
+    name: '20260904_140327_add_mobile_overrides'
   },
 ];

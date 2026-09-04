@@ -1,6 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
+import { mobileOverridesField } from "../fields/mobileOverridesField";
 
 export const TeamPageGlobal: GlobalConfig = {
   slug: "team-page",
@@ -62,5 +63,6 @@ export const TeamPageGlobal: GlobalConfig = {
         },
       ],
     },
+    mobileOverridesField(),
   ],
 };
