@@ -15,6 +15,7 @@ import { UseCasesVisualEditorView as UseCasesVisualEditorView_5c892cfba09d5b55a6
 import { TeamVisualEditorView as TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398 } from '@/payload/components/TeamVisualEditorView'
 import { QuestionsVisualEditorView as QuestionsVisualEditorView_57f251049496840aac0e4631408dcb08 } from '@/payload/components/QuestionsVisualEditorView'
 import { ContactVisualEditorView as ContactVisualEditorView_305f2e650e81fbb74587cc9a16cce763 } from '@/payload/components/ContactVisualEditorView'
+import { HomeVisualEditorView as HomeVisualEditorView_5c4816305ba29afb3e0f22b7b16a6e41 } from '@/payload/components/HomeVisualEditorView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -36,5 +37,6 @@ export const importMap = {
   "@/payload/components/TeamVisualEditorView#TeamVisualEditorView": TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398,
   "@/payload/components/QuestionsVisualEditorView#QuestionsVisualEditorView": QuestionsVisualEditorView_57f251049496840aac0e4631408dcb08,
   "@/payload/components/ContactVisualEditorView#ContactVisualEditorView": ContactVisualEditorView_305f2e650e81fbb74587cc9a16cce763,
+  "@/payload/components/HomeVisualEditorView#HomeVisualEditorView": HomeVisualEditorView_5c4816305ba29afb3e0f22b7b16a6e41,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

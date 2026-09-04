@@ -117,6 +117,11 @@ export default buildConfig({
           path: "/visual-editor/contact",
           meta: { title: "Contact — Visual Editor" },
         },
+        homeVisualEditor: {
+          Component: "@/payload/components/HomeVisualEditorView#HomeVisualEditorView",
+          path: "/visual-editor/home",
+          meta: { title: "Home — Visual Editor" },
+        },
       },
     },
     livePreview: {

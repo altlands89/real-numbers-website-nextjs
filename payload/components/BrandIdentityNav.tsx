@@ -6,6 +6,7 @@ import React from "react";
 // `.nav-group` selectors) rather than reusing Payload's internal nav
 // classes directly, which aren't a stable public API.
 const VISUAL_EDITOR_LINKS: { href: string; label: string; icon: string }[] = [
+  { href: "/admin/visual-editor/home", label: "Home", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
   { href: "/admin/visual-editor/about", label: "About", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
   { href: "/admin/visual-editor/why-real-numbers", label: "Why Real Numbers", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
   { href: "/admin/visual-editor/our-expertise", label: "Our Expertise", icon: "/icons/brand/RN_ICON_BLUE_21.svg" },
