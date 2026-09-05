@@ -162,16 +162,21 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
-      // The DATABASE_URI points at Supabase's Session Pooler, which caps
-      // total concurrent connections at 15. On Vercel each serverless
-      // function instance opens its own pool (node-postgres defaults to
-      // max: 10 per pool) — a couple of concurrent instances alone can
-      // exhaust the pooler, after which background page regeneration
-      // fails to connect and Next.js silently keeps serving the stale
-      // cached page instead of the new content (looks like "edits aren't
-      // saving" when they actually are — the DB write succeeds, only the
-      // re-render after it fails). Keeping each instance's pool small
-      // leaves headroom for multiple concurrent instances.
+      // DATABASE_URI points at Supabase's Transaction Pooler (port 6543),
+      // not the Session Pooler (5432) — the session pooler caps total
+      // concurrent connections at 15 project-wide, and on Vercel every
+      // serverless function instance opens its own pool, so a handful of
+      // concurrent invocations alone exhausted it in production
+      // (confirmed via `vercel logs`: EMAXCONNSESSION, "max clients
+      // reached in session mode — max clients are limited to
+      // pool_size: 15"). Symptom looked like "edits aren't saving" when
+      // they actually were — the DB write succeeded, only the next
+      // request's re-render failed to get a connection. Transaction mode
+      // multiplexes many clients over few real backend connections
+      // (confirmed 25 concurrent connections hold fine, vs. session
+      // mode's hard 15 cap) and is still IPv4-reachable like the session
+      // pooler, so it doesn't reintroduce the direct-host IPv6 problem
+      // noted elsewhere in this file's history.
       max: 3,
     },
     // Explicit migrations only — this Postgres instance also holds the
