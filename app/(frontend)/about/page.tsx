@@ -76,6 +76,7 @@ export default async function AboutPage() {
                 images={storyPhotos}
                 fallbackSrc="/img/photography/about-atmosphere.jpg"
                 alt="Inside a Real Numbers strategy session"
+                editorFieldPath="ourStory.photos"
                 caption={
                   page.ourStory?.photoCaption ? (
                     <ResponsiveText

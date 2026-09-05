@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AboutPage } from "@/payload/payload-types";
 import { saveAboutPage } from "./aboutVisualEditorActions";
-import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
-import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style, bodyTextStyle } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
@@ -24,7 +22,67 @@ type Props = {
   pageUrl: string;
 };
 
-export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
+// The real About page, rendered at its true desktop width (1440px) inside
+// DeviceFrame's existing optical-zoom wrapper, with every text/image field
+// directly clickable in place — no separate schematic re-layout. See the
+// visual-editor-round-3 plan (cached-whistling-hopper.md) for why the edit
+// overlay lives inside the iframe's own document (same-origin) rather than
+// being positioned from the parent across the CSS transform boundary.
+function LiveCanvas({
+  pageUrl,
+  refreshKey,
+  onFieldCommit,
+  onImageClick,
+}: {
+  pageUrl: string;
+  refreshKey: number;
+  onFieldCommit: (path: string, value: string) => void;
+  onImageClick: (path: string) => void;
+}) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
+  const [height, setHeight] = useState(900);
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      if (e.data?.type === "rn-editor-field-commit" && typeof e.data.path === "string") {
+        onFieldCommit(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
+      } else if (e.data?.type === "rn-editor-field-click" && e.data.kind === "image" && typeof e.data.path === "string") {
+        onImageClick(e.data.path);
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [onFieldCommit, onImageClick]);
+
+  useEffect(() => () => roRef.current?.disconnect(), []);
+
+  const handleLoad = () => {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc?.documentElement) return;
+    setHeight(doc.documentElement.scrollHeight);
+    roRef.current?.disconnect();
+    const ro = new ResizeObserver(() => setHeight(doc.documentElement.scrollHeight));
+    ro.observe(doc.documentElement);
+    roRef.current = ro;
+  };
+
+  const src = `${pageUrl}${pageUrl.includes("?") ? "&" : "?"}rn_editor_bridge=1&rn_editor_inline=1`;
+
+  return (
+    <iframe
+      key={refreshKey}
+      ref={iframeRef}
+      src={src}
+      onLoad={handleLoad}
+      title="About page — live canvas"
+      style={{ width: "100%", height, border: "none", display: "block", background: "#fff" }}
+    />
+  );
+}
+
+export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
@@ -96,7 +154,9 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
 
   // Editor bridge: a click inside the mobile-preview iframe (on the live
   // rendered page) posts {path} back here — scroll the matching field in
-  // the canvas above into view and focus its input.
+  // the leftover manage-lists panel into view (mobile still uses the old
+  // jump-to-schematic behavior until Stage 3 gives it its own inline
+  // editing — see cached-whistling-hopper.md).
   const handleFieldSelect = (path: string) => {
     const el = document.getElementById(`rn-field-${path}`);
     if (!el) return;
@@ -104,46 +164,81 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
     el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
   };
 
-  const type = {
-    eyebrow: eyebrowStyle(colors),
-    h1: pageHeroH1Style(colors),
-    lede: pageHeroLedeStyle(),
-    h2: sectionH2Style(colors),
-    body: bodyTextStyle(colors),
-    lead: { fontSize: "16.8px", fontWeight: 700, color: colors.black },
-    name: { fontSize: "18.4px", fontWeight: 700, color: colors.blue },
-    role: { fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: colors.red },
+  // The main canvas's live-iframe click → inline edit → commit lands here.
+  // Explicit per-path dispatch (not a generic path-parser) so a stray/
+  // unrecognized path can never silently write to the wrong field — it
+  // just logs and no-ops instead.
+  const handleFieldCommit = (path: string, value: string) => {
+    const segs = path.split(".");
+    set((d) => {
+      if (path === "hero.eyebrow") { d.hero.eyebrow = value; return; }
+      if (path === "hero.heading") { d.hero.heading = value; return; }
+      if (path === "hero.lede") { d.hero.lede = value; return; }
+      if (path === "ourStory.heading") { d.ourStory = { ...d.ourStory, heading: value }; return; }
+      if (path === "ourStory.photoCaption") { d.ourStory = { ...d.ourStory, photoCaption: value }; return; }
+      if (segs[0] === "ourStory" && segs[1] === "paragraphs") {
+        const idx = (d.ourStory?.paragraphs ?? []).findIndex((p, i) => String(p.id ?? i) === segs[2]);
+        if (idx >= 0) d.ourStory!.paragraphs![idx].text = value;
+        return;
+      }
+      if (path === "whatWeBelieve.heading") { d.whatWeBelieve = { ...d.whatWeBelieve, heading: value }; return; }
+      if (path === "whatWeBelieve.intro") { d.whatWeBelieve = { ...d.whatWeBelieve, intro: value }; return; }
+      if (segs[0] === "whatWeBelieve" && segs[1] === "principles") {
+        const idx = (d.whatWeBelieve?.principles ?? []).findIndex((p, i) => String(p.id ?? i) === segs[2]);
+        if (idx >= 0 && (segs[3] === "lead" || segs[3] === "text")) d.whatWeBelieve!.principles![idx][segs[3]] = value;
+        return;
+      }
+      if (path === "howWeWork.heading") { d.howWeWork = { ...d.howWeWork, heading: value }; return; }
+      if (segs[0] === "howWeWork" && segs[1] === "paragraphs") {
+        const idx = (d.howWeWork?.paragraphs ?? []).findIndex((p, i) => String(p.id ?? i) === segs[2]);
+        if (idx >= 0) d.howWeWork!.paragraphs![idx].text = value;
+        return;
+      }
+      if (path === "leadership.heading") { d.leadership = { ...d.leadership, heading: value }; return; }
+      if (path === "leadership.note") { d.leadership = { ...d.leadership, note: value }; return; }
+      if (path === "leadership.teamLinkLabel") { d.leadership = { ...d.leadership, teamLinkLabel: value }; return; }
+      if (segs[0] === "leadership" && segs[1] === "cards") {
+        const idx = (d.leadership?.cards ?? []).findIndex((c, i) => String(c.id ?? i) === segs[2]);
+        if (idx >= 0 && (segs[3] === "name" || segs[3] === "role" || segs[3] === "bio")) d.leadership!.cards![idx][segs[3]] = value;
+        return;
+      }
+      // eslint-disable-next-line no-console
+      console.warn("[about-visual-editor] unrecognized field path from live canvas:", path);
+    });
   };
 
-  const sectionLabel: React.CSSProperties = {
-    fontSize: 9,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    color: "rgba(36,30,28,0.35)",
-    fontFamily: "system-ui, sans-serif",
-    marginBottom: 10,
-    display: "block",
+  // The live canvas can only reach the currently-visible (first) slide of
+  // a photo slideshow — clicking it is a shortcut for "change photo 1",
+  // same as the first row in the Photos panel below.
+  const handleImageClick = (path: string) => {
+    if (path === "ourStory.photos") setPicking(0);
   };
 
-  const block: React.CSSProperties = {
-    borderTop: "1px solid rgba(36,30,28,0.12)",
-    paddingTop: 22,
-    marginTop: 26,
+  const rowLabel: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "var(--theme-text)",
+  };
+
+  const rowWrap: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    padding: "10px 14px",
+    border: "1px solid var(--theme-elevation-150)",
+    borderRadius: "var(--style-radius-s, 6px)",
   };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
-      <style>{`
-        .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
-      `}</style>
-
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
         <div>
           <h1 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>About — Visual Editor</h1>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 560 }}>
-            The About page in schematic form — each text sits where it appears on the real page, at
-            roughly its real size. Hover or click any text to edit it. Photos and SEO stay in the{" "}
+          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 620 }}>
+            The real page, shown at desktop size and scaled to fit. Hover any text or photo below to
+            see what it is, click to edit it in place. Adding/removing paragraphs, principles, cards
+            or photos happens in the panel underneath. SEO stays in the{" "}
             <a href="/admin/globals/about-page">regular form</a>.
           </p>
         </div>
@@ -217,324 +312,80 @@ export function AboutVisualEditorClient({ initialData, colors, mediaLibrary, pag
 
       <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
 
-      {/* ---- The schematic canvas ---- */}
-      <DeviceFrame>
-      <div
-        className="rn-ve"
-        style={{
-          border: "1px solid var(--theme-elevation-150)",
-          borderRadius: "var(--style-radius-m, 8px)",
-          overflow: "hidden",
-          fontFamily: '"TASA Orbiter Editor", system-ui, sans-serif',
-          boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)",
-        }}
-      >
-        {/* Section 1 — dark top banner */}
-        <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
-          <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
-          <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <ResponsiveField
-              label="Small label"
-              value={data.hero?.eyebrow ?? ""}
-              onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
-              path="hero.eyebrow"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.eyebrow}
-              placeholder="About Real Numbers"
-            />
-            <ResponsiveField
-              label="Heading"
-              value={data.hero?.heading ?? ""}
-              onChange={(v) => set((d) => { d.hero.heading = v; })}
-              path="hero.heading"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.h1}
-              multiline
-            />
-            <ResponsiveField
-              label="Intro paragraph"
-              value={data.hero?.lede ?? ""}
-              onChange={(v) => set((d) => { d.hero.lede = v; })}
-              path="hero.lede"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.lede}
-              multiline
-            />
-          </div>
+      {/* ---- The real page, live, editable in place ---- */}
+      <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
+        <DeviceFrame>
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+        </DeviceFrame>
+      </div>
+
+      {/* ---- Manage lists — add/remove/reorder has no on-page gesture yet
+          (see "Risks" in cached-whistling-hopper.md), and a slideshow's
+          2nd+ photo isn't visible/clickable in the frozen canvas above. ---- */}
+      <div style={{ marginTop: 22, display: "grid", gap: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--theme-elevation-500)" }}>
+          Manage lists
+        </span>
+
+        <div style={rowWrap}>
+          <span style={rowLabel}>Our Story — paragraphs ({(data.ourStory?.paragraphs ?? []).length})</span>
+          <RowActions
+            onAdd={() => set((d) => {
+              d.ourStory = d.ourStory ?? {};
+              d.ourStory.paragraphs = [...(d.ourStory.paragraphs ?? []), { text: "" }];
+            })}
+            onRemove={
+              (data.ourStory?.paragraphs?.length ?? 0) > 1
+                ? () => set((d) => { d.ourStory!.paragraphs!.pop(); })
+                : undefined
+            }
+          />
         </div>
 
-        {/* Sections 2–5 — light prose area */}
-        <div style={{ background: colors.offwhite, padding: "30px 34px 40px" }}>
-          {/* Section 2 — Our Story (two columns: text | photo) */}
-          <span style={sectionLabel}>2 · Our story</span>
-          <div style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: 26, alignItems: "start" }}>
-            <div style={{ display: "grid", gap: 10 }}>
-              <ResponsiveField
-                label="Heading"
-                value={data.ourStory?.heading ?? ""}
-                onChange={(v) => set((d) => { d.ourStory = { ...d.ourStory, heading: v }; })}
-                path="ourStory.heading"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.h2}
-              />
-              {(data.ourStory?.paragraphs ?? []).map((p, i) => (
-                <ResponsiveField
-                  key={p.id ?? i}
-                  label={`Paragraph ${i + 1}`}
-                  value={p.text ?? ""}
-                  onChange={(v) => set((d) => { d.ourStory!.paragraphs![i].text = v; })}
-                  path={`ourStory.paragraphs.${p.id ?? i}.text`}
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={type.body}
-                  multiline
-                />
-              ))}
-              <RowActions
-                onAdd={() => set((d) => {
-                  d.ourStory = d.ourStory ?? {};
-                  d.ourStory.paragraphs = [...(d.ourStory.paragraphs ?? []), { text: "" }];
-                })}
-                onRemove={
-                  (data.ourStory?.paragraphs?.length ?? 0) > 1
-                    ? () => set((d) => { d.ourStory!.paragraphs!.pop(); })
-                    : undefined
-                }
-              />
-            </div>
-            <div>
-              <PhotoSlots
-                photos={data.ourStory?.photos ?? []}
-                resolve={mediaById}
-                onPick={(index) => setPicking(index)}
-                onRemove={(index) =>
-                  set((d) => {
-                    d.ourStory!.photos!.splice(index, 1);
-                  })
-                }
-              />
-              <div style={{ marginTop: 8 }}>
-                <ResponsiveField
-                  label="Photo caption"
-                  value={data.ourStory?.photoCaption ?? ""}
-                  onChange={(v) => set((d) => { d.ourStory = { ...d.ourStory, photoCaption: v }; })}
-                  path="ourStory.photoCaption"
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={{ fontSize: 10.5, color: "rgba(36,30,28,0.6)" }}
-                />
-              </div>
-            </div>
-          </div>
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Our Story — photos</span>
+          <PhotoSlots
+            photos={data.ourStory?.photos ?? []}
+            resolve={mediaById}
+            onPick={(index) => setPicking(index)}
+            onRemove={(index) =>
+              set((d) => {
+                d.ourStory!.photos!.splice(index, 1);
+              })
+            }
+          />
+        </div>
 
-          {/* Section 3 — What We Believe */}
-          <div style={block}>
-            <span style={sectionLabel}>3 · What we believe</span>
-            <div style={{ display: "grid", gap: 10, maxWidth: 620 }}>
-              <ResponsiveField
-                label="Heading"
-                value={data.whatWeBelieve?.heading ?? ""}
-                onChange={(v) => set((d) => { d.whatWeBelieve = { ...d.whatWeBelieve, heading: v }; })}
-                path="whatWeBelieve.heading"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.h2}
-              />
-              <ResponsiveField
-                label="Intro paragraph"
-                value={data.whatWeBelieve?.intro ?? ""}
-                onChange={(v) => set((d) => { d.whatWeBelieve = { ...d.whatWeBelieve, intro: v }; })}
-                path="whatWeBelieve.intro"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.body}
-                multiline
-              />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginTop: 16 }}>
-              {(data.whatWeBelieve?.principles ?? []).map((p, i) => (
-                <div key={p.id ?? i} style={{ display: "grid", gap: 5, borderLeft: `2px solid ${colors.red}`, paddingLeft: 12 }}>
-                  <ResponsiveField
-                    label={`Principle ${i + 1} · title`}
-                    value={p.lead ?? ""}
-                    onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].lead = v; })}
-                    path={`whatWeBelieve.principles.${p.id ?? i}.lead`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.lead}
-                  />
-                  <ResponsiveField
-                    label={`Principle ${i + 1} · text`}
-                    value={p.text ?? ""}
-                    onChange={(v) => set((d) => { d.whatWeBelieve!.principles![i].text = v; })}
-                    path={`whatWeBelieve.principles.${p.id ?? i}.text`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.body}
-                    multiline
-                  />
-                </div>
-              ))}
-            </div>
-            <RowActions
-              onAdd={() => set((d) => {
-                d.whatWeBelieve = d.whatWeBelieve ?? {};
-                d.whatWeBelieve.principles = [...(d.whatWeBelieve.principles ?? []), { lead: "", text: "" }];
-              })}
-              onRemove={
-                (data.whatWeBelieve?.principles?.length ?? 0) > 1
-                  ? () => set((d) => { d.whatWeBelieve!.principles!.pop(); })
-                  : undefined
-              }
-            />
-          </div>
+        <div style={rowWrap}>
+          <span style={rowLabel}>What We Believe — principles ({(data.whatWeBelieve?.principles ?? []).length})</span>
+          <RowActions
+            onAdd={() => set((d) => {
+              d.whatWeBelieve = d.whatWeBelieve ?? {};
+              d.whatWeBelieve.principles = [...(d.whatWeBelieve.principles ?? []), { lead: "", text: "" }];
+            })}
+            onRemove={
+              (data.whatWeBelieve?.principles?.length ?? 0) > 1
+                ? () => set((d) => { d.whatWeBelieve!.principles!.pop(); })
+                : undefined
+            }
+          />
+        </div>
 
-          {/* Section 4 — How We Work */}
-          <div style={block}>
-            <span style={sectionLabel}>4 · How we work</span>
-            <div style={{ display: "grid", gap: 10, maxWidth: 620 }}>
-              <ResponsiveField
-                label="Heading"
-                value={data.howWeWork?.heading ?? ""}
-                onChange={(v) => set((d) => { d.howWeWork = { ...d.howWeWork, heading: v }; })}
-                path="howWeWork.heading"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.h2}
-              />
-              {(data.howWeWork?.paragraphs ?? []).map((p, i) => (
-                <ResponsiveField
-                  key={p.id ?? i}
-                  label={`Paragraph ${i + 1}`}
-                  value={p.text ?? ""}
-                  onChange={(v) => set((d) => { d.howWeWork!.paragraphs![i].text = v; })}
-                  path={`howWeWork.paragraphs.${p.id ?? i}.text`}
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={type.body}
-                  multiline
-                />
-              ))}
-              <RowActions
-                onAdd={() => set((d) => {
-                  d.howWeWork = d.howWeWork ?? {};
-                  d.howWeWork.paragraphs = [...(d.howWeWork.paragraphs ?? []), { text: "" }];
-                })}
-                onRemove={
-                  (data.howWeWork?.paragraphs?.length ?? 0) > 1
-                    ? () => set((d) => { d.howWeWork!.paragraphs!.pop(); })
-                    : undefined
-                }
-              />
-            </div>
-          </div>
-
-          {/* Section 5 — Leadership */}
-          <div style={block}>
-            <span style={sectionLabel}>5 · Leadership</span>
-            <ResponsiveField
-              label="Heading"
-              value={data.leadership?.heading ?? ""}
-              onChange={(v) => set((d) => { d.leadership = { ...d.leadership, heading: v }; })}
-              path="leadership.heading"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.h2}
-            />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginTop: 16 }}>
-              {(data.leadership?.cards ?? []).map((c, i) => (
-                <div
-                  key={c.id ?? i}
-                  style={{
-                    display: "grid",
-                    gap: 6,
-                    background: "rgba(255,255,255,0.6)",
-                    border: "1px solid rgba(36,30,28,0.12)",
-                    borderRadius: 8,
-                    padding: 14,
-                  }}
-                >
-                  <ResponsiveField
-                    label={`Person ${i + 1} · name`}
-                    value={c.name ?? ""}
-                    onChange={(v) => set((d) => { d.leadership!.cards![i].name = v; })}
-                    path={`leadership.cards.${c.id ?? i}.name`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.name}
-                  />
-                  <ResponsiveField
-                    label={`Person ${i + 1} · job title`}
-                    value={c.role ?? ""}
-                    onChange={(v) => set((d) => { d.leadership!.cards![i].role = v; })}
-                    path={`leadership.cards.${c.id ?? i}.role`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.role}
-                  />
-                  <ResponsiveField
-                    label={`Person ${i + 1} · bio`}
-                    value={c.bio ?? ""}
-                    onChange={(v) => set((d) => { d.leadership!.cards![i].bio = v; })}
-                    path={`leadership.cards.${c.id ?? i}.bio`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={{ ...type.body, fontSize: 11.5 }}
-                    multiline
-                  />
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "grid", gap: 8, marginTop: 14, maxWidth: 620 }}>
-              <ResponsiveField
-                label="Closing note"
-                value={data.leadership?.note ?? ""}
-                onChange={(v) => set((d) => { d.leadership = { ...d.leadership, note: v }; })}
-                path="leadership.note"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.body}
-                multiline
-              />
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
-                <ResponsiveField
-                  label="Link text"
-                  value={data.leadership?.teamLinkLabel ?? ""}
-                  onChange={(v) => set((d) => { d.leadership = { ...d.leadership, teamLinkLabel: v }; })}
-                  path="leadership.teamLinkLabel"
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={{ fontSize: 12, fontWeight: 700, color: colors.red }}
-                />
-                <span style={{ color: colors.red, fontSize: 12 }}>→</span>
-              </span>
-            </div>
-          </div>
+        <div style={rowWrap}>
+          <span style={rowLabel}>How We Work — paragraphs ({(data.howWeWork?.paragraphs ?? []).length})</span>
+          <RowActions
+            onAdd={() => set((d) => {
+              d.howWeWork = d.howWeWork ?? {};
+              d.howWeWork.paragraphs = [...(d.howWeWork.paragraphs ?? []), { text: "" }];
+            })}
+            onRemove={
+              (data.howWeWork?.paragraphs?.length ?? 0) > 1
+                ? () => set((d) => { d.howWeWork!.paragraphs!.pop(); })
+                : undefined
+            }
+          />
         </div>
       </div>
-      </DeviceFrame>
 
       {picking !== null && (
         <MediaPicker

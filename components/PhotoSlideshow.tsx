@@ -5,10 +5,15 @@ import { useEffect, useState } from "react";
 interface PhotoSlideshowProps {
   images: string[];
   interval?: number;
+  // Optional editor-bridge hook (components/EditorBridgeListener.tsx):
+  // when set, clicking the photo posts a "click to open the media picker"
+  // message instead of trying to inline-edit it as text. Omitted
+  // everywhere except call sites wired up for click-to-change-photo.
+  editorFieldPath?: string;
 }
 
 /** Auto-rotating, crossfading full-bleed photo stack — no controls, no arrows. */
-export default function PhotoSlideshow({ images, interval = 4200 }: PhotoSlideshowProps) {
+export default function PhotoSlideshow({ images, interval = 4200, editorFieldPath }: PhotoSlideshowProps) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -26,7 +31,11 @@ export default function PhotoSlideshow({ images, interval = 4200 }: PhotoSlidesh
   }, [images.length, interval]);
 
   return (
-    <div className="v2-slideshow">
+    <div
+      className="v2-slideshow"
+      data-field-path={editorFieldPath}
+      data-field-kind={editorFieldPath ? "image" : undefined}
+    >
       {images.map((src, i) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img
