@@ -12,6 +12,11 @@ export default function PhotoSlideshow({ images, interval = 4200 }: PhotoSlidesh
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    // Held on the first photo inside the visual editor's live-preview
+    // iframe (set by EditorBridgeListener) — an editor needs a stable
+    // target to click, not one that swaps out from under the cursor.
+    if (document.documentElement.dataset.rnEditorFrozen === "1") return;
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
     const id = setInterval(() => {

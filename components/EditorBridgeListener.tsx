@@ -18,6 +18,14 @@ export default function EditorBridgeListener() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("rn_editor_bridge") !== "1") return;
 
+    // Tells every dynamic/self-animating component (RotatingWord,
+    // PhotoSlideshow, CompositionDrift, Preloader, ScrollReveal) to hold
+    // still — an editing surface where the content keeps moving under the
+    // cursor is illegible. Set once, left set for the iframe's lifetime
+    // (not cleared in this effect's cleanup) since it should stay true for
+    // as long as this page is loaded inside the editor's iframe at all.
+    document.documentElement.dataset.rnEditorFrozen = "1";
+
     let hovered: HTMLElement | null = null;
 
     const findFieldEl = (target: EventTarget | null): HTMLElement | null => {

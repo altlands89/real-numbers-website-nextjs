@@ -37,6 +37,11 @@ export default function RotatingWord({ words, interval = 2200 }: RotatingWordPro
   }, [words]);
 
   useEffect(() => {
+    // Held frozen on the first word inside the visual editor's live-preview
+    // iframe (set by EditorBridgeListener) — a heading that keeps changing
+    // under the cursor makes the editing surface illegible.
+    if (document.documentElement.dataset.rnEditorFrozen === "1") return;
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fade = reduce ? 0 : 350;
 
