@@ -44,7 +44,20 @@ export const Media: CollectionConfig = {
       label: "Description (for accessibility)",
     },
   ],
-  upload: true,
+  // `focalPoint: true` (explicit, not the implicit default) is what makes
+  // Payload's own upload/replace-file drawer show the interactive focal-
+  // point + crop editor — its gating logic specifically checks `=== true`,
+  // so the bare `upload: true` shorthand this collection used before left
+  // it hidden even though focalX/focalY have been real columns on every
+  // Media doc all along (Payload adds them whenever focalPoint isn't
+  // explicitly `false`). No imageSizes/resizeOptions added — this doesn't
+  // change what gets stored or how `next/image` serves these files, only
+  // unlocks the picker UI for choosing which part of a photo to feature
+  // when it's cropped narrower than its original aspect ratio somewhere
+  // on the site. No migration needed: the columns already existed.
+  upload: {
+    focalPoint: true,
+  },
   hooks: {
     beforeChange: [defaultAltFromFilename],
     afterChange: [revalidateOnChange],
