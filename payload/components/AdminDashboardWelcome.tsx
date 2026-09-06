@@ -4,15 +4,19 @@ import { getSiteUrl } from "@/lib/site-url";
 
 // Icon numbers match AdminBrandStyles.tsx's NAV_ICONS mapping for the same
 // pages, so the sidebar and this dashboard grid stay visually consistent.
+// `veSlug` is the page's /admin/visual-editor/<veSlug> path — the primary
+// way to edit every page now (see BrandIdentityNav.tsx), so that's what
+// these cards link to; the plain Global form is still one click away from
+// there for SEO/drafts/version history.
 const PAGE_LINKS = [
-  { label: "Home", slug: "home", icon: 42 },
-  { label: "About", slug: "about-page", icon: 15 },
-  { label: "Team", slug: "team-page", icon: 31 },
-  { label: "Why Real Numbers", slug: "why-real-numbers-page", icon: 27 },
-  { label: "Our Expertise", slug: "our-expertise-page", icon: 25 },
-  { label: "Use Cases", slug: "use-cases-page", icon: 36 },
-  { label: "Questions Founders Ask", slug: "questions-founders-ask-page", icon: 32 },
-  { label: "Contact", slug: "contact-page", icon: 14 },
+  { label: "Home", slug: "home", veSlug: "home", icon: 42 },
+  { label: "About", slug: "about-page", veSlug: "about", icon: 15 },
+  { label: "Team", slug: "team-page", veSlug: "team", icon: 31 },
+  { label: "Why Real Numbers", slug: "why-real-numbers-page", veSlug: "why-real-numbers", icon: 27 },
+  { label: "Our Expertise", slug: "our-expertise-page", veSlug: "our-expertise", icon: 25 },
+  { label: "Use Cases", slug: "use-cases-page", veSlug: "use-cases", icon: 36 },
+  { label: "Questions Founders Ask", slug: "questions-founders-ask-page", veSlug: "questions", icon: 32 },
+  { label: "Contact", slug: "contact-page", veSlug: "contact", icon: 14 },
 ];
 
 // Rendered above Payload's own collections/globals grid via
@@ -90,7 +94,7 @@ export function AdminDashboardWelcome({ user }: ServerProps) {
           {PAGE_LINKS.map((page) => (
             <a
               key={page.slug}
-              href={`/admin/globals/${page.slug}`}
+              href={`/admin/visual-editor/${page.veSlug}`}
               style={{
                 display: "flex",
                 alignItems: "center",

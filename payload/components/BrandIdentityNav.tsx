@@ -19,6 +19,9 @@ const VISUAL_EDITOR_LINKS: { href: string; label: string; icon: string }[] = [
 export function BrandIdentityNav() {
   return (
     <div style={{ marginTop: 24 }}>
+      {/* Listed first, above Settings/Brand — this is the primary way to
+          edit every page now, not a secondary/beta tool, so it gets the
+          most prominent position in this custom nav block. */}
       <div
         style={{
           fontSize: 11,
@@ -27,6 +30,39 @@ export function BrandIdentityNav() {
           textTransform: "uppercase",
           color: "var(--theme-elevation-500)",
           padding: "0 0 6px 6px",
+        }}
+      >
+        Pages
+      </div>
+      {VISUAL_EDITOR_LINKS.map((link) => (
+        <a
+          key={link.href}
+          href={link.href}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 6px",
+            borderRadius: "var(--style-radius-s, 4px)",
+            color: "var(--theme-text)",
+            textDecoration: "none",
+            fontSize: 13,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={link.icon} alt="" aria-hidden="true" style={{ width: 16, height: 16, opacity: 0.65 }} />
+          {link.label}
+        </a>
+      ))}
+
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: "var(--theme-elevation-500)",
+          padding: "16px 0 6px 6px",
         }}
       >
         Settings
@@ -78,53 +114,6 @@ export function BrandIdentityNav() {
         <img src="/icons/brand/RN_ICON_BLUE_9.svg" alt="" aria-hidden="true" style={{ width: 16, height: 16, opacity: 0.65 }} />
         Brand Identity
       </a>
-
-      <div
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          color: "var(--theme-elevation-500)",
-          padding: "16px 0 6px 6px",
-        }}
-      >
-        Visual Editors
-      </div>
-      {VISUAL_EDITOR_LINKS.map((link) => (
-        <a
-          key={link.href}
-          href={link.href}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "8px 6px",
-            borderRadius: "var(--style-radius-s, 4px)",
-            color: "var(--theme-text)",
-            textDecoration: "none",
-            fontSize: 13,
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={link.icon} alt="" aria-hidden="true" style={{ width: 16, height: 16, opacity: 0.65 }} />
-          {link.label}
-          <span
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              background: "var(--theme-elevation-150)",
-              color: "var(--theme-elevation-600)",
-              borderRadius: 3,
-              padding: "1px 4px",
-            }}
-          >
-            Beta
-          </span>
-        </a>
-      ))}
     </div>
   );
 }
