@@ -19,6 +19,8 @@ type Props = {
   featuredHeading: ReactNode;
   featuredCtaLabel: ReactNode;
   featuredImages: string[];
+  // See PhotoSlideshow's editorFieldPath.
+  featuredImagesFieldPath?: string;
   logos: Logo[];
   logosCtaLabel: ReactNode;
 };
@@ -31,6 +33,7 @@ export default function HeroV2({
   featuredHeading,
   featuredCtaLabel,
   featuredImages,
+  featuredImagesFieldPath,
   logos,
   logosCtaLabel,
 }: Props) {
@@ -83,7 +86,7 @@ export default function HeroV2({
 
       <div className="wrap">
         <div className="v2-photo-feature" data-reveal>
-          <PhotoSlideshow images={featuredImages} />
+          <PhotoSlideshow images={featuredImages} editorFieldPath={featuredImagesFieldPath} />
           <div className="v2-photo-feature-overlay">
             <h2>{featuredHeading}</h2>
             <a href="/about" className="v2-pill-link">

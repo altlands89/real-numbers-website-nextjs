@@ -75,6 +75,7 @@ export default async function Home() {
                   />
                 }
                 featuredImages={featuredImages}
+                featuredImagesFieldPath={`${sectionKey}.featuredPhoto.images`}
                 logos={logos}
                 logosCtaLabel={
                   <ResponsiveText

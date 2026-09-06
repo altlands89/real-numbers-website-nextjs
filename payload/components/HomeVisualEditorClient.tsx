@@ -2,24 +2,19 @@
 
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type {
-  AudienceBlock,
-  CtaDarkBlock,
-  DifferenceBlock,
-  Home,
-  HeroBlock,
-  StoriesBlock,
-} from "@/payload/payload-types";
+import type { AudienceBlock, Home, HeroBlock } from "@/payload/payload-types";
 import { saveHomeSections } from "./homeVisualEditorActions";
-import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
+import { Field } from "./visual-editor/Field";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
-import { scaledH2Style, homeHeroHeadlineStyle, bodyTextStyle } from "./visual-editor/typeScale";
+import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
+import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
@@ -41,24 +36,53 @@ const BLOCK_LABEL: Record<string, string> = {
   stories: "Client Stories",
 };
 
-export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
+export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
   const [previewKey, setPreviewKey] = useState(0);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const dragIndexRef = useRef<number | null>(null);
-  // Which section's PhotoSlots opened the picker — `picking` itself is
-  // only the photo's index *within* that section's images array, so this
-  // is needed too now that more than one section could theoretically
-  // have a photo field.
+  // Which section's PhotoSlots opened the picker — `picking` itself is only
+  // the photo's index *within* that section's images array.
   const pickingSectionIndexRef = useRef<number | null>(null);
 
-  const { data, set, dirty, setDirty } = useCloneState<Home>(initialData, () => setStatus({ kind: "idle" }));
+  const history = useLastTouchedHistory();
+  const {
+    data,
+    set,
+    dirty,
+    setDirty,
+    undo: undoData,
+    redo: redoData,
+    canUndo: canUndoData,
+    canRedo: canRedoData,
+  } = useCloneState<Home>(initialData, () => {
+    setStatus({ kind: "idle" });
+    history.mark("data");
+  });
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
-  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
-    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  const {
+    overrides,
+    setOverride,
+    dirty: overridesDirty,
+    setDirty: setOverridesDirty,
+    undo: undoOverrides,
+    redo: redoOverrides,
+    canUndo: canUndoOverrides,
+    canRedo: canRedoOverrides,
+  } = useMobileOverrides(initialData.mobileOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("overrides"),
   );
+
+  const historySlices = {
+    data: { canUndo: canUndoData, canRedo: canRedoData, undo: undoData, redo: redoData },
+    overrides: { canUndo: canUndoOverrides, canRedo: canRedoOverrides, undo: undoOverrides, redo: redoOverrides },
+  };
+  const canUndo = canUndoData || canUndoOverrides;
+  const canRedo = canRedoData || canRedoOverrides;
+  const handleUndo = () => history.undo(historySlices);
+  const handleRedo = () => history.redo(historySlices);
 
   const sections = data.sections ?? [];
   const overallDirty = dirty || overridesDirty;
@@ -107,14 +131,73 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
-  // Editor bridge: a click inside the mobile-preview iframe (on the live
-  // rendered page) posts {path} back here — scroll the matching field in
-  // the canvas above into view and focus its input.
-  const handleFieldSelect = (path: string) => {
-    const el = document.getElementById(`rn-field-${path}`);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  const findSectionIndex = (sectionKey: string) => sections.findIndex((s, i) => String(s.id ?? i) === sectionKey);
+
+  // Explicit per-blockType dispatch, same discipline as every other
+  // migrated page's handleFieldCommit — an unrecognized path logs and
+  // no-ops instead of risking a write to the wrong block/field.
+  const handleFieldCommit = (path: string, value: string) => {
+    const segs = path.split(".");
+    const idx = findSectionIndex(segs[0]);
+    if (idx < 0) {
+      // eslint-disable-next-line no-console
+      console.warn("[home-visual-editor] unrecognized section in path from live canvas:", path);
+      return;
+    }
+    set((d) => {
+      const section = d.sections![idx];
+      if (section.blockType === "hero") {
+        if (segs[1] === "description" || segs[1] === "primaryCtaLabel" || segs[1] === "secondaryCtaLabel") {
+          (section as HeroBlock)[segs[1]] = value;
+          return;
+        }
+        if (segs[1] === "featuredPhoto" && (segs[2] === "heading" || segs[2] === "ctaLabel")) {
+          const hb = section as HeroBlock;
+          hb.featuredPhoto = { ...hb.featuredPhoto, [segs[2]]: value };
+          return;
+        }
+        if (segs[1] === "logosStrip" && segs[2] === "ctaLabel") {
+          const hb = section as HeroBlock;
+          hb.logosStrip = { ...hb.logosStrip, ctaLabel: value };
+          return;
+        }
+      } else if (section.blockType === "diff" && segs[1] === "heading") {
+        section.heading = value;
+        return;
+      } else if (section.blockType === "cta" && (segs[1] === "heading" || segs[1] === "ctaLabel")) {
+        section[segs[1]] = value;
+        return;
+      } else if (section.blockType === "audience") {
+        const ab = section as AudienceBlock;
+        if (segs[1] === "heading") {
+          ab.heading = value;
+          return;
+        }
+        if (segs[1] === "areas") {
+          const areaIdx = (ab.areas ?? []).findIndex((a, i) => String(a.id ?? i) === segs[2]);
+          if (areaIdx >= 0 && (segs[3] === "title" || segs[3] === "text")) {
+            ab.areas![areaIdx][segs[3]] = value;
+          }
+          return;
+        }
+      } else if (section.blockType === "stories" && (segs[1] === "eyebrow" || segs[1] === "heading")) {
+        section[segs[1]] = value;
+        return;
+      }
+      // eslint-disable-next-line no-console
+      console.warn("[home-visual-editor] unrecognized field path from live canvas:", path);
+    });
+  };
+
+  const handleMobileFieldCommit = (path: string, value: string) => setOverride(path, value);
+
+  const handleImageClick = (path: string) => {
+    const segs = path.split(".");
+    if (segs[1] !== "featuredPhoto" || segs[2] !== "images") return;
+    const idx = findSectionIndex(segs[0]);
+    if (idx < 0) return;
+    pickingSectionIndexRef.current = idx;
+    setPicking(0);
   };
 
   const reorder = (from: number, to: number) => {
@@ -126,65 +209,36 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
     });
   };
 
-  // Each Home section scales the shared h2 by its own real multiplier
-  // (.v2-difference ×1.45, .v2-stats/.v2-audience ×1.17, .v2-cta-dark ×0.94
-  // — see CLAUDE.md's Stage 1 note / typeScale.ts), so unlike every other
-  // page's editor this one can't use one flat "heading" style for every
-  // block — each block gets its own real-sized heading below.
-  const type = {
-    label: { fontSize: 14, fontWeight: 700, color: colors.black },
-    heading: scaledH2Style(colors, 1),
-    headingLight: scaledH2Style(colors, 1, true),
-    heroRotatingWord: homeHeroHeadlineStyle(colors),
-    // .v2-photo-feature-overlay h2 is an uncapped 8vw in the real CSS (no
-    // clamp — a known "orphan" size, not one of the shared multipliers) —
-    // approximated here against the shared h2 scale instead of raw vw, so
-    // it stays stable inside the editor's fixed-width canvas.
-    featuredPhotoHeading: scaledH2Style(colors, 1.3, true),
-    diffHeading: scaledH2Style(colors, 1.45),
-    ctaHeading: scaledH2Style(colors, 0.94, true),
-    audienceHeading: scaledH2Style(colors, 1.17, true),
-    body: bodyTextStyle(colors),
-    bodyLight: { fontSize: 16, lineHeight: 1.6, color: colors.offwhite, opacity: 0.85 },
-    small: { fontSize: 13, color: colors.blue, fontWeight: 600 },
-    smallLight: { fontSize: 13, color: colors.offwhite, opacity: 0.75, fontWeight: 600 },
+  const rowLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "var(--theme-text)" };
+  const rowWrap: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    padding: "10px 14px",
+    border: "1px solid var(--theme-elevation-150)",
+    borderRadius: "var(--style-radius-s, 6px)",
   };
 
-  const sectionLabel: React.CSSProperties = {
-    fontSize: 9,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    fontFamily: "system-ui, sans-serif",
-  };
-
-  const placeholderNote = (text: string, light: boolean): React.CSSProperties => ({
-    border: `1px dashed ${light ? "rgba(240,239,232,0.3)" : "rgba(36,30,28,0.25)"}`,
-    borderRadius: 8,
-    padding: 14,
-    fontSize: 11,
-    color: light ? "rgba(240,239,232,0.55)" : "rgba(36,30,28,0.5)",
-    fontFamily: "system-ui, sans-serif",
-    fontStyle: "italic",
-  });
+  const heroSection = sections.find((s): s is HeroBlock => s.blockType === "hero");
+  const heroIndex = sections.findIndex((s) => s.blockType === "hero");
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
-      <style>{`
-        .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
-      `}</style>
-
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
         <div>
           <h1 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Home — Visual Editor</h1>
           <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 620 }}>
-            The Home page in schematic form, in real section order. Drag a section by its ⠿ handle to
-            reorder the page. Hover or click any text to edit it. Stats, client logos, and testimonials
-            come from their own collections/globals — not editable here. SEO and adding/removing whole
-            sections stay in the <a href="/admin/globals/home">regular form</a>.
+            The real page, shown at desktop size and scaled to fit. Hover any text or photo below to see
+            what it is, click to edit it in place. Reordering sections, the rotating hero words (not
+            clickable on the page itself), and adding/removing service areas or photos happen in the
+            panel underneath. Stats, client logos, and testimonials come from their own collections/
+            globals — not editable here. SEO and adding/removing whole sections stay in the{" "}
+            <a href="/admin/globals/home">regular form</a>.
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
             type="button"
             onClick={save}
@@ -249,22 +303,24 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
 
-      {/* ---- The schematic canvas — one card per section, in page order ---- */}
-      <DeviceFrame>
-      <div
-        className="rn-ve"
-        style={{
-          display: "grid",
-          gap: 10,
-          fontFamily: '"TASA Orbiter Editor", system-ui, sans-serif',
-        }}
-      >
-        {sections.map((section, i) => {
-          const dark = section.blockType === "hero" || section.blockType === "cta" || section.blockType === "audience";
-          const sectionKey = section.id ?? i;
-          return (
+      <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
+        <DeviceFrame>
+          {/* Home's field paths are keyed by section (e.g. "<sectionId>.description"),
+              not nested under a "sections" property — pass the sections array itself
+              as the resync root so getByPath's array-by-id lookup matches the first
+              path segment directly. */}
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Home page — live canvas" data={sections} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+        </DeviceFrame>
+      </div>
+
+      <div style={{ marginTop: 22, display: "grid", gap: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--theme-elevation-500)" }}>
+          Manage sections — drag to reorder
+        </span>
+        <div style={{ display: "grid", gap: 6 }}>
+          {sections.map((section, i) => (
             <div
               key={section.id ?? i}
               draggable
@@ -280,274 +336,98 @@ export function HomeVisualEditorClient({ initialData, colors, mediaLibrary, page
               }}
               onDragEnd={() => { dragIndexRef.current = null; setDragOverIndex(null); }}
               style={{
-                border: `1px solid ${dragOverIndex === i ? colors.red : "var(--theme-elevation-150)"}`,
-                borderRadius: "var(--style-radius-m, 8px)",
-                overflow: "hidden",
-                boxShadow: "0 8px 24px -16px rgba(36,30,28,0.35)",
-                background: dark ? colors.black : colors.offwhite,
-                transition: "border-color 120ms ease",
+                padding: "8px 10px",
+                borderRadius: 6,
+                border: dragOverIndex === i ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
+                fontSize: 12,
+                color: "var(--theme-elevation-600)",
+                cursor: "grab",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "8px 14px",
-                  background: dark ? "rgba(255,255,255,0.06)" : "rgba(36,30,28,0.05)",
-                  borderBottom: `1px solid ${dark ? "rgba(255,255,255,0.1)" : "rgba(36,30,28,0.1)"}`,
-                  cursor: "grab",
-                }}
-                title="Drag to reorder"
-              >
-                <span style={{ fontSize: 14, color: dark ? "rgba(240,239,232,0.4)" : "rgba(36,30,28,0.35)", lineHeight: 1 }}>⠿</span>
-                <span style={{ ...sectionLabel, color: dark ? "rgba(240,239,232,0.45)" : "rgba(36,30,28,0.4)" }}>
-                  {i + 1} · {BLOCK_LABEL[section.blockType] ?? section.blockType}
-                </span>
+              ⠿ {i + 1} · {BLOCK_LABEL[section.blockType] ?? section.blockType}
+            </div>
+          ))}
+        </div>
+
+        {heroSection && (
+          <>
+            <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                <span style={rowLabel}>Rotating hero words — not shown on the page itself, so not clickable above</span>
+                <RowActions
+                  onAdd={() => set((d) => {
+                    const hb = d.sections![heroIndex] as HeroBlock;
+                    hb.rotatingWords = [...(hb.rotatingWords ?? []), { word: "" }];
+                  })}
+                  onRemove={
+                    (heroSection.rotatingWords?.length ?? 0) > 1
+                      ? () => set((d) => { (d.sections![heroIndex] as HeroBlock).rotatingWords!.pop(); })
+                      : undefined
+                  }
+                />
               </div>
-
-              <div style={{ padding: "22px 24px" }}>
-                {section.blockType === "hero" && (() => {
-                  const s = section as HeroBlock;
-                  return (
-                    <div style={{ display: "grid", gap: 14 }}>
-                      <div>
-                        <div style={{ display: "grid", gap: 6 }}>
-                          {(s.rotatingWords ?? []).map((w, wi) => (
-                            <ResponsiveField
-                              key={w.id ?? wi}
-                              label={`Rotating word ${wi + 1}`}
-                              value={w.word ?? ""}
-                              onChange={(v) => set((d) => { ((d.sections![i] as HeroBlock).rotatingWords![wi].word) = v; })}
-                              path={`${sectionKey}.rotatingWords.${w.id ?? wi}.word`}
-                              overrides={overrides}
-                              setOverride={setOverride}
-                              clearOverride={clearOverride}
-                              style={type.heroRotatingWord}
-                            />
-                          ))}
-                        </div>
-                        <RowActions
-                          onAdd={() => set((d) => { const hb = d.sections![i] as HeroBlock; hb.rotatingWords = [...(hb.rotatingWords ?? []), { word: "" }]; })}
-                          onRemove={(s.rotatingWords?.length ?? 0) > 1 ? () => set((d) => { (d.sections![i] as HeroBlock).rotatingWords!.pop(); }) : undefined}
-                        />
-                      </div>
-                      <ResponsiveField
-                        label="Description"
-                        value={s.description ?? ""}
-                        onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).description = v; })}
-                        path={`${sectionKey}.description`}
-                        overrides={overrides}
-                        setOverride={setOverride}
-                        clearOverride={clearOverride}
-                        style={type.bodyLight}
-                        multiline
-                      />
-                      <div style={{ display: "flex", gap: 16 }}>
-                        <ResponsiveField
-                          label="Primary button text"
-                          value={s.primaryCtaLabel ?? ""}
-                          onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).primaryCtaLabel = v; })}
-                          path={`${sectionKey}.primaryCtaLabel`}
-                          overrides={overrides}
-                          setOverride={setOverride}
-                          clearOverride={clearOverride}
-                          style={type.smallLight}
-                        />
-                        <ResponsiveField
-                          label="Secondary button text"
-                          value={s.secondaryCtaLabel ?? ""}
-                          onChange={(v) => set((d) => { (d.sections![i] as HeroBlock).secondaryCtaLabel = v; })}
-                          path={`${sectionKey}.secondaryCtaLabel`}
-                          overrides={overrides}
-                          setOverride={setOverride}
-                          clearOverride={clearOverride}
-                          style={type.smallLight}
-                        />
-                      </div>
-                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 14, display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20 }}>
-                        <div style={{ display: "grid", gap: 8 }}>
-                          <ResponsiveField
-                            label="Featured photo · heading"
-                            value={s.featuredPhoto?.heading ?? ""}
-                            onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.featuredPhoto = { ...hb.featuredPhoto, heading: v }; })}
-                            path={`${sectionKey}.featuredPhoto.heading`}
-                            overrides={overrides}
-                            setOverride={setOverride}
-                            clearOverride={clearOverride}
-                            style={type.featuredPhotoHeading}
-                          />
-                          <ResponsiveField
-                            label="Featured photo · button text"
-                            value={s.featuredPhoto?.ctaLabel ?? ""}
-                            onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.featuredPhoto = { ...hb.featuredPhoto, ctaLabel: v }; })}
-                            path={`${sectionKey}.featuredPhoto.ctaLabel`}
-                            overrides={overrides}
-                            setOverride={setOverride}
-                            clearOverride={clearOverride}
-                            style={type.smallLight}
-                          />
-                        </div>
-                        <PhotoSlots
-                          photos={s.featuredPhoto?.images ?? []}
-                          resolve={mediaById}
-                          onPick={(index) => { pickingSectionIndexRef.current = i; setPicking(index); }}
-                          onRemove={(index) => set((d) => { (d.sections![i] as HeroBlock).featuredPhoto!.images!.splice(index, 1); })}
-                        />
-                      </div>
-                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 14, display: "grid", gap: 8 }}>
-                        <ResponsiveField
-                          label="Client logos strip · button text"
-                          value={s.logosStrip?.ctaLabel ?? ""}
-                          onChange={(v) => set((d) => { const hb = d.sections![i] as HeroBlock; hb.logosStrip = { ...hb.logosStrip, ctaLabel: v }; })}
-                          path={`${sectionKey}.logosStrip.ctaLabel`}
-                          overrides={overrides}
-                          setOverride={setOverride}
-                          clearOverride={clearOverride}
-                          style={type.smallLight}
-                        />
-                        <p style={placeholderNote("", true)}>The logos themselves come from the Client Logos collection, not here.</p>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {section.blockType === "diff" && (
-                  <ResponsiveField
-                    label="Heading"
-                    value={(section as DifferenceBlock).heading ?? ""}
-                    onChange={(v) => set((d) => { (d.sections![i] as DifferenceBlock).heading = v; })}
-                    path={`${sectionKey}.heading`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.diffHeading}
-                    multiline
+              <div style={{ display: "grid", gap: 6, maxWidth: 400 }}>
+                {(heroSection.rotatingWords ?? []).map((w, wi) => (
+                  <Field
+                    key={w.id ?? wi}
+                    label={`Rotating word ${wi + 1}`}
+                    value={w.word ?? ""}
+                    onChange={(v) => set((d) => { ((d.sections![heroIndex] as HeroBlock).rotatingWords![wi].word) = v; })}
+                    style={{ fontSize: 14 }}
                   />
-                )}
-
-                {section.blockType === "stats" && (
-                  <p style={placeholderNote("", false)}>
-                    No fields here — this renders the separate{" "}
-                    <a href="/admin/globals/stats" style={{ color: colors.red }}>Stats global</a>, wherever this block sits in the order.
-                  </p>
-                )}
-
-                {section.blockType === "divider" && (
-                  <p style={placeholderNote("", false)}>
-                    Decorative video/image strip — edit the video upload in the{" "}
-                    <a href="/admin/globals/home" style={{ color: colors.red }}>regular form</a>.
-                  </p>
-                )}
-
-                {section.blockType === "cta" && (
-                  <div style={{ display: "grid", gap: 8 }}>
-                    <ResponsiveField
-                      label="Heading"
-                      value={(section as CtaDarkBlock).heading ?? ""}
-                      onChange={(v) => set((d) => { (d.sections![i] as CtaDarkBlock).heading = v; })}
-                      path={`${sectionKey}.heading`}
-                      overrides={overrides}
-                      setOverride={setOverride}
-                      clearOverride={clearOverride}
-                      style={type.ctaHeading}
-                      multiline
-                    />
-                    <ResponsiveField
-                      label="Button text"
-                      value={(section as CtaDarkBlock).ctaLabel ?? ""}
-                      onChange={(v) => set((d) => { (d.sections![i] as CtaDarkBlock).ctaLabel = v; })}
-                      path={`${sectionKey}.ctaLabel`}
-                      overrides={overrides}
-                      setOverride={setOverride}
-                      clearOverride={clearOverride}
-                      style={{ ...type.smallLight, background: colors.red, color: "#fff", display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content", opacity: 1 }}
-                    />
-                  </div>
-                )}
-
-                {section.blockType === "audience" && (() => {
-                  const s = section as AudienceBlock;
-                  return (
-                    <div style={{ display: "grid", gap: 12 }}>
-                      <ResponsiveField
-                        label="Heading"
-                        value={s.heading ?? ""}
-                        onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).heading = v; })}
-                        path={`${sectionKey}.heading`}
-                        overrides={overrides}
-                        setOverride={setOverride}
-                        clearOverride={clearOverride}
-                        style={type.audienceHeading}
-                        multiline
-                      />
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                        {(s.areas ?? []).map((a, ai) => (
-                          <div key={a.id ?? ai} style={{ display: "grid", gap: 4, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: 12 }}>
-                            <ResponsiveField
-                              label={`Area ${ai + 1} · title`}
-                              value={a.title ?? ""}
-                              onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).areas![ai].title = v; })}
-                              path={`${sectionKey}.areas.${a.id ?? ai}.title`}
-                              overrides={overrides}
-                              setOverride={setOverride}
-                              clearOverride={clearOverride}
-                              style={type.smallLight}
-                            />
-                            <ResponsiveField
-                              label={`Area ${ai + 1} · description`}
-                              value={a.text ?? ""}
-                              onChange={(v) => set((d) => { (d.sections![i] as AudienceBlock).areas![ai].text = v; })}
-                              path={`${sectionKey}.areas.${a.id ?? ai}.text`}
-                              overrides={overrides}
-                              setOverride={setOverride}
-                              clearOverride={clearOverride}
-                              style={type.bodyLight}
-                              multiline
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <RowActions
-                        onAdd={(s.areas?.length ?? 0) < 4 ? () => set((d) => { const ab = d.sections![i] as AudienceBlock; ab.areas = [...(ab.areas ?? []), { title: "", text: "" }]; }) : undefined}
-                        onRemove={(s.areas?.length ?? 0) > 1 ? () => set((d) => { (d.sections![i] as AudienceBlock).areas!.pop(); }) : undefined}
-                      />
-                    </div>
-                  );
-                })()}
-
-                {section.blockType === "stories" && (
-                  <div style={{ display: "grid", gap: 8 }}>
-                    <ResponsiveField
-                      label="Small label"
-                      value={(section as StoriesBlock).eyebrow ?? ""}
-                      onChange={(v) => set((d) => { (d.sections![i] as StoriesBlock).eyebrow = v; })}
-                      path={`${sectionKey}.eyebrow`}
-                      overrides={overrides}
-                      setOverride={setOverride}
-                      clearOverride={clearOverride}
-                      style={type.small}
-                    />
-                    <ResponsiveField
-                      label="Heading"
-                      value={(section as StoriesBlock).heading ?? ""}
-                      onChange={(v) => set((d) => { (d.sections![i] as StoriesBlock).heading = v; })}
-                      path={`${sectionKey}.heading`}
-                      overrides={overrides}
-                      setOverride={setOverride}
-                      clearOverride={clearOverride}
-                      style={type.heading}
-                      multiline
-                    />
-                    <p style={placeholderNote("", false)}>Testimonials themselves come from the Testimonials collection, not here.</p>
-                  </div>
-                )}
+                ))}
               </div>
+            </div>
+
+            <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+              <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Top Banner — featured photos</span>
+              <PhotoSlots
+                photos={heroSection.featuredPhoto?.images ?? []}
+                resolve={mediaById}
+                onPick={(index) => { pickingSectionIndexRef.current = heroIndex; setPicking(index); }}
+                onRemove={(index) =>
+                  set((d) => {
+                    (d.sections![heroIndex] as HeroBlock).featuredPhoto!.images!.splice(index, 1);
+                  })
+                }
+              />
+            </div>
+          </>
+        )}
+
+        {sections.map((section, i) => {
+          if (section.blockType !== "audience") return null;
+          const ab = section as AudienceBlock;
+          return (
+            <div key={section.id ?? i} style={rowWrap}>
+              <span style={rowLabel}>Service Areas — cards ({(ab.areas ?? []).length})</span>
+              <RowActions
+                onAdd={
+                  (ab.areas?.length ?? 0) < 4
+                    ? () => set((d) => {
+                        const b = d.sections![i] as AudienceBlock;
+                        b.areas = [...(b.areas ?? []), { title: "", text: "" }];
+                      })
+                    : undefined
+                }
+                onRemove={
+                  (ab.areas?.length ?? 0) > 1
+                    ? () => set((d) => { (d.sections![i] as AudienceBlock).areas!.pop(); })
+                    : undefined
+                }
+              />
             </div>
           );
         })}
+
+        {sections.some((s) => s.blockType === "stats" || s.blockType === "divider") && (
+          <p style={{ fontSize: 11, color: "var(--theme-elevation-500)", margin: 0 }}>
+            The Stats section reads the separate{" "}
+            <a href="/admin/globals/stats">Stats global</a>, and the video divider&apos;s upload lives in
+            the <a href="/admin/globals/home">regular form</a> — neither has fields here.
+          </p>
+        )}
       </div>
-      </DeviceFrame>
 
       {picking !== null && picking !== "new" && (
         <MediaPicker

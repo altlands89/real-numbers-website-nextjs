@@ -803,7 +803,7 @@ export interface Stat {
   createdAt?: string | null;
 }
 /**
- * Home page copy. Drag the section rows below to reorder the page. Testimonials, stats, and client logos are managed in their own collections.
+ * Add, remove, or reorder whole sections here (the Visual Editor doesn't add/remove sections). Section copy is edited in the Visual Editor. Testimonials, stats, and client logos are managed in their own collections.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".

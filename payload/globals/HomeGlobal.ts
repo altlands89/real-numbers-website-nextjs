@@ -9,7 +9,7 @@ export const HomeGlobal: GlobalConfig = {
   label: "Home",
   admin: {
     group: "Pages",
-    description: "Home page copy. Drag the section rows below to reorder the page. Testimonials, stats, and client logos are managed in their own collections.",
+    description: "Add, remove, or reorder whole sections here (the Visual Editor doesn't add/remove sections). Section copy is edited in the Visual Editor. Testimonials, stats, and client logos are managed in their own collections.",
   },
   hooks: {
     afterChange: [revalidateGlobalOnChange],

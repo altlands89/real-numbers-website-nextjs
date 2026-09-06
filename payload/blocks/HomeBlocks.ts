@@ -17,6 +17,12 @@ export const HeroBlock: Block = {
   slug: "hero",
   labels: { singular: "Top Banner (Hero)", plural: "Top Banners" },
   interfaceName: "HeroBlock",
+  // Every field below is edited via the Home Visual Editor now (rotating
+  // words in its "Manage sections" panel, everything else by clicking the
+  // live canvas) — admin.hidden so the regular form can't hold a stale,
+  // independently-editable copy of the same content. The block's own
+  // existence/position stays editable here (add/remove/reorder a whole
+  // section), since the visual editor deliberately doesn't replicate that.
   fields: [
     {
       name: "rotatingWords",
@@ -24,16 +30,17 @@ export const HeroBlock: Block = {
       label: "Rotating Words",
       labels: { singular: "Word", plural: "Words" },
       minRows: 1,
-      admin: { description: "Words that cycle after \"Real\" in the headline, e.g. \"Numbers.\", \"Clarity.\", \"Confidence.\"" },
+      admin: { hidden: true, description: "Words that cycle after \"Real\" in the headline, e.g. \"Numbers.\", \"Clarity.\", \"Confidence.\"" },
       fields: [{ name: "word", type: "text", label: "Word", required: true }],
     },
-    { name: "description", type: "textarea", label: "Description Text", required: true },
-    { name: "primaryCtaLabel", type: "text", label: "Main Button Text", defaultValue: "Let's Talk" },
-    { name: "secondaryCtaLabel", type: "text", label: "Second Button Text", defaultValue: "Our Expertise" },
+    { name: "description", type: "textarea", label: "Description Text", required: true, admin: { hidden: true } },
+    { name: "primaryCtaLabel", type: "text", label: "Main Button Text", defaultValue: "Let's Talk", admin: { hidden: true } },
+    { name: "secondaryCtaLabel", type: "text", label: "Second Button Text", defaultValue: "Our Expertise", admin: { hidden: true } },
     {
       name: "featuredPhoto",
       type: "group",
       label: "Featured Photo Overlay",
+      admin: { hidden: true },
       fields: [
         { name: "heading", type: "textarea", label: "Heading", defaultValue: "A partnership that works" },
         { name: "ctaLabel", type: "text", label: "Button Text", defaultValue: "Our approach" },
@@ -51,6 +58,7 @@ export const HeroBlock: Block = {
       name: "logosStrip",
       type: "group",
       label: "Client Logos Strip",
+      admin: { hidden: true },
       fields: [
         {
           name: "ctaLabel",
@@ -68,7 +76,7 @@ export const DifferenceBlock: Block = {
   slug: "diff",
   labels: { singular: "Numbers Section", plural: "Numbers Sections" },
   interfaceName: "DifferenceBlock",
-  fields: [{ name: "heading", type: "textarea", label: "Heading", defaultValue: "The numbers that make the difference" }],
+  fields: [{ name: "heading", type: "textarea", label: "Heading", defaultValue: "The numbers that make the difference", admin: { hidden: true } }],
 };
 
 export const StatsBlock: Block = {
@@ -100,8 +108,8 @@ export const CtaDarkBlock: Block = {
   labels: { singular: "Dark Banner", plural: "Dark Banners" },
   interfaceName: "CtaDarkBlock",
   fields: [
-    { name: "heading", type: "textarea", label: "Heading", defaultValue: "From ambition to tangible results" },
-    { name: "ctaLabel", type: "text", label: "Button Text", defaultValue: "Discover more" },
+    { name: "heading", type: "textarea", label: "Heading", defaultValue: "From ambition to tangible results", admin: { hidden: true } },
+    { name: "ctaLabel", type: "text", label: "Button Text", defaultValue: "Discover more", admin: { hidden: true } },
   ],
 };
 
@@ -110,7 +118,7 @@ export const AudienceBlock: Block = {
   labels: { singular: "Service Areas", plural: "Service Areas" },
   interfaceName: "AudienceBlock",
   fields: [
-    { name: "heading", type: "textarea", label: "Heading", defaultValue: "One partnership\nfor every stage of growth", admin: { description: "\"One partnership for every stage of growth\" — dark navy section." } },
+    { name: "heading", type: "textarea", label: "Heading", defaultValue: "One partnership\nfor every stage of growth", admin: { hidden: true, description: "\"One partnership for every stage of growth\" — dark navy section." } },
     {
       name: "areas",
       type: "array",
@@ -118,6 +126,7 @@ export const AudienceBlock: Block = {
       labels: { singular: "Service Area", plural: "Service Areas" },
       minRows: 1,
       maxRows: 4,
+      admin: { hidden: true },
       fields: [
         { name: "title", type: "text", label: "Title", required: true },
         { name: "text", type: "textarea", label: "Description", required: true },
@@ -131,8 +140,8 @@ export const StoriesBlock: Block = {
   labels: { singular: "Client Stories", plural: "Client Stories" },
   interfaceName: "StoriesBlock",
   fields: [
-    { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Client Stories", admin: { description: "Testimonials themselves come from the Testimonials collection, not here." } },
-    { name: "heading", type: "textarea", label: "Heading", defaultValue: "What happens when the numbers start working for you" },
+    { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Client Stories", admin: { hidden: true, description: "Testimonials themselves come from the Testimonials collection, not here." } },
+    { name: "heading", type: "textarea", label: "Heading", defaultValue: "What happens when the numbers start working for you", admin: { hidden: true } },
   ],
 };
 
