@@ -52,7 +52,7 @@ export default function CompositionInteractive({
   const mouseTarget = useRef({ x: 0, y: 0 });
   const mouseCurrent = useRef({ x: 0, y: 0 });
   const active = useRef(true);
-  const rafId = useRef<number>();
+  const rafId = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,6 +83,12 @@ export default function CompositionInteractive({
   useEffect(() => {
     const container = containerRef.current;
     if (!container || paths.length === 0) return;
+
+    // Purely decorative background motion — skip it entirely inside the
+    // visual editor's live-preview iframe (set by EditorBridgeListener) so
+    // it can't make a click target drift out from under the cursor.
+    if (document.documentElement.dataset.rnEditorFrozen === "1") return;
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const io = new IntersectionObserver(

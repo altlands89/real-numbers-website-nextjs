@@ -1,76 +1,30 @@
-"use client";
+import { getCMS } from "@/lib/payload";
+import StoriesClient from "./StoriesClient";
+import { ResponsiveText, getOverride } from "./ResponsiveText";
 
-import { useRef } from "react";
-import CompositionDrift from "./CompositionDrift";
-import ScrollDots from "./ScrollDots";
+export default async function Stories() {
+  const payload = await getCMS();
+  const [home, testimonials] = await Promise.all([
+    payload.findGlobal({ slug: "home" }),
+    payload.find({ collection: "testimonials", sort: "order", limit: 50 }),
+  ]);
 
-const STORIES = [
-  {
-    quote:
-      "Working with Real Numbers has been a real asset for us. Uzi and Eran are thoughtful, precise, and always available when we need them. They understand our business deeply and help turn complex challenges into clear, practical plans. Their team combines the professionalism of a strong finance department with the care and ownership of true partners.",
-    name: "Gilad Uziely",
-    role: "Get Sequence",
-  },
-  {
-    quote:
-      "The Real Numbers team supported us every step of the way — guiding with clarity, strengthening our business model, and responding quickly whenever needed. Their true partnership and personal approach made us feel like the first and only client.",
-    name: "Yaniv Nisanboim",
-    role: "",
-  },
-  {
-    quote:
-      "I've worked with many advisors, but Real Numbers really changed the game. They're that rare mix of professionalism, reliability, and true partnership. With them, I gained clarity, control, and confidence in financial decisions. More than just a service provider, they became a trusted partner to me and the company.",
-    name: "Marina",
-    role: "VP of Finance and Operations, Astrix",
-  },
-  {
-    quote:
-      "As a CEO, trust is everything — especially when it comes to finances. The team at Real Numbers has become a true partner in our journey. They act as real-time advisors for every financial strategy and question, and their proactive approach allows us to focus fully on our customers, confident that Real Numbers has our back at every step. Their professionalism, combined with a level of service that is truly unheard of, sets them apart in every way.",
-    name: "Amit Rapaport",
-    role: "CEO, Compete",
-  },
-];
-
-export default function Stories() {
-  const railRef = useRef<HTMLDivElement>(null);
+  const storiesSection = (home.sections ?? []).find((s) => s.blockType === "stories");
+  const mo = home.mobileOverrides;
+  const sectionKey = storiesSection?.id ?? "stories";
 
   return (
-    <section className="stories" id="use-cases" data-reveal>
-      <CompositionDrift
-        src="/compositions/comp-13.svg"
-        distance={160}
-        seed={8}
-        style={{ right: "-12%", top: "-16%", width: 590, opacity: 0.18 }}
-      />
-      <div className="wrap">
-        <div className="section-head center">
-          <span className="eyebrow">Client Stories</span>
-          <h2 data-reveal className="reveal-heading">
-            Reports were never the point. The confidence leaders gain from
-            them is.
-          </h2>
-        </div>
-        <div className="stories-grid-wrap">
-          <div className="stories-grid" ref={railRef}>
-            {STORIES.map((s, i) => (
-              <div
-                className="story-card"
-                key={s.name}
-                data-reveal
-                style={{ transitionDelay: `${i * 80}ms` }}
-              >
-                <span className="story-quote-mark">&quot;</span>
-                <p className="story-text">{s.quote}</p>
-                <p className="attribution">
-                  — {s.name}
-                  {s.role ? `, ${s.role}` : ""}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <ScrollDots railRef={railRef} count={STORIES.length} />
-      </div>
-    </section>
+    <StoriesClient
+      eyebrow={
+        <ResponsiveText
+          desktop={storiesSection?.eyebrow || "Client Stories"}
+          mobile={getOverride(mo, `${sectionKey}.eyebrow`)} path={`${sectionKey}.eyebrow`}
+        />
+      }
+      heading={
+        <ResponsiveText desktop={storiesSection?.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />
+      }
+      stories={testimonials.docs.map((t) => ({ quote: t.quote, name: t.name, role: t.role || "" }))}
+    />
   );
 }
