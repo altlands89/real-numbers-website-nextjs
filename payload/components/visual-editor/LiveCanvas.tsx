@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { extractText, renderTextInto, findTextTarget, getByPath } from "./domTextSync";
 
 // The real page, rendered at its true desktop width (1440px, inside the
@@ -40,6 +41,7 @@ export function LiveCanvas({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const roRef = useRef<ResizeObserver | null>(null);
   const [height, setHeight] = useState(900);
+  const router = useRouter();
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
@@ -48,11 +50,17 @@ export function LiveCanvas({
         onFieldCommit(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
       } else if (e.data?.type === "rn-editor-field-click" && e.data.kind === "image" && typeof e.data.path === "string") {
         onImageClick(e.data.path);
+      } else if (e.data?.type === "rn-editor-navigate" && typeof e.data.slug === "string") {
+        // A click on an in-canvas link to another page — jump the admin to
+        // that page's own visual editor rather than following the link
+        // inside this iframe (see EditorBridgeListener.tsx for the
+        // same-origin-only, mapped-routes-only detection this trusts).
+        router.push(`/admin/visual-editor/${e.data.slug}`);
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [onFieldCommit, onImageClick]);
+  }, [onFieldCommit, onImageClick, router]);
 
   useEffect(() => () => roRef.current?.disconnect(), []);
 

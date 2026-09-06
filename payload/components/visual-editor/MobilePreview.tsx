@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 // A real, accurate mobile preview — an iframe of the actual live page at a
 // phone-width viewport (390px, matching Payload's own Live Preview mobile
@@ -44,9 +45,9 @@ export function MobilePreview({
 }) {
   const [open, setOpen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!onFieldSelect && !onFieldCommit) return;
     const onMessage = (e: MessageEvent) => {
       // Ignore messages from any other bridge iframe on the same page
       // (e.g. About's main live canvas) — both post the same message
@@ -56,11 +57,16 @@ export function MobilePreview({
         onFieldSelect?.(e.data.path);
       } else if (e.data?.type === "rn-editor-field-commit" && typeof e.data.path === "string") {
         onFieldCommit?.(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
+      } else if (e.data?.type === "rn-editor-navigate" && typeof e.data.slug === "string") {
+        // Same cross-page jump as the main canvas (LiveCanvas.tsx) — always
+        // wired up here regardless of onFieldSelect/onFieldCommit, since a
+        // link click can happen even when this preview is read-only.
+        router.push(`/admin/visual-editor/${e.data.slug}`);
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [onFieldSelect, onFieldCommit]);
+  }, [onFieldSelect, onFieldCommit, router]);
 
   // rn_editor_bridge=1 is what tells EditorBridgeListener (inert on every
   // normal page view) to actually attach its click/hover handlers.

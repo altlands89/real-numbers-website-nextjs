@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { extractText, renderTextInto, findTextTarget } from "@/payload/components/visual-editor/domTextSync";
+import { ROUTE_TO_VISUAL_EDITOR_SLUG, normalizePathname } from "@/lib/editorPageRoutes";
 
 // Powers the visual editor's live-preview bridge
 // (payload/components/visual-editor/MobilePreview.tsx and, for pages
@@ -172,17 +173,42 @@ export default function EditorBridgeListener() {
     // leadership "View team" link) gets a chance to navigate the iframe.
     const onClick = (e: MouseEvent) => {
       const el = findFieldEl(e.target);
-      if (!el) return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (inlineEditing && el.dataset.fieldKind !== "image") {
-        startInlineEdit(el);
+      if (el) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (inlineEditing && el.dataset.fieldKind !== "image") {
+          startInlineEdit(el);
+          return;
+        }
+        window.parent.postMessage(
+          { type: "rn-editor-field-click", path: el.dataset.fieldPath, kind: el.dataset.fieldKind },
+          "*"
+        );
         return;
       }
-      window.parent.postMessage(
-        { type: "rn-editor-field-click", path: el.dataset.fieldPath, kind: el.dataset.fieldKind },
-        "*"
-      );
+
+      // Not an editable field — if it's a link to another page on this same
+      // site, jump the admin to THAT page's own visual editor instead of
+      // just following the link inside this iframe (which would land on a
+      // read-only render of a different page, with nothing here to edit).
+      // External links, same-page anchors, and mailto:/tel: links are left
+      // alone — only internal navigation is intercepted.
+      const anchor = (e.target as HTMLElement | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute("href") || "";
+      if (!href || href.startsWith("#") || /^(mailto|tel):/i.test(href)) return;
+      let url: URL;
+      try {
+        url = new URL(href, window.location.href);
+      } catch {
+        return;
+      }
+      if (url.origin !== window.location.origin) return;
+      const slug = ROUTE_TO_VISUAL_EDITOR_SLUG[normalizePathname(url.pathname)];
+      if (!slug) return;
+      e.preventDefault();
+      e.stopPropagation();
+      window.parent.postMessage({ type: "rn-editor-navigate", slug }, "*");
     };
 
     document.addEventListener("mouseover", onMouseOver);

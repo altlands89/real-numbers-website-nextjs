@@ -13,6 +13,7 @@ import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
@@ -198,6 +199,7 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
             type="button"
@@ -260,6 +262,7 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
               Reload &amp; sign in
             </button>
           )}
+          {status.kind === "ok" && <ViewLiveLink pageUrl={pageUrl} variant="banner" />}
         </div>
       )}
 
