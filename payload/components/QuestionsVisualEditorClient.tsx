@@ -4,15 +4,14 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuestionsFoundersAskPage } from "@/payload/payload-types";
 import { saveFaqItems, saveQuestionsPage } from "./questionsVisualEditorActions";
-import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
-import { eyebrowStyle, pageHeroH1Style } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
@@ -27,7 +26,7 @@ type Props = {
   pageUrl: string;
 };
 
-export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colors, mediaLibrary, pageUrl }: Props) {
+export function QuestionsVisualEditorClient({ initialData, initialFaqItems, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
@@ -40,7 +39,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
     onMutate,
   );
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
-  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+  const { overrides, setOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
     initialData.mobileOverrides as Record<string, unknown> | null | undefined,
   );
 
@@ -79,14 +78,30 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
-  // Editor bridge: a click inside the mobile-preview iframe (on the live
-  // rendered page) posts {path} back here — scroll the matching field in
-  // the canvas above into view and focus its input.
-  const handleFieldSelect = (path: string) => {
-    const el = document.getElementById(`rn-field-${path}`);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  const handleFieldCommit = (path: string, value: string) => {
+    const segs = path.split(".");
+    if (segs[0] === "faq") {
+      const idx = faqItems.findIndex((f, i) => String(f.id ?? `new-${i}`) === segs[1]);
+      if (idx >= 0 && (segs[2] === "question" || segs[2] === "answer")) {
+        setFaqItems((d) => { d[idx][segs[2] as "question" | "answer"] = value; });
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn("[questions-visual-editor] unrecognized faq path from live canvas:", path);
+      }
+      return;
+    }
+    set((d) => {
+      if (path === "hero.eyebrow") { d.hero.eyebrow = value; return; }
+      if (path === "hero.heading") { d.hero.heading = value; return; }
+      // eslint-disable-next-line no-console
+      console.warn("[questions-visual-editor] unrecognized field path from live canvas:", path);
+    });
+  };
+
+  const handleMobileFieldCommit = (path: string, value: string) => setOverride(path, value);
+
+  const handleImageClick = (path: string) => {
+    if (path === "atmospherePhotos") setPicking(0);
   };
 
   const addFaqItem = () => setFaqItems((d) => { d.push({ id: null, question: "", answer: "" }); });
@@ -101,24 +116,6 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
       d.splice(to, 0, item);
     });
   const { dragHandlers, dragOverIndex } = useDragReorder(reorderFaqItems);
-
-  const type = {
-    eyebrow: eyebrowStyle(colors),
-    h1: pageHeroH1Style(colors),
-    question: { fontSize: "17.6px", fontWeight: 700, color: colors.blue },
-    answer: { fontSize: 14, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
-  };
-
-  const sectionLabel: React.CSSProperties = {
-    fontSize: 9,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    color: "rgba(36,30,28,0.35)",
-    fontFamily: "system-ui, sans-serif",
-    marginBottom: 10,
-    display: "block",
-  };
 
   const cardBtn: React.CSSProperties = {
     border: "1px solid rgba(36,30,28,0.2)",
@@ -135,18 +132,15 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
-      <style>{`
-        .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
-      `}</style>
-
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
         <div>
           <h1 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Questions Founders Ask — Visual Editor</h1>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 560 }}>
-            The Q&amp;A page in schematic form, including the question list — add, remove, reorder, and edit
-            right here. SEO stays in the{" "}
-            <a href="/admin/globals/questions-founders-ask-page">regular form</a>; the list also has its own{" "}
-            <a href="/admin/collections/faq-items">collection screen</a> if you prefer a plain form.
+          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 620 }}>
+            The real page, shown at desktop size and scaled to fit. Hover any text or photo below —
+            including a question or its answer — to edit it in place. Adding, removing and reordering
+            questions happens in the panel underneath. SEO stays in the{" "}
+            <a href="/admin/globals/questions-founders-ask-page">regular form</a>; the list also has its
+            own <a href="/admin/collections/faq-items">collection screen</a> if you prefer a plain form.
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -214,138 +208,78 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, colo
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
 
-      {/* ---- The schematic canvas ---- */}
-      <DeviceFrame>
-      <div
-        className="rn-ve"
-        style={{
-          border: "1px solid var(--theme-elevation-150)",
-          borderRadius: "var(--style-radius-m, 8px)",
-          overflow: "hidden",
-          fontFamily: '"TASA Orbiter Editor", system-ui, sans-serif',
-          boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)",
-        }}
-      >
-        {/* Section 1 — dark top banner (page-hero, no lede on this page) */}
-        <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
-          <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
-          <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <ResponsiveField
-              label="Small label"
-              value={data.hero?.eyebrow ?? ""}
-              onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
-              path="hero.eyebrow"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.eyebrow}
-              placeholder="Questions Founders Ask"
-            />
-            <ResponsiveField
-              label="Heading"
-              value={data.hero?.heading ?? ""}
-              onChange={(v) => set((d) => { d.hero.heading = v; })}
-              path="hero.heading"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.h1}
-              multiline
-            />
-          </div>
+      <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
+        <DeviceFrame>
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Questions Founders Ask page — live canvas" onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+        </DeviceFrame>
+      </div>
+
+      <div style={{ marginTop: 22, display: "grid", gap: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--theme-elevation-500)" }}>
+          Manage lists
+        </span>
+
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--theme-text)", display: "block", marginBottom: 8 }}>Background photo</span>
+          <PhotoSlots
+            photos={data.atmospherePhotos ?? []}
+            resolve={mediaById}
+            onPick={(index) => setPicking(index)}
+            onRemove={(index) =>
+              set((d) => {
+                d.atmospherePhotos!.splice(index, 1);
+              })
+            }
+          />
         </div>
 
-        {/* Section 2 — atmosphere photo + Q&A list (no closing banner on this page) */}
-        <div style={{ background: colors.offwhite, padding: "30px 34px 40px" }}>
-          <span style={sectionLabel}>2 · Background photo</span>
-          <div style={{ maxWidth: 420, marginBottom: 24 }}>
-            <PhotoSlots
-              photos={data.atmospherePhotos ?? []}
-              resolve={mediaById}
-              onPick={(index) => setPicking(index)}
-              onRemove={(index) =>
-                set((d) => {
-                  d.atmospherePhotos!.splice(index, 1);
-                })
-              }
-            />
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--theme-text)" }}>Questions ({faqItems.length}) — drag to reorder</span>
+            <button
+              type="button"
+              onClick={addFaqItem}
+              style={{
+                border: "1px dashed var(--theme-elevation-250)",
+                background: "var(--theme-elevation-0)",
+                color: "var(--theme-text)",
+                borderRadius: 6,
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              + Add question
+            </button>
           </div>
-
-          <span style={sectionLabel}>3 · Questions</span>
-          <div style={{ display: "grid", gap: 14 }}>
-            {faqItems.map((f, i) => {
-              const faqKey = f.id ?? `new-${i}`;
-              return (
-                <div
-                  key={faqKey}
-                  {...dragHandlers(i)}
-                  style={{
-                    display: "grid",
-                    gap: 6,
-                    background: "rgba(255,255,255,0.6)",
-                    border: dragOverIndex === i ? `1px dashed ${colors.blue}` : "1px solid rgba(36,30,28,0.12)",
-                    borderRadius: 8,
-                    padding: 14,
-                    cursor: "grab",
-                  }}
-                >
-                  <ResponsiveField
-                    label={`Question ${i + 1}`}
-                    value={f.question}
-                    onChange={(v) => setFaqItems((d) => { d[i].question = v; })}
-                    path={`faq.${faqKey}.question`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.question}
-                    multiline
-                  />
-                  <ResponsiveField
-                    label={`Question ${i + 1} · answer`}
-                    value={f.answer}
-                    onChange={(v) => setFaqItems((d) => { d[i].answer = v; })}
-                    path={`faq.${faqKey}.answer`}
-                    overrides={overrides}
-                    setOverride={setOverride}
-                    clearOverride={clearOverride}
-                    style={type.answer}
-                    multiline
-                  />
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                    <span style={{ fontSize: 11, color: "rgba(36,30,28,0.4)", cursor: "grab" }} title="Drag to reorder">
-                      ⠿ Drag to reorder
-                    </span>
-                    <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <div style={{ display: "grid", gap: 6 }}>
+            {faqItems.map((f, i) => (
+              <div
+                key={f.id ?? `new-${i}`}
+                {...dragHandlers(i)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  border: dragOverIndex === i ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
+                  cursor: "grab",
+                }}
+              >
+                <span style={{ fontSize: 12, color: "var(--theme-elevation-600)" }}>⠿ {f.question || `Question ${i + 1}`}</span>
+                <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
-          <button
-            type="button"
-            onClick={addFaqItem}
-            style={{
-              marginTop: 12,
-              border: "1px dashed rgba(36,30,28,0.3)",
-              background: "rgba(255,255,255,0.75)",
-              color: "#241e1c",
-              borderRadius: 6,
-              padding: "8px 14px",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
-            + Add question
-          </button>
         </div>
       </div>
-      </DeviceFrame>
 
       {picking !== null && (
         <MediaPicker

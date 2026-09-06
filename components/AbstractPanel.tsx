@@ -15,6 +15,9 @@ interface AbstractPanelProps {
   /** Parallax travel in px. Kept gentle so it reads as drift, not motion sickness. Ignored when `video` is set. */
   strength?: number;
   sizes?: string;
+  // See PhotoSlideshow's editorFieldPath — applies to both the slideshow
+  // and single-image render paths here.
+  editorFieldPath?: string;
 }
 
 /**
@@ -31,6 +34,7 @@ export default function AbstractPanel({
   className,
   strength = 22,
   sizes,
+  editorFieldPath,
 }: AbstractPanelProps) {
   const defaultSizes =
     variant === "panel"
@@ -65,15 +69,21 @@ export default function AbstractPanel({
       ) : (
         <Parallax className="abstract-panel-inner" strength={strength}>
           {images.length > 1 ? (
-            <PhotoSlideshow images={images} />
+            <PhotoSlideshow images={images} editorFieldPath={editorFieldPath} />
           ) : (
-            <Image
-              src={images[0]}
-              alt={alt}
-              fill
-              sizes={sizes || defaultSizes}
-              style={{ objectFit: "cover" }}
-            />
+            <div
+              style={{ position: "absolute", inset: 0 }}
+              data-field-path={editorFieldPath}
+              data-field-kind={editorFieldPath ? "image" : undefined}
+            >
+              <Image
+                src={images[0]}
+                alt={alt}
+                fill
+                sizes={sizes || defaultSizes}
+                style={{ objectFit: "cover" }}
+              />
+            </div>
           )}
         </Parallax>
       )}

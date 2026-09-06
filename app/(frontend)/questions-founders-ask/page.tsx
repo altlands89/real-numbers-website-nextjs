@@ -62,6 +62,7 @@ export default async function QuestionsFoundersAskPage() {
             images={atmospherePhotos}
             fallbackSrc="/img/photography/faq-atmosphere.jpg"
             alt="A quiet corner of the Real Numbers office"
+            editorFieldPath="atmospherePhotos"
             strength={22}
             style={{ marginTop: 0, marginBottom: "var(--space-600)", aspectRatio: "21/9" }}
           />

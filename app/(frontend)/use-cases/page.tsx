@@ -61,6 +61,7 @@ export default async function UseCasesPage() {
             images={atmospherePhotos}
             fallbackSrc="/img/photography/usecases-atmosphere.jpg"
             alt="A team working through a growth decision"
+            editorFieldPath="atmospherePhotos"
             caption={
               page.atmospherePhotoCaption ? (
                 <ResponsiveText desktop={page.atmospherePhotoCaption} mobile={getOverride(mo, "atmospherePhotoCaption")} path={"atmospherePhotoCaption"} />

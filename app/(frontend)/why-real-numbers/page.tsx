@@ -143,7 +143,12 @@ export default async function WhyRealNumbersPage() {
               ))}
             </div>
             <div className="prose-block-media">
-              <AbstractPanel src={differentPhotos.length > 0 ? differentPhotos : "/img/abstract/sq-8.jpg"} variant="panel" strength={18} />
+              <AbstractPanel
+                src={differentPhotos.length > 0 ? differentPhotos : "/img/abstract/sq-8.jpg"}
+                variant="panel"
+                strength={18}
+                editorFieldPath="whatMakesDifferent.photos"
+              />
             </div>
           </div>
         </div>

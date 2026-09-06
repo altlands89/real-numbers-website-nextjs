@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AboutPage } from "@/payload/payload-types";
 import { saveAboutPage } from "./aboutVisualEditorActions";
@@ -11,6 +11,7 @@ import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
@@ -21,66 +22,6 @@ type Props = {
   mediaLibrary: MediaItem[];
   pageUrl: string;
 };
-
-// The real About page, rendered at its true desktop width (1440px) inside
-// DeviceFrame's existing optical-zoom wrapper, with every text/image field
-// directly clickable in place — no separate schematic re-layout. See the
-// visual-editor-round-3 plan (cached-whistling-hopper.md) for why the edit
-// overlay lives inside the iframe's own document (same-origin) rather than
-// being positioned from the parent across the CSS transform boundary.
-function LiveCanvas({
-  pageUrl,
-  refreshKey,
-  onFieldCommit,
-  onImageClick,
-}: {
-  pageUrl: string;
-  refreshKey: number;
-  onFieldCommit: (path: string, value: string) => void;
-  onImageClick: (path: string) => void;
-}) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const roRef = useRef<ResizeObserver | null>(null);
-  const [height, setHeight] = useState(900);
-
-  useEffect(() => {
-    const onMessage = (e: MessageEvent) => {
-      if (e.source !== iframeRef.current?.contentWindow) return;
-      if (e.data?.type === "rn-editor-field-commit" && typeof e.data.path === "string") {
-        onFieldCommit(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
-      } else if (e.data?.type === "rn-editor-field-click" && e.data.kind === "image" && typeof e.data.path === "string") {
-        onImageClick(e.data.path);
-      }
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [onFieldCommit, onImageClick]);
-
-  useEffect(() => () => roRef.current?.disconnect(), []);
-
-  const handleLoad = () => {
-    const doc = iframeRef.current?.contentDocument;
-    if (!doc?.documentElement) return;
-    setHeight(doc.documentElement.scrollHeight);
-    roRef.current?.disconnect();
-    const ro = new ResizeObserver(() => setHeight(doc.documentElement.scrollHeight));
-    ro.observe(doc.documentElement);
-    roRef.current = ro;
-  };
-
-  const src = `${pageUrl}${pageUrl.includes("?") ? "&" : "?"}rn_editor_bridge=1&rn_editor_inline=1`;
-
-  return (
-    <iframe
-      key={refreshKey}
-      ref={iframeRef}
-      src={src}
-      onLoad={handleLoad}
-      title="About page — live canvas"
-      style={{ width: "100%", height, border: "none", display: "block", background: "#fff" }}
-    />
-  );
-}
 
 export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
@@ -313,7 +254,7 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
       {/* ---- The real page, live, editable in place ---- */}
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="About page — live canvas" onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 

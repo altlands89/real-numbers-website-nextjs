@@ -116,6 +116,7 @@ export default async function OurExpertisePage() {
               images={integratedPhotos}
               fallbackSrc="/img/photography/expertise-atmosphere.jpg"
               alt="A financial model in progress"
+              editorFieldPath="integrated.photos"
               caption={
                 page.integrated?.photoCaption ? (
                   <ResponsiveText desktop={page.integrated.photoCaption} mobile={getOverride(mo, "integrated.photoCaption")} path={"integrated.photoCaption"} />

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { UseCasesPage } from "@/payload/payload-types";
 import { saveUseCasesPage } from "./useCasesVisualEditorActions";
-import { ResponsiveField } from "./visual-editor/ResponsiveField";
 import { RowActions } from "./visual-editor/RowActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
@@ -12,8 +11,8 @@ import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
-import { eyebrowStyle, pageHeroH1Style, pageHeroLedeStyle, sectionH2Style } from "./visual-editor/typeScale";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
+import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
@@ -25,7 +24,7 @@ type Props = {
   pageUrl: string;
 };
 
-export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary, pageUrl }: Props) {
+export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
@@ -43,7 +42,7 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary, 
       list.splice(to, 0, item);
     }),
   );
-  const { overrides, setOverride, clearOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
+  const { overrides, setOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
     initialData.mobileOverrides as Record<string, unknown> | null | undefined,
   );
 
@@ -86,58 +85,52 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary, 
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
-  // Editor bridge: a click inside the mobile-preview iframe (on the live
-  // rendered page) posts {path} back here — scroll the matching field in
-  // the canvas above into view and focus its input.
-  const handleFieldSelect = (path: string) => {
-    const el = document.getElementById(`rn-field-${path}`);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  const handleFieldCommit = (path: string, value: string) => {
+    const segs = path.split(".");
+    set((d) => {
+      if (path === "hero.eyebrow") { d.hero.eyebrow = value; return; }
+      if (path === "hero.heading") { d.hero.heading = value; return; }
+      if (path === "hero.lede") { d.hero.lede = value; return; }
+      if (path === "atmospherePhotoCaption") { d.atmospherePhotoCaption = value; return; }
+      if (path === "situationsIntro") { d.situationsIntro = value; return; }
+      if (segs[0] === "situations") {
+        const idx = (d.situations ?? []).findIndex((s, i) => String(s.id ?? i) === segs[1]);
+        if (idx >= 0 && (segs[2] === "question" || segs[2] === "answer")) d.situations![idx][segs[2]] = value;
+        return;
+      }
+      if (path === "closingCta.heading") { d.closingCta = { ...d.closingCta, heading: value }; return; }
+      if (path === "closingCta.buttonLabel") { d.closingCta = { ...d.closingCta, buttonLabel: value }; return; }
+      // eslint-disable-next-line no-console
+      console.warn("[use-cases-visual-editor] unrecognized field path from live canvas:", path);
+    });
   };
 
-  // Same page-hero / prose-section type scale as About, Why Real Numbers
-  // and Our Expertise.
-  const type = {
-    eyebrow: eyebrowStyle(colors),
-    h1: pageHeroH1Style(colors),
-    lede: pageHeroLedeStyle(),
-    intro: { fontSize: "16.8px", fontWeight: 700, color: colors.black, opacity: 0.85 },
-    question: { fontSize: "17.6px", fontWeight: 700, fontStyle: "italic" as const, color: colors.blue },
-    answer: { fontSize: 14, lineHeight: 1.6, color: "rgba(36,30,28,0.82)" },
-    closingH2: sectionH2Style(colors, true),
-    button: { fontSize: 13, fontWeight: 700, color: colors.offwhite },
+  const handleMobileFieldCommit = (path: string, value: string) => setOverride(path, value);
+
+  const handleImageClick = (path: string) => {
+    if (path === "atmospherePhotos") setPicking(0);
   };
 
-  const sectionLabel: React.CSSProperties = {
-    fontSize: 9,
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    color: "rgba(36,30,28,0.35)",
-    fontFamily: "system-ui, sans-serif",
-    marginBottom: 10,
-    display: "block",
-  };
-
-  const block: React.CSSProperties = {
-    borderTop: "1px solid rgba(36,30,28,0.12)",
-    paddingTop: 22,
-    marginTop: 26,
+  const rowLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "var(--theme-text)" };
+  const rowWrap: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    padding: "10px 14px",
+    border: "1px solid var(--theme-elevation-150)",
+    borderRadius: "var(--style-radius-s, 6px)",
   };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
-      <style>{`
-        .rn-ve input::placeholder, .rn-ve textarea::placeholder { color: rgba(120,120,120,0.55); font-style: italic; }
-      `}</style>
-
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
         <div>
           <h1 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Use Cases — Visual Editor</h1>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 560 }}>
-            The Use Cases page in schematic form — each text sits where it appears on the real page, at
-            roughly its real size. Hover or click any text to edit it. Photos and SEO stay in the{" "}
+          <p style={{ margin: 0, fontSize: 13, color: "var(--theme-elevation-600)", maxWidth: 620 }}>
+            The real page, shown at desktop size and scaled to fit. Hover any text or photo below to see
+            what it is, click to edit it in place. Adding/removing situations or photos happens in the
+            panel underneath. SEO stays in the{" "}
             <a href="/admin/globals/use-cases-page">regular form</a>.
           </p>
         </div>
@@ -206,181 +199,69 @@ export function UseCasesVisualEditorClient({ initialData, colors, mediaLibrary, 
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
 
-      {/* ---- The schematic canvas ---- */}
-      <DeviceFrame>
-      <div
-        className="rn-ve"
-        style={{
-          border: "1px solid var(--theme-elevation-150)",
-          borderRadius: "var(--style-radius-m, 8px)",
-          overflow: "hidden",
-          fontFamily: '"TASA Orbiter Editor", system-ui, sans-serif',
-          boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)",
-        }}
-      >
-        {/* Section 1 — dark top banner (page-hero) */}
-        <div style={{ background: colors.black, padding: "40px 34px 34px", position: "relative" }}>
-          <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>1 · Top banner</span>
-          <div style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-            <ResponsiveField
-              label="Small label"
-              value={data.hero?.eyebrow ?? ""}
-              onChange={(v) => set((d) => { d.hero.eyebrow = v; })}
-              path="hero.eyebrow"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.eyebrow}
-              placeholder="Use Cases"
-            />
-            <ResponsiveField
-              label="Heading"
-              value={data.hero?.heading ?? ""}
-              onChange={(v) => set((d) => { d.hero.heading = v; })}
-              path="hero.heading"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.h1}
-              multiline
-            />
-            <ResponsiveField
-              label="Intro paragraph"
-              value={data.hero?.lede ?? ""}
-              onChange={(v) => set((d) => { d.hero.lede = v; })}
-              path="hero.lede"
-              overrides={overrides}
-              setOverride={setOverride}
-              clearOverride={clearOverride}
-              style={type.lede}
-              multiline
-            />
-          </div>
+      <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
+        <DeviceFrame>
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Use Cases page — live canvas" onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+        </DeviceFrame>
+      </div>
+
+      <div style={{ marginTop: 22, display: "grid", gap: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--theme-elevation-500)" }}>
+          Manage lists
+        </span>
+
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Situations — photos</span>
+          <PhotoSlots
+            photos={data.atmospherePhotos ?? []}
+            resolve={mediaById}
+            onPick={(index) => setPicking(index)}
+            onRemove={(index) =>
+              set((d) => {
+                d.atmospherePhotos!.splice(index, 1);
+              })
+            }
+          />
         </div>
 
-        {/* Sections 2–3 — light prose area */}
-        <div style={{ background: colors.offwhite, padding: "30px 34px 40px" }}>
-          {/* Section 2 — Situations (photo, intro, up to 7 Q&A entries) */}
-          <span style={sectionLabel}>2 · Situations</span>
-          <div style={{ maxWidth: 420, marginBottom: 20 }}>
-            <PhotoSlots
-              photos={data.atmospherePhotos ?? []}
-              resolve={mediaById}
-              onPick={(index) => setPicking(index)}
-              onRemove={(index) =>
-                set((d) => {
-                  d.atmospherePhotos!.splice(index, 1);
-                })
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={rowLabel}>Situations ({(data.situations ?? []).length}) — drag to reorder</span>
+            <RowActions
+              onAdd={
+                (data.situations?.length ?? 0) < 7
+                  ? () => set((d) => { d.situations = [...(d.situations ?? []), { question: "", answer: "" }]; })
+                  : undefined
+              }
+              onRemove={
+                (data.situations?.length ?? 0) > 1
+                  ? () => set((d) => { d.situations!.pop(); })
+                  : undefined
               }
             />
-            <div style={{ marginTop: 8 }}>
-              <ResponsiveField
-                label="Photo caption"
-                value={data.atmospherePhotoCaption ?? ""}
-                onChange={(v) => set((d) => { d.atmospherePhotoCaption = v; })}
-                path="atmospherePhotoCaption"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={{ fontSize: 10.5, color: "rgba(36,30,28,0.6)" }}
-              />
-            </div>
           </div>
-          <ResponsiveField
-            label="Intro line before the list"
-            value={data.situationsIntro ?? ""}
-            onChange={(v) => set((d) => { d.situationsIntro = v; })}
-            path="situationsIntro"
-            overrides={overrides}
-            setOverride={setOverride}
-            clearOverride={clearOverride}
-            style={type.intro}
-          />
-          <div style={{ display: "grid", gap: 16, marginTop: 16 }}>
+          <div style={{ display: "grid", gap: 6 }}>
             {(data.situations ?? []).map((s, i) => (
               <div
                 key={s.id ?? i}
                 {...situationDragHandlers(i)}
                 style={{
-                  display: "grid",
-                  gap: 4,
-                  borderLeft: `2px solid ${situationDragOverIndex === i ? colors.red : colors.blue}`,
-                  paddingLeft: 12,
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  border: situationDragOverIndex === i ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
+                  fontSize: 12,
+                  color: "var(--theme-elevation-600)",
                   cursor: "grab",
                 }}
               >
-                <ResponsiveField
-                  label={`Situation ${i + 1} · founder quote`}
-                  value={s.question ?? ""}
-                  onChange={(v) => set((d) => { d.situations![i].question = v; })}
-                  path={`situations.${s.id ?? i}.question`}
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={type.question}
-                />
-                <ResponsiveField
-                  label={`Situation ${i + 1} · our response`}
-                  value={s.answer ?? ""}
-                  onChange={(v) => set((d) => { d.situations![i].answer = v; })}
-                  path={`situations.${s.id ?? i}.answer`}
-                  overrides={overrides}
-                  setOverride={setOverride}
-                  clearOverride={clearOverride}
-                  style={type.answer}
-                  multiline
-                />
-                <span style={{ fontSize: 10.5, color: "rgba(36,30,28,0.4)" }} title="Drag to reorder">
-                  ⠿ Drag to reorder
-                </span>
+                ⠿ {s.question || `Situation ${i + 1}`}
               </div>
             ))}
           </div>
-          <RowActions
-            onAdd={
-              (data.situations?.length ?? 0) < 7
-                ? () => set((d) => { d.situations = [...(d.situations ?? []), { question: "", answer: "" }]; })
-                : undefined
-            }
-            onRemove={
-              (data.situations?.length ?? 0) > 1
-                ? () => set((d) => { d.situations!.pop(); })
-                : undefined
-            }
-          />
-
-          {/* Section 3 — Closing Banner */}
-          <div style={{ ...block, background: colors.black, margin: "26px -34px -40px", padding: "34px" }}>
-            <span style={{ ...sectionLabel, color: "rgba(240,239,232,0.35)" }}>3 · Closing banner</span>
-            <div style={{ display: "grid", gap: 10, maxWidth: 560 }}>
-              <ResponsiveField
-                label="Heading"
-                value={data.closingCta?.heading ?? ""}
-                onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, heading: v }; })}
-                path="closingCta.heading"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={type.closingH2}
-                multiline
-              />
-              <ResponsiveField
-                label="Button text"
-                value={data.closingCta?.buttonLabel ?? ""}
-                onChange={(v) => set((d) => { d.closingCta = { ...d.closingCta, buttonLabel: v }; })}
-                path="closingCta.buttonLabel"
-                overrides={overrides}
-                setOverride={setOverride}
-                clearOverride={clearOverride}
-                style={{ ...type.button, background: colors.red, display: "inline-block", padding: "6px 12px", borderRadius: 6, width: "fit-content" }}
-              />
-            </div>
-          </div>
         </div>
       </div>
-      </DeviceFrame>
 
       {picking !== null && (
         <MediaPicker
