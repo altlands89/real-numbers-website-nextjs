@@ -20,6 +20,7 @@ export function LiveCanvas({
   refreshKey,
   title,
   data,
+  dirty,
   onFieldCommit,
   onImageClick,
 }: {
@@ -35,6 +36,13 @@ export function LiveCanvas({
   // caveat MobilePreview's own copy already states — this only re-syncs
   // the text of fields that already have a home in the current markup.
   data: unknown;
+  // Whether the page currently has unpublished edits — checked before
+  // following an in-canvas link to another page's visual editor, since
+  // that jump is a client-side route change (no browser-level "leave
+  // site?" prompt would ever fire for it) and would otherwise discard
+  // those edits with zero warning. See useUnsavedChangesGuard.ts for the
+  // separate, broader tab-close/refresh guard.
+  dirty: boolean;
   onFieldCommit: (path: string, value: string) => void;
   onImageClick: (path: string) => void;
 }) {
@@ -42,6 +50,8 @@ export function LiveCanvas({
   const roRef = useRef<ResizeObserver | null>(null);
   const [height, setHeight] = useState(900);
   const router = useRouter();
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
@@ -55,6 +65,12 @@ export function LiveCanvas({
         // that page's own visual editor rather than following the link
         // inside this iframe (see EditorBridgeListener.tsx for the
         // same-origin-only, mapped-routes-only detection this trusts).
+        // Confirm first when there are unpublished edits — this is a
+        // same-page client-side route change, so it's the one navigation
+        // path this tool fully controls and must guard itself.
+        if (dirtyRef.current && !window.confirm("Leave this page without publishing your changes? They'll be lost.")) {
+          return;
+        }
         router.push(`/admin/visual-editor/${e.data.slug}`);
       }
     };

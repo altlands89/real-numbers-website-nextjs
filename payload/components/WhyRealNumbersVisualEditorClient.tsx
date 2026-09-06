@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { WhyRealNumbersPage } from "@/payload/payload-types";
 import { saveWhyRealNumbersPage } from "./whyRealNumbersVisualEditorActions";
-import { RowActions } from "./visual-editor/RowActions";
+import { ListManager, TextPreview, removeBtnStyle } from "./visual-editor/ListManager";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
@@ -13,10 +13,12 @@ import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -59,6 +61,7 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -79,6 +82,8 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -173,15 +178,6 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
   };
 
   const rowLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "var(--theme-text)" };
-  const rowWrap: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    padding: "10px 14px",
-    border: "1px solid var(--theme-elevation-150)",
-    borderRadius: "var(--style-radius-s, 6px)",
-  };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
@@ -195,7 +191,7 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
             <a href="/admin/globals/why-real-numbers-page">regular form</a>.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -229,8 +225,8 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -263,11 +259,12 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Why Real Numbers page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Why Real Numbers page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -276,52 +273,49 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
           Manage lists
         </span>
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>Intro paragraphs ({(data.hero?.ledeParagraphs ?? []).length})</span>
-          <RowActions
-            onAdd={
-              (data.hero?.ledeParagraphs?.length ?? 0) < 2
-                ? () => set((d) => { d.hero.ledeParagraphs = [...(d.hero.ledeParagraphs ?? []), { text: "" }]; })
-                : undefined
-            }
-            onRemove={
-              (data.hero?.ledeParagraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.hero.ledeParagraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="Intro paragraphs"
+          itemLabel="paragraph"
+          items={data.hero?.ledeParagraphs ?? []}
+          maxRows={2}
+          onAdd={() => set((d) => { d.hero.ledeParagraphs = [...(d.hero.ledeParagraphs ?? []), { text: "" }]; })}
+          onRemove={(i) => set((d) => { d.hero.ledeParagraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>Why Choose Us — paragraphs ({(data.whyChooseUs?.paragraphs ?? []).length})</span>
-          <RowActions
-            onAdd={() => set((d) => {
-              d.whyChooseUs = d.whyChooseUs ?? {};
-              d.whyChooseUs.paragraphs = [...(d.whyChooseUs.paragraphs ?? []), { text: "" }];
-            })}
-            onRemove={
-              (data.whyChooseUs?.paragraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.whyChooseUs!.paragraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="Why Choose Us — paragraphs"
+          itemLabel="paragraph"
+          items={data.whyChooseUs?.paragraphs ?? []}
+          onAdd={() => set((d) => {
+            d.whyChooseUs = d.whyChooseUs ?? {};
+            d.whyChooseUs.paragraphs = [...(d.whyChooseUs.paragraphs ?? []), { text: "" }];
+          })}
+          onRemove={(i) => set((d) => { d.whyChooseUs!.paragraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
 
         <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={rowLabel}>Feature cards ({(data.valueProps ?? []).length}) — drag to reorder</span>
-            <RowActions
-              onAdd={
-                (data.valueProps?.length ?? 0) < 4
-                  ? () => set((d) => { d.valueProps = [...(d.valueProps ?? []), { title: "", paragraph1: "" }]; })
-                  : undefined
-              }
-              onRemove={
-                (data.valueProps?.length ?? 0) > 1
-                  ? () => set((d) => { d.valueProps!.pop(); })
-                  : undefined
-              }
-            />
+            <span style={rowLabel}>Feature cards ({(data.valueProps ?? []).length}/4) — drag to reorder</span>
+            <button
+              type="button"
+              onClick={() => set((d) => { d.valueProps = [...(d.valueProps ?? []), { title: "", paragraph1: "" }]; })}
+              disabled={(data.valueProps?.length ?? 0) >= 4}
+              style={{
+                border: "1px dashed var(--theme-elevation-250)",
+                background: "var(--theme-elevation-0)",
+                color: (data.valueProps?.length ?? 0) >= 4 ? "var(--theme-elevation-350)" : "var(--theme-text)",
+                borderRadius: 6,
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: (data.valueProps?.length ?? 0) >= 4 ? "default" : "pointer",
+              }}
+              title={(data.valueProps?.length ?? 0) >= 4 ? "Up to 4 cards — remove one to add another" : undefined}
+            >
+              + Add card
+            </button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             {(data.valueProps ?? []).map((v, i) => (
@@ -329,6 +323,10 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
                 key={v.id ?? i}
                 {...valuePropDragHandlers(i)}
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 8,
                   padding: "8px 10px",
                   borderRadius: 6,
                   border: valuePropDragOverIndex === i ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
@@ -337,7 +335,20 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
                   cursor: "grab",
                 }}
               >
-                ⠿ {v.title || `Card ${i + 1}`}
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>⠿ {v.title || `Card ${i + 1}`}</span>
+                {(data.valueProps?.length ?? 0) > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Remove this card? You can still Undo before you click Publish, but not after.")) {
+                        set((d) => { d.valueProps!.splice(i, 1); });
+                      }
+                    }}
+                    style={removeBtnStyle}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -357,20 +368,17 @@ export function WhyRealNumbersVisualEditorClient({ initialData, mediaLibrary, pa
           />
         </div>
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>What Makes Us Different — paragraphs ({(data.whatMakesDifferent?.paragraphs ?? []).length})</span>
-          <RowActions
-            onAdd={() => set((d) => {
-              d.whatMakesDifferent = d.whatMakesDifferent ?? {};
-              d.whatMakesDifferent.paragraphs = [...(d.whatMakesDifferent.paragraphs ?? []), { text: "" }];
-            })}
-            onRemove={
-              (data.whatMakesDifferent?.paragraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.whatMakesDifferent!.paragraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="What Makes Us Different — paragraphs"
+          itemLabel="paragraph"
+          items={data.whatMakesDifferent?.paragraphs ?? []}
+          onAdd={() => set((d) => {
+            d.whatMakesDifferent = d.whatMakesDifferent ?? {};
+            d.whatMakesDifferent.paragraphs = [...(d.whatMakesDifferent.paragraphs ?? []), { text: "" }];
+          })}
+          onRemove={(i) => set((d) => { d.whatMakesDifferent!.paragraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
       </div>
 
       {picking !== null && (

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { QuestionsFoundersAskPage } from "@/payload/payload-types";
 import { saveFaqItems, saveQuestionsPage } from "./questionsVisualEditorActions";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
+import { removeBtnStyle } from "./visual-editor/ListManager";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
@@ -12,10 +13,12 @@ import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -67,6 +70,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -88,6 +92,8 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || faqDirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -150,7 +156,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
 
   const addFaqItem = () => setFaqItems((d) => { d.push({ id: null, question: "", answer: "" }); });
   const removeFaqItem = (i: number) => {
-    if (!window.confirm("Remove this question? This can't be undone from here.")) return;
+    if (!window.confirm("Remove this question? You can still Undo before you click Publish, but not after.")) return;
     setFaqItems((d) => { d.splice(i, 1); });
   };
   const reorderFaqItems = (from: number, to: number) =>
@@ -160,19 +166,6 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
       d.splice(to, 0, item);
     });
   const { dragHandlers, dragOverIndex } = useDragReorder(reorderFaqItems);
-
-  const cardBtn: React.CSSProperties = {
-    border: "1px solid rgba(36,30,28,0.2)",
-    background: "rgba(255,255,255,0.7)",
-    borderRadius: 4,
-    width: 22,
-    height: 20,
-    lineHeight: 1,
-    fontSize: 11,
-    cursor: "pointer",
-    color: "#241e1c",
-    fontFamily: "system-ui, sans-serif",
-  };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
@@ -187,7 +180,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
             own <a href="/admin/collections/faq-items">collection screen</a> if you prefer a plain form.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -221,8 +214,8 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -255,11 +248,12 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Questions Founders Ask page — live canvas" data={{ ...data, faq: faqItems }} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Questions Founders Ask page — live canvas" data={{ ...data, faq: faqItems }} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -319,7 +313,7 @@ export function QuestionsVisualEditorClient({ initialData, initialFaqItems, medi
                 }}
               >
                 <span style={{ fontSize: 12, color: "var(--theme-elevation-600)" }}>⠿ {f.question || `Question ${i + 1}`}</span>
-                <button type="button" onClick={() => removeFaqItem(i)} style={cardBtn} title="Remove this question">
+                <button type="button" onClick={() => removeFaqItem(i)} style={removeBtnStyle} title="Remove this question">
                   Remove
                 </button>
               </div>

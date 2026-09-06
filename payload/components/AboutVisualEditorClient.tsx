@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AboutPage } from "@/payload/payload-types";
 import { saveAboutPage } from "./aboutVisualEditorActions";
-import { RowActions } from "./visual-editor/RowActions";
+import { ListManager, TextPreview } from "./visual-editor/ListManager";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
@@ -12,10 +12,12 @@ import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -71,6 +73,8 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -194,15 +198,6 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
     color: "var(--theme-text)",
   };
 
-  const rowWrap: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    padding: "10px 14px",
-    border: "1px solid var(--theme-elevation-150)",
-    borderRadius: "var(--style-radius-s, 6px)",
-  };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
@@ -216,7 +211,7 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
             <a href="/admin/globals/about-page">regular form</a>.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -253,8 +248,8 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -287,12 +282,13 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       {/* ---- The real page, live, editable in place ---- */}
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="About page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="About page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -304,20 +300,17 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
           Manage lists
         </span>
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>Our Story — paragraphs ({(data.ourStory?.paragraphs ?? []).length})</span>
-          <RowActions
-            onAdd={() => set((d) => {
-              d.ourStory = d.ourStory ?? {};
-              d.ourStory.paragraphs = [...(d.ourStory.paragraphs ?? []), { text: "" }];
-            })}
-            onRemove={
-              (data.ourStory?.paragraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.ourStory!.paragraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="Our Story — paragraphs"
+          itemLabel="paragraph"
+          items={data.ourStory?.paragraphs ?? []}
+          onAdd={() => set((d) => {
+            d.ourStory = d.ourStory ?? {};
+            d.ourStory.paragraphs = [...(d.ourStory.paragraphs ?? []), { text: "" }];
+          })}
+          onRemove={(i) => set((d) => { d.ourStory!.paragraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
 
         <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
           <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Our Story — photos</span>
@@ -333,35 +326,29 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
           />
         </div>
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>What We Believe — principles ({(data.whatWeBelieve?.principles ?? []).length})</span>
-          <RowActions
-            onAdd={() => set((d) => {
-              d.whatWeBelieve = d.whatWeBelieve ?? {};
-              d.whatWeBelieve.principles = [...(d.whatWeBelieve.principles ?? []), { lead: "", text: "" }];
-            })}
-            onRemove={
-              (data.whatWeBelieve?.principles?.length ?? 0) > 1
-                ? () => set((d) => { d.whatWeBelieve!.principles!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="What We Believe — principles"
+          itemLabel="principle"
+          items={data.whatWeBelieve?.principles ?? []}
+          onAdd={() => set((d) => {
+            d.whatWeBelieve = d.whatWeBelieve ?? {};
+            d.whatWeBelieve.principles = [...(d.whatWeBelieve.principles ?? []), { lead: "", text: "" }];
+          })}
+          onRemove={(i) => set((d) => { d.whatWeBelieve!.principles!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={[p.lead, p.text].filter(Boolean).join(" — ")} />}
+        />
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>How We Work — paragraphs ({(data.howWeWork?.paragraphs ?? []).length})</span>
-          <RowActions
-            onAdd={() => set((d) => {
-              d.howWeWork = d.howWeWork ?? {};
-              d.howWeWork.paragraphs = [...(d.howWeWork.paragraphs ?? []), { text: "" }];
-            })}
-            onRemove={
-              (data.howWeWork?.paragraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.howWeWork!.paragraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="How We Work — paragraphs"
+          itemLabel="paragraph"
+          items={data.howWeWork?.paragraphs ?? []}
+          onAdd={() => set((d) => {
+            d.howWeWork = d.howWeWork ?? {};
+            d.howWeWork.paragraphs = [...(d.howWeWork.paragraphs ?? []), { text: "" }];
+          })}
+          onRemove={(i) => set((d) => { d.howWeWork!.paragraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
       </div>
 
       {picking !== null && (

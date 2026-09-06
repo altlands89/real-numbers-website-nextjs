@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import type { TeamPage } from "@/payload/payload-types";
 import { saveTeamPage, saveTeamRoster } from "./teamVisualEditorActions";
 import { MediaPicker } from "./visual-editor/MediaPicker";
+import { removeBtnStyle } from "./visual-editor/ListManager";
 import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import { photoBtn, type MediaItem } from "./visual-editor/shared";
 import type { BrandColors } from "./visual-editor/serverData";
 
@@ -78,6 +81,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -99,6 +103,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || rosterDirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -184,7 +190,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
       d.push({ id: null, name: "New team member", role: "", bio: "", education: "", linkedin: "", photo: null });
     });
   const removeMember = (i: number) => {
-    if (!window.confirm("Remove this person from the team page? This can't be undone from here.")) return;
+    if (!window.confirm("Remove this person from the team page? You can still Undo before you click Publish, but not after.")) return;
     setRoster((d) => {
       d.splice(i, 1);
     });
@@ -206,19 +212,6 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
     [mediaById],
   );
 
-  const cardBtn: React.CSSProperties = {
-    border: "1px solid rgba(36,30,28,0.2)",
-    background: "rgba(255,255,255,0.7)",
-    borderRadius: 4,
-    width: 22,
-    height: 20,
-    lineHeight: 1,
-    fontSize: 11,
-    cursor: "pointer",
-    color: "#241e1c",
-    fontFamily: "system-ui, sans-serif",
-  };
-
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
@@ -232,7 +225,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
             <a href="/admin/collections/team-members">collection screen</a> if you prefer a plain form.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -266,8 +259,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -300,11 +293,12 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Team page — live canvas" data={{ ...data, roster }} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Team page — live canvas" data={{ ...data, roster }} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -392,7 +386,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
                   <span style={{ fontSize: 11, color: "var(--theme-elevation-500)", cursor: "grab" }} title="Drag to reorder">
                     ⠿ Drag to reorder
                   </span>
-                  <button type="button" onClick={() => removeMember(i)} style={cardBtn} title="Remove this person">
+                  <button type="button" onClick={() => removeMember(i)} style={removeBtnStyle} title="Remove this person">
                     Remove
                   </button>
                 </div>

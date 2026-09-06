@@ -20,12 +20,19 @@ const FRAME_HEIGHT = 780;
 export function MobilePreview({
   pageUrl,
   refreshKey,
+  dirty,
   onFieldSelect,
   onFieldCommit,
   inlineEditing,
 }: {
   pageUrl: string;
   refreshKey: number;
+  // Whether the page currently has unpublished edits — see the matching
+  // prop on LiveCanvas.tsx for why the in-canvas cross-page jump needs
+  // this checked explicitly rather than relying on the browser's own
+  // "leave site?" prompt (that prompt never fires for a client-side route
+  // change like this one).
+  dirty: boolean;
   // Called with a field's dot-path when the editor-bridge script inside the
   // iframe (components/EditorBridgeListener.tsx) reports a click on the
   // live render — lets the caller scroll to and focus that field's input.
@@ -46,6 +53,8 @@ export function MobilePreview({
   const [open, setOpen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
@@ -61,6 +70,9 @@ export function MobilePreview({
         // Same cross-page jump as the main canvas (LiveCanvas.tsx) — always
         // wired up here regardless of onFieldSelect/onFieldCommit, since a
         // link click can happen even when this preview is read-only.
+        if (dirtyRef.current && !window.confirm("Leave this page without publishing your changes? They'll be lost.")) {
+          return;
+        }
         router.push(`/admin/visual-editor/${e.data.slug}`);
       }
     };
@@ -88,18 +100,20 @@ export function MobilePreview({
           cursor: "pointer",
         }}
       >
-        {open ? "Hide mobile preview" : "📱 Show mobile preview"}
+        {open ? "Hide mobile preview" : "Show mobile preview"}
       </button>
 
       {open && (
         <div style={{ marginTop: 10 }}>
           <p style={{ fontSize: 11, color: "var(--theme-elevation-500)", maxWidth: 480, marginBottom: 8 }}>
-            The real live page at a phone-width viewport — refreshes automatically after you publish
-            changes. Not a live keystroke-by-keystroke preview: publish first to see an edit reflected here.
+            The real live page at a phone-width viewport.
             {inlineEditing
-              ? " Click any text or image to edit it here — edits made here are mobile-only."
+              ? " Editing directly here updates right away and is mobile-only — it won't change what desktop visitors see. Edits made on the canvas above or in the panels below only show up here after you click Publish."
               : onFieldSelect && " Click any text below to jump to its field above."}
           </p>
+          <div style={{ fontSize: 11, color: "var(--theme-elevation-500)", fontFamily: "system-ui, sans-serif", marginBottom: 6 }}>
+            Mobile preview · actual size ({FRAME_WIDTH}px wide)
+          </div>
           <div
             style={{
               width: FRAME_WIDTH,

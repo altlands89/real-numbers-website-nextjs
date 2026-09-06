@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AudienceBlock, Home, HeroBlock } from "@/payload/payload-types";
 import { saveHomeSections } from "./homeVisualEditorActions";
-import { RowActions } from "./visual-editor/RowActions";
+import { ListManager, TextPreview } from "./visual-editor/ListManager";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { Field } from "./visual-editor/Field";
@@ -13,10 +13,12 @@ import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -66,6 +68,7 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -87,6 +90,7 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
 
   const sections = data.sections ?? [];
   const overallDirty = dirty || overridesDirty;
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -211,15 +215,6 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
   };
 
   const rowLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "var(--theme-text)" };
-  const rowWrap: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    padding: "10px 14px",
-    border: "1px solid var(--theme-elevation-150)",
-    borderRadius: "var(--style-radius-s, 6px)",
-  };
 
   const heroSection = sections.find((s): s is HeroBlock => s.blockType === "hero");
   const heroIndex = sections.findIndex((s) => s.blockType === "hero");
@@ -238,7 +233,7 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
             <a href="/admin/globals/home">regular form</a>.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -272,8 +267,8 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -306,7 +301,8 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
@@ -314,7 +310,7 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
               not nested under a "sections" property — pass the sections array itself
               as the resync root so getByPath's array-by-id lookup matches the first
               path segment directly. */}
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Home page — live canvas" data={sections} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Home page — live canvas" data={sections} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -354,33 +350,24 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
 
         {heroSection && (
           <>
-            <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={rowLabel}>Rotating hero words — not shown on the page itself, so not clickable above</span>
-                <RowActions
-                  onAdd={() => set((d) => {
-                    const hb = d.sections![heroIndex] as HeroBlock;
-                    hb.rotatingWords = [...(hb.rotatingWords ?? []), { word: "" }];
-                  })}
-                  onRemove={
-                    (heroSection.rotatingWords?.length ?? 0) > 1
-                      ? () => set((d) => { (d.sections![heroIndex] as HeroBlock).rotatingWords!.pop(); })
-                      : undefined
-                  }
+            <ListManager
+              label="Rotating hero words — not shown on the page itself, so not clickable above"
+              itemLabel="word"
+              items={heroSection.rotatingWords ?? []}
+              onAdd={() => set((d) => {
+                const hb = d.sections![heroIndex] as HeroBlock;
+                hb.rotatingWords = [...(hb.rotatingWords ?? []), { word: "" }];
+              })}
+              onRemove={(wi) => set((d) => { (d.sections![heroIndex] as HeroBlock).rotatingWords!.splice(wi, 1); })}
+              renderItem={(w, wi) => (
+                <Field
+                  label={`Rotating word ${wi + 1}`}
+                  value={w.word ?? ""}
+                  onChange={(v) => set((d) => { ((d.sections![heroIndex] as HeroBlock).rotatingWords![wi].word) = v; })}
+                  style={{ fontSize: 14 }}
                 />
-              </div>
-              <div style={{ display: "grid", gap: 6, maxWidth: 400 }}>
-                {(heroSection.rotatingWords ?? []).map((w, wi) => (
-                  <Field
-                    key={w.id ?? wi}
-                    label={`Rotating word ${wi + 1}`}
-                    value={w.word ?? ""}
-                    onChange={(v) => set((d) => { ((d.sections![heroIndex] as HeroBlock).rotatingWords![wi].word) = v; })}
-                    style={{ fontSize: 14 }}
-                  />
-                ))}
-              </div>
-            </div>
+              )}
+            />
 
             <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
               <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Top Banner — featured photos</span>
@@ -402,33 +389,30 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
           if (section.blockType !== "audience") return null;
           const ab = section as AudienceBlock;
           return (
-            <div key={section.id ?? i} style={rowWrap}>
-              <span style={rowLabel}>Service Areas — cards ({(ab.areas ?? []).length})</span>
-              <RowActions
-                onAdd={
-                  (ab.areas?.length ?? 0) < 4
-                    ? () => set((d) => {
-                        const b = d.sections![i] as AudienceBlock;
-                        b.areas = [...(b.areas ?? []), { title: "", text: "" }];
-                      })
-                    : undefined
-                }
-                onRemove={
-                  (ab.areas?.length ?? 0) > 1
-                    ? () => set((d) => { (d.sections![i] as AudienceBlock).areas!.pop(); })
-                    : undefined
-                }
-              />
-            </div>
+            <ListManager
+              key={section.id ?? i}
+              label="Service Areas — cards"
+              itemLabel="card"
+              items={ab.areas ?? []}
+              maxRows={4}
+              onAdd={() => set((d) => {
+                const b = d.sections![i] as AudienceBlock;
+                b.areas = [...(b.areas ?? []), { title: "", text: "" }];
+              })}
+              onRemove={(ai) => set((d) => { (d.sections![i] as AudienceBlock).areas!.splice(ai, 1); })}
+              renderItem={(a) => <TextPreview text={[a.title, a.text].filter(Boolean).join(" — ")} />}
+            />
           );
         })}
 
         {sections.some((s) => s.blockType === "stats" || s.blockType === "divider") && (
-          <p style={{ fontSize: 11, color: "var(--theme-elevation-500)", margin: 0 }}>
-            The Stats section reads the separate{" "}
-            <a href="/admin/globals/stats">Stats global</a>, and the video divider&apos;s upload lives in
-            the <a href="/admin/globals/home">regular form</a> — neither has fields here.
-          </p>
+          <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)", background: "var(--theme-elevation-50, transparent)" }}>
+            <p style={{ fontSize: 12.5, color: "var(--theme-elevation-600)", margin: 0 }}>
+              The Stats section reads the separate{" "}
+              <a href="/admin/globals/stats">Stats global</a>, and the video divider&apos;s upload lives in
+              the <a href="/admin/globals/home">regular form</a> — neither has fields here.
+            </p>
+          </div>
         )}
       </div>
 

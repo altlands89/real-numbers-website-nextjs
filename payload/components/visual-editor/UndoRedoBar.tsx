@@ -22,6 +22,16 @@ export function UndoRedoBar({
     const onKeyDown = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
       if (!mod) return;
+      // Don't hijack Ctrl/Cmd+Z while the cursor is in a plain form field
+      // (e.g. the LinkedIn/WhatsApp/email inputs in a "Manage lists"
+      // panel) — the browser's own native undo for that one field is what
+      // a user reaching for Ctrl+Z there actually wants. Without this, an
+      // in-progress typo fix instead reverts the whole document's last
+      // change (a photo removed ten minutes ago, say), which is much more
+      // surprising than "my last keystroke didn't undo."
+      const target = document.activeElement as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
       const key = e.key.toLowerCase();
       if (key === "z" && e.shiftKey) {
         e.preventDefault();

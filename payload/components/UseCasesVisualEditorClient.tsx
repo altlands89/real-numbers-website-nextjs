@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { UseCasesPage } from "@/payload/payload-types";
 import { saveUseCasesPage } from "./useCasesVisualEditorActions";
-import { RowActions } from "./visual-editor/RowActions";
+import { removeBtnStyle } from "./visual-editor/ListManager";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
@@ -13,10 +13,12 @@ import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -59,6 +61,7 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -79,6 +82,8 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -166,7 +171,7 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
             <a href="/admin/globals/use-cases-page">regular form</a>.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -200,8 +205,8 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -234,11 +239,12 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Use Cases page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Use Cases page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -263,19 +269,25 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
 
         <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={rowLabel}>Situations ({(data.situations ?? []).length}) — drag to reorder</span>
-            <RowActions
-              onAdd={
-                (data.situations?.length ?? 0) < 7
-                  ? () => set((d) => { d.situations = [...(d.situations ?? []), { question: "", answer: "" }]; })
-                  : undefined
-              }
-              onRemove={
-                (data.situations?.length ?? 0) > 1
-                  ? () => set((d) => { d.situations!.pop(); })
-                  : undefined
-              }
-            />
+            <span style={rowLabel}>Situations ({(data.situations ?? []).length}/7) — drag to reorder</span>
+            <button
+              type="button"
+              onClick={() => set((d) => { d.situations = [...(d.situations ?? []), { question: "", answer: "" }]; })}
+              disabled={(data.situations?.length ?? 0) >= 7}
+              style={{
+                border: "1px dashed var(--theme-elevation-250)",
+                background: "var(--theme-elevation-0)",
+                color: (data.situations?.length ?? 0) >= 7 ? "var(--theme-elevation-350)" : "var(--theme-text)",
+                borderRadius: 6,
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: (data.situations?.length ?? 0) >= 7 ? "default" : "pointer",
+              }}
+              title={(data.situations?.length ?? 0) >= 7 ? "Up to 7 situations — remove one to add another" : undefined}
+            >
+              + Add situation
+            </button>
           </div>
           <div style={{ display: "grid", gap: 6 }}>
             {(data.situations ?? []).map((s, i) => (
@@ -283,6 +295,10 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
                 key={s.id ?? i}
                 {...situationDragHandlers(i)}
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 8,
                   padding: "8px 10px",
                   borderRadius: 6,
                   border: situationDragOverIndex === i ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
@@ -291,7 +307,20 @@ export function UseCasesVisualEditorClient({ initialData, mediaLibrary, pageUrl 
                   cursor: "grab",
                 }}
               >
-                ⠿ {s.question || `Situation ${i + 1}`}
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>⠿ {s.question || `Situation ${i + 1}`}</span>
+                {(data.situations?.length ?? 0) > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Remove this situation? You can still Undo before you click Publish, but not after.")) {
+                        set((d) => { d.situations!.splice(i, 1); });
+                      }
+                    }}
+                    style={removeBtnStyle}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
           </div>

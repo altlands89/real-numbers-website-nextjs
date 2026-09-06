@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { OurExpertisePage } from "@/payload/payload-types";
 import { saveOurExpertisePage } from "./ourExpertiseVisualEditorActions";
-import { RowActions } from "./visual-editor/RowActions";
+import { ListManager, TextPreview, removeBtnStyle } from "./visual-editor/ListManager";
 import { PhotoSlots } from "./visual-editor/PhotoSlots";
 import { MediaPicker } from "./visual-editor/MediaPicker";
 import { useCloneState } from "./visual-editor/useCloneState";
@@ -13,10 +13,12 @@ import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
 import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
 import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
+import { useUnsavedChangesGuard } from "./visual-editor/useUnsavedChangesGuard";
 import { ViewLiveLink } from "./visual-editor/ViewLiveLink";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
+import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -61,6 +63,7 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
   const {
     overrides,
     setOverride,
+    clearOverride,
     dirty: overridesDirty,
     setDirty: setOverridesDirty,
     undo: undoOverrides,
@@ -81,6 +84,8 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
   const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || overridesDirty;
+
+  useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
     setSaving(true);
@@ -176,15 +181,6 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
   };
 
   const rowLabel: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "var(--theme-text)" };
-  const rowWrap: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-    padding: "10px 14px",
-    border: "1px solid var(--theme-elevation-150)",
-    borderRadius: "var(--style-radius-s, 6px)",
-  };
 
   return (
     <div style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 80px" }}>
@@ -198,7 +194,7 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
             <a href="/admin/globals/our-expertise-page">regular form</a>.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, position: "sticky", top: 0, zIndex: 20, background: "var(--theme-elevation-0)", padding: "8px 0 8px 12px", borderRadius: "var(--style-radius-m, 8px)" }}>
           <ViewLiveLink pageUrl={pageUrl} variant="toolbar" />
           <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
@@ -232,8 +228,8 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
             marginBottom: 14,
             padding: "12px 16px",
             borderRadius: "var(--style-radius-m, 8px)",
-            border: `1px solid ${status.kind === "ok" ? "rgba(46,125,50,0.35)" : "rgba(184,88,64,0.45)"}`,
-            background: status.kind === "ok" ? "rgba(46,125,50,0.10)" : "rgba(184,88,64,0.10)",
+            border: `1px solid var(--theme-${status.kind === "ok" ? "success" : "error"}-600)`,
+            background: `var(--theme-${status.kind === "ok" ? "success" : "error"}-100)`,
             color: "var(--theme-text)",
             fontSize: 13,
             fontWeight: 500,
@@ -266,11 +262,12 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
+      <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Our Expertise page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} title="Our Expertise page — live canvas" data={data} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 
@@ -279,77 +276,91 @@ export function OurExpertiseVisualEditorClient({ initialData, mediaLibrary, page
           Manage lists
         </span>
 
-        <div style={rowWrap}>
-          <span style={rowLabel}>Intro paragraphs ({(data.hero?.ledeParagraphs ?? []).length})</span>
-          <RowActions
-            onAdd={
-              (data.hero?.ledeParagraphs?.length ?? 0) < 2
-                ? () => set((d) => { d.hero.ledeParagraphs = [...(d.hero.ledeParagraphs ?? []), { text: "" }]; })
-                : undefined
-            }
-            onRemove={
-              (data.hero?.ledeParagraphs?.length ?? 0) > 1
-                ? () => set((d) => { d.hero.ledeParagraphs!.pop(); })
-                : undefined
-            }
-          />
-        </div>
+        <ListManager
+          label="Intro paragraphs"
+          itemLabel="paragraph"
+          items={data.hero?.ledeParagraphs ?? []}
+          maxRows={2}
+          onAdd={() => set((d) => { d.hero.ledeParagraphs = [...(d.hero.ledeParagraphs ?? []), { text: "" }]; })}
+          onRemove={(i) => set((d) => { d.hero.ledeParagraphs!.splice(i, 1); })}
+          renderItem={(p) => <TextPreview text={p.text ?? ""} />}
+        />
 
         <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={rowLabel}>Expertise areas ({(data.areas ?? []).length}) — drag to reorder</span>
-            <RowActions
-              onAdd={
-                (data.areas?.length ?? 0) < 4
-                  ? () => set((d) => { d.areas = [...(d.areas ?? []), structuredClone(EMPTY_AREA)]; })
-                  : undefined
-              }
-              onRemove={
-                (data.areas?.length ?? 0) > 1
-                  ? () => set((d) => { d.areas!.pop(); })
-                  : undefined
-              }
-            />
+            <span style={rowLabel}>Expertise areas ({(data.areas ?? []).length}/4) — drag to reorder</span>
+            <button
+              type="button"
+              onClick={() => set((d) => { d.areas = [...(d.areas ?? []), structuredClone(EMPTY_AREA)]; })}
+              disabled={(data.areas?.length ?? 0) >= 4}
+              style={{
+                border: "1px dashed var(--theme-elevation-250)",
+                background: "var(--theme-elevation-0)",
+                color: (data.areas?.length ?? 0) >= 4 ? "var(--theme-elevation-350)" : "var(--theme-text)",
+                borderRadius: 6,
+                padding: "6px 12px",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: (data.areas?.length ?? 0) >= 4 ? "default" : "pointer",
+              }}
+              title={(data.areas?.length ?? 0) >= 4 ? "Up to 4 areas — remove one to add another" : undefined}
+            >
+              + Add area
+            </button>
           </div>
-          <div style={{ display: "grid", gap: 8 }}>
+          <div style={{ display: "grid", gap: 10 }}>
             {(data.areas ?? []).map((a, ai) => (
               <div
                 key={a.id ?? ai}
-                {...areaDragHandlers(ai)}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 10,
-                  padding: "8px 10px",
                   borderRadius: 6,
                   border: areaDragOverIndex === ai ? "1px dashed var(--theme-elevation-800)" : "1px solid var(--theme-elevation-100)",
-                  cursor: "grab",
+                  overflow: "hidden",
                 }}
               >
-                <span style={{ fontSize: 12, color: "var(--theme-elevation-600)" }}>⠿ {a.title || `Area ${ai + 1}`}</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 11, color: "var(--theme-elevation-500)" }}>
-                    {(a.paragraphs ?? []).length} paragraph{(a.paragraphs ?? []).length === 1 ? "" : "s"}
-                  </span>
-                  <RowActions
+                <div
+                  {...areaDragHandlers(ai)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 10,
+                    padding: "8px 10px",
+                    cursor: "grab",
+                    background: "var(--theme-elevation-50, transparent)",
+                  }}
+                >
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--theme-elevation-600)" }}>⠿ {a.title || `Area ${ai + 1}`}</span>
+                  {(data.areas?.length ?? 0) > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm("Remove this whole area, including its paragraphs and tags? You can still Undo before you click Publish, but not after.")) {
+                          set((d) => { d.areas!.splice(ai, 1); });
+                        }
+                      }}
+                      style={removeBtnStyle}
+                    >
+                      Remove area
+                    </button>
+                  )}
+                </div>
+                <div style={{ padding: "8px 10px", display: "grid", gap: 8 }}>
+                  <ListManager
+                    label="Paragraphs"
+                    itemLabel="paragraph"
+                    items={a.paragraphs ?? []}
                     onAdd={() => set((d) => { d.areas![ai].paragraphs = [...(d.areas![ai].paragraphs ?? []), { text: "" }]; })}
-                    onRemove={
-                      (a.paragraphs?.length ?? 0) > 1
-                        ? () => set((d) => { d.areas![ai].paragraphs!.pop(); })
-                        : undefined
-                    }
+                    onRemove={(pi) => set((d) => { d.areas![ai].paragraphs!.splice(pi, 1); })}
+                    renderItem={(p) => <TextPreview text={p.text ?? ""} />}
                   />
-                  <span style={{ fontSize: 11, color: "var(--theme-elevation-500)" }}>
-                    {(a.services ?? []).length} tag{(a.services ?? []).length === 1 ? "" : "s"}
-                  </span>
-                  <RowActions
+                  <ListManager
+                    label="Tags"
+                    itemLabel="tag"
+                    items={a.services ?? []}
                     onAdd={() => set((d) => { d.areas![ai].services = [...(d.areas![ai].services ?? []), { label: "" }]; })}
-                    onRemove={
-                      (a.services?.length ?? 0) > 1
-                        ? () => set((d) => { d.areas![ai].services!.pop(); })
-                        : undefined
-                    }
+                    onRemove={(si) => set((d) => { d.areas![ai].services!.splice(si, 1); })}
+                    renderItem={(s) => <TextPreview text={s.label ?? ""} placeholder="(empty — click it on the page above to add text)" />}
                   />
                 </div>
               </div>
