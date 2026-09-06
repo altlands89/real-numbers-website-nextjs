@@ -6,7 +6,7 @@ import { mobileOverridesField } from "../fields/mobileOverridesField";
 export const WhyRealNumbersGlobal: GlobalConfig = {
   slug: "why-real-numbers-page",
   label: "Why Real Numbers",
-  admin: { group: "Pages", description: "Why Real Numbers page copy." },
+  admin: { group: "Pages", description: "SEO and version history. Page content is edited in the Visual Editor." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
@@ -28,6 +28,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
               name: "hero",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Why Real Numbers" },
                 { name: "heading", type: "textarea", label: "Heading", required: true },
@@ -51,6 +52,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
               name: "whyChooseUs",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "text", label: "Heading", defaultValue: "Why companies choose us" },
                 {
@@ -75,7 +77,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
               labels: { singular: "Feature Card", plural: "Feature Cards" },
               minRows: 1,
               maxRows: 4,
-              admin: { description: "The 4-card grid (Startup Mindset, Strategic Thinking, Hands-on Partnership, Built for Long-Term Growth)." },
+              admin: { hidden: true, description: "The 4-card grid (Startup Mindset, Strategic Thinking, Hands-on Partnership, Built for Long-Term Growth)." },
               fields: [
                 { name: "title", type: "text", label: "Title", required: true },
                 { name: "paragraph1", type: "textarea", label: "First Paragraph", required: true },
@@ -91,6 +93,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
               name: "whatMakesDifferent",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "textarea", label: "Heading", defaultValue: "What makes the partnership different" },
                 {
@@ -125,6 +128,7 @@ export const WhyRealNumbersGlobal: GlobalConfig = {
               name: "closingCta",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "textarea", label: "Heading", required: true },
                 { name: "closingLine", type: "text", label: "Supporting Line" },

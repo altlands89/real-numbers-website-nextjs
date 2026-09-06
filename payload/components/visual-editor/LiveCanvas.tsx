@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { extractText, renderTextInto, findTextTarget, getByPath } from "./domTextSync";
 
 // The real page, rendered at its true desktop width (1440px, inside the
 // caller's DeviceFrame optical-zoom wrapper) with every text/image field
@@ -17,12 +18,22 @@ export function LiveCanvas({
   pageUrl,
   refreshKey,
   title,
+  data,
   onFieldCommit,
   onImageClick,
 }: {
   pageUrl: string;
   refreshKey: number;
   title: string;
+  // The page's current local editor state (About's `data`, etc.) — kept in
+  // sync with the iframe's *text* content on every change (Undo/Redo, or a
+  // Manage-lists-panel edit), same-origin DOM patch, not a re-render/reload
+  // of the iframe (which would lose any other unsaved edit and require a
+  // round-trip to the server). Structural changes (an added/removed array
+  // row) still need Publish to actually appear here — same long-standing
+  // caveat MobilePreview's own copy already states — this only re-syncs
+  // the text of fields that already have a home in the current markup.
+  data: unknown;
   onFieldCommit: (path: string, value: string) => void;
   onImageClick: (path: string) => void;
 }) {
@@ -44,6 +55,24 @@ export function LiveCanvas({
   }, [onFieldCommit, onImageClick]);
 
   useEffect(() => () => roRef.current?.disconnect(), []);
+
+  // Keep every visible field's text in sync with `data` — covers Undo/Redo
+  // (which only change React state, never touch the iframe's own DOM) and
+  // a text edit made via the Manage-lists panel below the canvas.
+  useEffect(() => {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc) return;
+    doc.querySelectorAll<HTMLElement>("[data-field-path]").forEach((el) => {
+      if (el.dataset.editing === "1") return; // an inline edit is open on this field right now — don't clobber it
+      const path = el.dataset.fieldPath;
+      if (!path || el.dataset.fieldKind === "image") return;
+      const value = getByPath(data, path);
+      if (typeof value !== "string") return;
+      const target = findTextTarget(el, false); // this canvas is always the desktop viewport
+      if (extractText(target) === value) return;
+      renderTextInto(target, value);
+    });
+  }, [data]);
 
   const handleLoad = () => {
     const doc = iframeRef.current?.contentDocument;

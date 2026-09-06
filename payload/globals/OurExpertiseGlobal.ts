@@ -6,7 +6,7 @@ import { mobileOverridesField } from "../fields/mobileOverridesField";
 export const OurExpertiseGlobal: GlobalConfig = {
   slug: "our-expertise-page",
   label: "Our Expertise",
-  admin: { group: "Pages", description: "Our Expertise page copy." },
+  admin: { group: "Pages", description: "SEO and version history. Page content is edited in the Visual Editor." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
@@ -28,6 +28,7 @@ export const OurExpertiseGlobal: GlobalConfig = {
               name: "hero",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Our Expertise" },
                 { name: "heading", type: "textarea", label: "Heading", required: true },
@@ -46,7 +47,7 @@ export const OurExpertiseGlobal: GlobalConfig = {
               labels: { singular: "Expertise Area", plural: "Expertise Areas" },
               minRows: 1,
               maxRows: 4,
-              admin: { description: "Financial Operations, Strategic Finance, Fundraising & Growth, Business Performance." },
+              admin: { hidden: true, description: "Financial Operations, Strategic Finance, Fundraising & Growth, Business Performance." },
               fields: [
                 { name: "title", type: "text", label: "Title", required: true },
                 { name: "tagline", type: "text", label: "Tagline", required: true },
@@ -71,7 +72,7 @@ export const OurExpertiseGlobal: GlobalConfig = {
               name: "integrated",
               type: "group",
               label: false,
-              admin: { description: "\"One integrated financial partnership\" closing section." },
+              admin: { hidden: true, description: "\"One integrated financial partnership\" closing section." },
               fields: [
                 { name: "heading", type: "textarea", label: "Heading", defaultValue: "One integrated financial partnership" },
                 { name: "text", type: "textarea", label: "Paragraph" },
@@ -95,6 +96,7 @@ export const OurExpertiseGlobal: GlobalConfig = {
               name: "closingCta",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "textarea", label: "Heading", required: true },
                 { name: "closingLine", type: "textarea", label: "Supporting Line" },

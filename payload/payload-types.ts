@@ -963,7 +963,7 @@ export interface StoriesBlock {
   blockType: 'stories';
 }
 /**
- * About page copy.
+ * SEO and version history. Page content is edited in the Visual Editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about-page".
@@ -1061,7 +1061,7 @@ export interface AboutPage {
   createdAt?: string | null;
 }
 /**
- * Team page copy. The roster itself lives in the Team Members collection.
+ * SEO and version history. Page content is edited in the Visual Editor; the roster lives in the Team Members collection.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team-page".
@@ -1110,7 +1110,7 @@ export interface TeamPage {
   createdAt?: string | null;
 }
 /**
- * Contact page copy.
+ * SEO and version history. Page content is edited in the Visual Editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-page".
@@ -1167,7 +1167,7 @@ export interface ContactPage {
   createdAt?: string | null;
 }
 /**
- * Why Real Numbers page copy.
+ * SEO and version history. Page content is edited in the Visual Editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "why-real-numbers-page".
@@ -1258,7 +1258,7 @@ export interface WhyRealNumbersPage {
   createdAt?: string | null;
 }
 /**
- * Our Expertise page copy.
+ * SEO and version history. Page content is edited in the Visual Editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "our-expertise-page".
@@ -1353,7 +1353,7 @@ export interface OurExpertisePage {
   createdAt?: string | null;
 }
 /**
- * Use Cases page copy.
+ * SEO and version history. Page content is edited in the Visual Editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "use-cases-page".
@@ -1421,7 +1421,7 @@ export interface UseCasesPage {
   createdAt?: string | null;
 }
 /**
- * Questions Founders Ask page copy. The Q&A list itself lives in the FAQ Items collection.
+ * SEO and version history. Page content is edited in the Visual Editor; the Q&A list lives in the FAQ Items collection.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "questions-founders-ask-page".

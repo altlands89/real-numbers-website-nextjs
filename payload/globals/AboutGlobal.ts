@@ -3,10 +3,19 @@ import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
 import { mobileOverridesField } from "../fields/mobileOverridesField";
 
+// All content on this page is owned by the visual editor
+// (/admin/visual-editor/about) — every group below is admin.hidden so the
+// regular form can't diverge from it (two independent, unsynchronized edit
+// surfaces on the same document is exactly the "last write wins" conflict
+// this project decided to eliminate rather than merely warn about). The
+// Local API/Server Actions the visual editor calls are unaffected —
+// admin.hidden only removes a field from the admin UI, same as
+// mobileOverridesField() already relied on. SEO and version history stay
+// visible here; there's no on-page equivalent for those.
 export const AboutGlobal: GlobalConfig = {
   slug: "about-page",
   label: "About",
-  admin: { group: "Pages", description: "About page copy." },
+  admin: { group: "Pages", description: "SEO and version history. Page content is edited in the Visual Editor." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
@@ -28,6 +37,7 @@ export const AboutGlobal: GlobalConfig = {
               name: "hero",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "About Real Numbers" },
                 { name: "heading", type: "textarea", label: "Heading", required: true },
@@ -43,6 +53,7 @@ export const AboutGlobal: GlobalConfig = {
               name: "ourStory",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "text", label: "Heading", defaultValue: "Our Story" },
                 { name: "paragraphs", type: "array", label: "Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
@@ -66,6 +77,7 @@ export const AboutGlobal: GlobalConfig = {
               name: "whatWeBelieve",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "text", label: "Heading", defaultValue: "What We Believe" },
                 { name: "intro", type: "textarea", label: "Intro Paragraph" },
@@ -92,6 +104,7 @@ export const AboutGlobal: GlobalConfig = {
               name: "howWeWork",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "text", label: "Heading", defaultValue: "How We Work" },
                 { name: "paragraphs", type: "array", label: "Paragraphs", labels: { singular: "Paragraph", plural: "Paragraphs" }, minRows: 1, fields: [{ name: "text", type: "textarea", label: "Paragraph", required: true }] },
@@ -106,7 +119,7 @@ export const AboutGlobal: GlobalConfig = {
               name: "leadership",
               type: "group",
               label: false,
-              admin: { description: "Short-form bios for the About page — the full-length bios live on the Team page (Team Members collection)." },
+              admin: { hidden: true, description: "Short-form bios for the About page — the full-length bios live on the Team page (Team Members collection)." },
               fields: [
                 { name: "heading", type: "text", label: "Heading", defaultValue: "Leadership" },
                 {

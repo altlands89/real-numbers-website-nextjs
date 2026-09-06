@@ -9,6 +9,8 @@ import { useCloneState } from "./visual-editor/useCloneState";
 import { useMediaPicker } from "./visual-editor/useMediaPicker";
 import { useDragReorder } from "./visual-editor/useDragReorder";
 import { useMobileOverrides } from "./visual-editor/useMobileOverrides";
+import { useLastTouchedHistory } from "./visual-editor/useCombinedHistory";
+import { UndoRedoBar } from "./visual-editor/UndoRedoBar";
 import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
@@ -42,15 +44,57 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
   const [status, setStatus] = useState<{ kind: "idle" | "ok" | "error"; message?: string }>({ kind: "idle" });
   const [previewKey, setPreviewKey] = useState(0);
 
+  const history = useLastTouchedHistory();
   const onMutate = () => setStatus({ kind: "idle" });
-  const { data, set, dirty, setDirty } = useCloneState<TeamPage>(initialData, onMutate);
-  const { data: roster, set: setRoster, dirty: rosterDirty, setDirty: setRosterDirty } = useCloneState<
-    RosterMember[]
-  >(initialRoster, onMutate);
+  const {
+    data,
+    set,
+    dirty,
+    setDirty,
+    undo: undoData,
+    redo: redoData,
+    canUndo: canUndoData,
+    canRedo: canRedoData,
+  } = useCloneState<TeamPage>(initialData, () => {
+    onMutate();
+    history.mark("data");
+  });
+  const {
+    data: roster,
+    set: setRoster,
+    dirty: rosterDirty,
+    setDirty: setRosterDirty,
+    undo: undoRoster,
+    redo: redoRoster,
+    canUndo: canUndoRoster,
+    canRedo: canRedoRoster,
+  } = useCloneState<RosterMember[]>(initialRoster, () => {
+    onMutate();
+    history.mark("roster");
+  });
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
-  const { overrides, setOverride, dirty: overridesDirty, setDirty: setOverridesDirty } = useMobileOverrides(
-    initialData.mobileOverrides as Record<string, unknown> | null | undefined,
+  const {
+    overrides,
+    setOverride,
+    dirty: overridesDirty,
+    setDirty: setOverridesDirty,
+    undo: undoOverrides,
+    redo: redoOverrides,
+    canUndo: canUndoOverrides,
+    canRedo: canRedoOverrides,
+  } = useMobileOverrides(initialData.mobileOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("overrides"),
   );
+
+  const historySlices = {
+    data: { canUndo: canUndoData, canRedo: canRedoData, undo: undoData, redo: redoData },
+    roster: { canUndo: canUndoRoster, canRedo: canRedoRoster, undo: undoRoster, redo: redoRoster },
+    overrides: { canUndo: canUndoOverrides, canRedo: canRedoOverrides, undo: undoOverrides, redo: redoOverrides },
+  };
+  const canUndo = canUndoData || canUndoRoster || canUndoOverrides;
+  const canRedo = canRedoData || canRedoRoster || canRedoOverrides;
+  const handleUndo = () => history.undo(historySlices);
+  const handleRedo = () => history.redo(historySlices);
 
   const overallDirty = dirty || rosterDirty || overridesDirty;
 
@@ -186,6 +230,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
           <button
             type="button"
             onClick={save}
@@ -254,7 +299,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>
-          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Team page — live canvas" onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
+          <LiveCanvas pageUrl={pageUrl} refreshKey={previewKey} title="Team page — live canvas" data={{ ...data, roster }} onFieldCommit={handleFieldCommit} onImageClick={handleImageClick} />
         </DeviceFrame>
       </div>
 

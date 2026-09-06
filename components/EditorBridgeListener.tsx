@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { extractText, renderTextInto, findTextTarget } from "@/payload/components/visual-editor/domTextSync";
 
 // Powers the visual editor's live-preview bridge
 // (payload/components/visual-editor/MobilePreview.tsx and, for pages
@@ -84,30 +85,6 @@ export default function EditorBridgeListener() {
     // visual-editor-round-3 plan for why this deliberately avoids computing
     // any position from the parent's side of the iframe boundary) ---
 
-    // Reconstructs the plain-text value (with real "\n"s) from an element
-    // built by components/ResponsiveText.tsx's renderLines(), which
-    // represents each line break as a literal <br> between text nodes.
-    const extractText = (root: Node): string => {
-      let text = "";
-      root.childNodes.forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE) text += node.textContent ?? "";
-        else if (node.nodeName === "BR") text += "\n";
-        else text += extractText(node);
-      });
-      return text;
-    };
-
-    // Inverse of extractText — rebuilds the text-node/<br> structure so the
-    // element keeps looking exactly like ResponsiveText's own output.
-    const renderTextInto = (container: Element, text: string) => {
-      container.textContent = "";
-      const lines = text.split("\n");
-      lines.forEach((line, i) => {
-        container.appendChild(document.createTextNode(line));
-        if (i < lines.length - 1) container.appendChild(document.createElement("br"));
-      });
-    };
-
     const startInlineEdit = (el: HTMLElement) => {
       if (el.dataset.editing === "1") return;
       // A field with a mobile override renders two children
@@ -117,8 +94,7 @@ export default function EditorBridgeListener() {
       // itself, seeded with the (shared) desktop text — same starting
       // point ResponsiveField's own "use different text on mobile" button
       // uses when creating a new override.
-      const target =
-        (el.querySelector(isMobileViewport ? ":scope > .rn-mobile-only" : ":scope > .rn-desktop-only") as HTMLElement | null) ?? el;
+      const target = findTextTarget(el, isMobileViewport);
       const currentText = extractText(target);
       const path = el.dataset.fieldPath ?? "";
 

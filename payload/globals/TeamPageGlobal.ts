@@ -6,7 +6,7 @@ import { mobileOverridesField } from "../fields/mobileOverridesField";
 export const TeamPageGlobal: GlobalConfig = {
   slug: "team-page",
   label: "Team",
-  admin: { group: "Pages", description: "Team page copy. The roster itself lives in the Team Members collection." },
+  admin: { group: "Pages", description: "SEO and version history. Page content is edited in the Visual Editor; the roster lives in the Team Members collection." },
   hooks: {
     afterChange: [revalidateGlobalOnChange],
   },
@@ -28,6 +28,7 @@ export const TeamPageGlobal: GlobalConfig = {
               name: "hero",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "eyebrow", type: "text", label: "Small Label Above Heading", defaultValue: "Our Team" },
                 { name: "heading", type: "textarea", label: "Heading", required: true },
@@ -39,7 +40,7 @@ export const TeamPageGlobal: GlobalConfig = {
         {
           label: "Team List",
           fields: [
-            { name: "sectionHeading", type: "text", label: "\"The Team\" Section Title", defaultValue: "The Team" },
+            { name: "sectionHeading", type: "text", label: "\"The Team\" Section Title", defaultValue: "The Team", admin: { hidden: true } },
           ],
         },
         {
@@ -49,6 +50,7 @@ export const TeamPageGlobal: GlobalConfig = {
               name: "closingCta",
               type: "group",
               label: false,
+              admin: { hidden: true },
               fields: [
                 { name: "heading", type: "textarea", label: "Heading", required: true },
                 { name: "closingLine", type: "textarea", label: "Supporting Line" },
