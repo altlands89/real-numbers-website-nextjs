@@ -14,6 +14,8 @@ import * as migration_20260902_150500_remove_home_old_section_fields from './202
 import * as migration_20260902_155046_add_seo_and_site_settings from './20260902_155046_add_seo_and_site_settings';
 import * as migration_20260904_090825 from './20260904_090825';
 import * as migration_20260904_140327_add_mobile_overrides from './20260904_140327_add_mobile_overrides';
+import * as migration_20260906_185525_add_team_member_linkedin from './20260906_185525_add_team_member_linkedin';
+import * as migration_20260906_190500_add_settings_globals from './20260906_190500_add_settings_globals';
 
 export const migrations = [
   {
@@ -94,6 +96,16 @@ export const migrations = [
   {
     up: migration_20260904_140327_add_mobile_overrides.up,
     down: migration_20260904_140327_add_mobile_overrides.down,
-    name: '20260904_140327_add_mobile_overrides'
+    name: '20260904_140327_add_mobile_overrides',
+  },
+  {
+    up: migration_20260906_185525_add_team_member_linkedin.up,
+    down: migration_20260906_185525_add_team_member_linkedin.down,
+    name: '20260906_185525_add_team_member_linkedin',
+  },
+  {
+    up: migration_20260906_190500_add_settings_globals.up,
+    down: migration_20260906_190500_add_settings_globals.down,
+    name: '20260906_190500_add_settings_globals'
   },
 ];

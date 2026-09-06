@@ -33,6 +33,7 @@ export type TeamMemberEntry = {
   role: string;
   bio: string;
   education: string;
+  linkedin: string;
   photo: number | null;
 };
 
@@ -75,6 +76,7 @@ export async function saveTeamRoster(
         role: entry.role,
         bio: entry.bio,
         education: entry.education,
+        linkedin: entry.linkedin,
         photo: entry.photo,
         order: i,
       };

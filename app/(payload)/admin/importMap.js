@@ -12,6 +12,7 @@ import { AboutVisualEditorView as AboutVisualEditorView_16045fbc452172628d113612
 import { WhyRealNumbersVisualEditorView as WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e } from '@/payload/components/WhyRealNumbersVisualEditorView'
 import { OurExpertiseVisualEditorView as OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41 } from '@/payload/components/OurExpertiseVisualEditorView'
 import { UseCasesVisualEditorView as UseCasesVisualEditorView_5c892cfba09d5b55a6419038af9ac98d } from '@/payload/components/UseCasesVisualEditorView'
+import { SettingsView as SettingsView_9e248d8aa6696ade562565ce3caa7cb0 } from '@/payload/components/SettingsView'
 import { TeamVisualEditorView as TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398 } from '@/payload/components/TeamVisualEditorView'
 import { QuestionsVisualEditorView as QuestionsVisualEditorView_57f251049496840aac0e4631408dcb08 } from '@/payload/components/QuestionsVisualEditorView'
 import { ContactVisualEditorView as ContactVisualEditorView_305f2e650e81fbb74587cc9a16cce763 } from '@/payload/components/ContactVisualEditorView'
@@ -34,6 +35,7 @@ export const importMap = {
   "@/payload/components/WhyRealNumbersVisualEditorView#WhyRealNumbersVisualEditorView": WhyRealNumbersVisualEditorView_b5d6cf9295cb9c8c180e5a95fb71c80e,
   "@/payload/components/OurExpertiseVisualEditorView#OurExpertiseVisualEditorView": OurExpertiseVisualEditorView_518c0488a948eadf42331883a5689f41,
   "@/payload/components/UseCasesVisualEditorView#UseCasesVisualEditorView": UseCasesVisualEditorView_5c892cfba09d5b55a6419038af9ac98d,
+  "@/payload/components/SettingsView#SettingsView": SettingsView_9e248d8aa6696ade562565ce3caa7cb0,
   "@/payload/components/TeamVisualEditorView#TeamVisualEditorView": TeamVisualEditorView_9ec3703d953623e2c9465f7fdf165398,
   "@/payload/components/QuestionsVisualEditorView#QuestionsVisualEditorView": QuestionsVisualEditorView_57f251049496840aac0e4631408dcb08,
   "@/payload/components/ContactVisualEditorView#ContactVisualEditorView": ContactVisualEditorView_305f2e650e81fbb74587cc9a16cce763,

@@ -33,6 +33,7 @@ export async function TeamVisualEditorView(props: AdminViewProps) {
     role: d.role ?? "",
     bio: d.bio ?? "",
     education: d.education ?? "",
+    linkedin: d.linkedin ?? "",
     photo: typeof d.photo === "object" && d.photo ? { id: d.photo.id, url: d.photo.url ?? "" } : (d.photo ?? null),
   }));
 

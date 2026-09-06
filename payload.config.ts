@@ -26,6 +26,8 @@ import { DesignTokensGlobal } from "./payload/globals/DesignTokensGlobal";
 import { TypographyGlobal } from "./payload/globals/TypographyGlobal";
 import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
 import { SiteSettingsGlobal } from "./payload/globals/SiteSettingsGlobal";
+import { AIIntegrationsGlobal } from "./payload/globals/AIIntegrationsGlobal";
+import { AccountHandoffGlobal } from "./payload/globals/AccountHandoffGlobal";
 import { getSiteUrl } from "./lib/site-url";
 
 // Maps each page Global's slug to the live route it renders, so Live
@@ -102,6 +104,11 @@ export default buildConfig({
           path: "/visual-editor/use-cases",
           meta: { title: "Use Cases — Visual Editor" },
         },
+        settings: {
+          Component: "@/payload/components/SettingsView#SettingsView",
+          path: "/settings",
+          meta: { title: "Settings" },
+        },
         teamVisualEditor: {
           Component: "@/payload/components/TeamVisualEditorView#TeamVisualEditorView",
           path: "/visual-editor/team",
@@ -153,6 +160,8 @@ export default buildConfig({
     OurExpertiseGlobal,
     UseCasesGlobal,
     QuestionsFoundersAskGlobal,
+    AIIntegrationsGlobal,
+    AccountHandoffGlobal,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

@@ -112,6 +112,8 @@ export interface Config {
     'our-expertise-page': OurExpertisePage;
     'use-cases-page': UseCasesPage;
     'questions-founders-ask-page': QuestionsFoundersAskPage;
+    'ai-integrations': AiIntegration;
+    'account-handoff': AccountHandoff;
   };
   globalsSelect: {
     branding: BrandingSelect<false> | BrandingSelect<true>;
@@ -128,6 +130,8 @@ export interface Config {
     'our-expertise-page': OurExpertisePageSelect<false> | OurExpertisePageSelect<true>;
     'use-cases-page': UseCasesPageSelect<false> | UseCasesPageSelect<true>;
     'questions-founders-ask-page': QuestionsFoundersAskPageSelect<false> | QuestionsFoundersAskPageSelect<true>;
+    'ai-integrations': AiIntegrationsSelect<false> | AiIntegrationsSelect<true>;
+    'account-handoff': AccountHandoffSelect<false> | AccountHandoffSelect<true>;
   };
   locale: null;
   widgets: {
@@ -216,6 +220,10 @@ export interface TeamMember {
    * Shown only for the two leadership cards (e.g. "B.A. in Accounting...").
    */
   education?: string | null;
+  /**
+   * Full profile URL, e.g. https://www.linkedin.com/in/username. Shown as a LinkedIn icon button on their card — leave blank to hide it.
+   */
+  linkedin?: string | null;
   leadership?: boolean | null;
   order?: number | null;
   updatedAt: string;
@@ -441,6 +449,7 @@ export interface TeamMembersSelect<T extends boolean = true> {
   photo?: T;
   bio?: T;
   education?: T;
+  linkedin?: T;
   leadership?: T;
   order?: T;
   updatedAt?: T;
@@ -1472,6 +1481,59 @@ export interface QuestionsFoundersAskPage {
   createdAt?: string | null;
 }
 /**
+ * Connect an AI provider using your own API key — configure this from Settings → AI Integrations, not here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-integrations".
+ */
+export interface AiIntegration {
+  id: number;
+  provider?: ('openai' | 'anthropic' | 'google') | null;
+  apiKey?: string | null;
+  /**
+   * Set automatically by the Settings page's Test Connection button.
+   */
+  lastVerifiedAt?: string | null;
+  lastVerifiedOk?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Track progress on transferring this site's accounts to the client. See Settings → Ownership & Handoff for the full step-by-step guide with real links.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "account-handoff".
+ */
+export interface AccountHandoff {
+  id: number;
+  githubTransfer?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  vercelTransfer?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  supabaseTransfer?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  domainTransfer?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  clientAdminAccount?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  agencyAccessRemoved?: {
+    done?: boolean | null;
+    notes?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "branding_select".
  */
@@ -2100,6 +2162,64 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
       };
   mobileOverrides?: T;
   _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-integrations_select".
+ */
+export interface AiIntegrationsSelect<T extends boolean = true> {
+  provider?: T;
+  apiKey?: T;
+  lastVerifiedAt?: T;
+  lastVerifiedOk?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "account-handoff_select".
+ */
+export interface AccountHandoffSelect<T extends boolean = true> {
+  githubTransfer?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
+  vercelTransfer?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
+  supabaseTransfer?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
+  domainTransfer?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
+  clientAdminAccount?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
+  agencyAccessRemoved?:
+    | T
+    | {
+        done?: T;
+        notes?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

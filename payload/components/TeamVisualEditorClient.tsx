@@ -24,6 +24,7 @@ export type RosterMember = {
   role: string;
   bio: string;
   education: string;
+  linkedin: string;
   photo: number | { id: number; url?: string | null } | null;
 };
 
@@ -126,6 +127,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
           role: m.role,
           bio: m.bio,
           education: m.education,
+          linkedin: m.linkedin,
           photo: typeof m.photo === "object" ? (m.photo?.id ?? null) : m.photo,
         })),
       );
@@ -179,7 +181,7 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
 
   const addMember = () =>
     setRoster((d) => {
-      d.push({ id: null, name: "New team member", role: "", bio: "", education: "", photo: null });
+      d.push({ id: null, name: "New team member", role: "", bio: "", education: "", linkedin: "", photo: null });
     });
   const removeMember = (i: number) => {
     if (!window.confirm("Remove this person from the team page? This can't be undone from here.")) return;
@@ -369,6 +371,23 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
                     </button>
                   )}
                 </div>
+                <input
+                  type="text"
+                  value={m.linkedin}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setRoster((d) => { d[i].linkedin = value; });
+                  }}
+                  placeholder="LinkedIn URL (optional)"
+                  style={{
+                    fontSize: 12,
+                    padding: "6px 8px",
+                    borderRadius: 6,
+                    border: "1px solid var(--theme-elevation-150)",
+                    background: "var(--theme-input-bg, var(--theme-elevation-0))",
+                    color: "var(--theme-text)",
+                  }}
+                />
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 11, color: "var(--theme-elevation-500)", cursor: "grab" }} title="Drag to reorder">
                     ⠿ Drag to reorder

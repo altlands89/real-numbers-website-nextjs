@@ -29,6 +29,12 @@ export const TeamMembers: CollectionConfig = {
       label: "Education",
       admin: { description: "Shown only for the two leadership cards (e.g. \"B.A. in Accounting...\")." },
     },
+    {
+      name: "linkedin",
+      type: "text",
+      label: "LinkedIn URL",
+      admin: { description: "Full profile URL, e.g. https://www.linkedin.com/in/username. Shown as a LinkedIn icon button on their card — leave blank to hide it." },
+    },
     { name: "leadership", type: "checkbox", label: "Show in Leadership Section?", defaultValue: false },
     { name: "order", type: "number", label: "Display Order", defaultValue: 0 },
   ],
