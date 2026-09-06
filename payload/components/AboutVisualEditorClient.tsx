@@ -152,16 +152,14 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
-  // Editor bridge: a click inside the mobile-preview iframe (on the live
-  // rendered page) posts {path} back here — scroll the matching field in
-  // the leftover manage-lists panel into view (mobile still uses the old
-  // jump-to-schematic behavior until Stage 3 gives it its own inline
-  // editing — see cached-whistling-hopper.md).
-  const handleFieldSelect = (path: string) => {
-    const el = document.getElementById(`rn-field-${path}`);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.querySelector<HTMLInputElement | HTMLTextAreaElement>("input, textarea")?.focus();
+  // Mobile preview's live-iframe click → inline edit → commit lands here.
+  // Unlike the desktop canvas, this always writes a *mobile override*
+  // (never the shared desktop value) — EditorBridgeListener decides this
+  // is a mobile-viewport edit by the iframe's own 390px width, and
+  // mobileOverrides is already a flat {path: value} map, so no per-field
+  // dispatch table is needed the way the desktop commit below needs one.
+  const handleMobileFieldCommit = (path: string, value: string) => {
+    setOverride(path, value);
   };
 
   // The main canvas's live-iframe click → inline edit → commit lands here.
@@ -310,7 +308,7 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
         </div>
       )}
 
-      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} onFieldSelect={handleFieldSelect} />
+      <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} inlineEditing onFieldCommit={handleMobileFieldCommit} />
 
       {/* ---- The real page, live, editable in place ---- */}
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>

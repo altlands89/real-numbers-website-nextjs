@@ -14,14 +14,19 @@ import { useEffect } from "react";
 // an actual page view.
 //
 // Two click behaviors, chosen per-iframe by a second param:
-// - `rn_editor_inline=1` (set only by the new real-iframe main canvas,
-//   About only for now) — click opens an inline textarea positioned
-//   exactly over the clicked element, edited in place; committing posts
-//   {type: "rn-editor-field-commit", path, value} so the parent can fold
-//   the edit into its existing save-on-Publish state.
-// - otherwise (MobilePreview, and every page not yet migrated) — the
-//   original behavior: click posts {type: "rn-editor-field-click", path}
-//   so the parent can jump/scroll to that field in its schematic canvas.
+// - `rn_editor_inline=1` (set by the real-iframe main canvas, and by
+//   MobilePreview when its caller opts in via `inlineEditing`) — click
+//   opens an inline textarea positioned exactly over the clicked element,
+//   edited in place; committing posts {type: "rn-editor-field-commit",
+//   path, value} so the parent can fold the edit into its existing
+//   save-on-Publish state. Which of a field's two values (desktop/mobile
+//   override) gets edited is decided by this iframe's own width — see
+//   startInlineEdit — not by anything the parent tells it, so the exact
+//   same script produces the right behavior in both the 1440px main
+//   canvas and MobilePreview's 390px frame.
+// - otherwise (every page not yet migrated) — the original behavior:
+//   click posts {type: "rn-editor-field-click", path} so the parent can
+//   jump/scroll to that field in its schematic canvas.
 export default function EditorBridgeListener() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -29,6 +34,12 @@ export default function EditorBridgeListener() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("rn_editor_bridge") !== "1") return;
     const inlineEditing = params.get("rn_editor_inline") === "1";
+    // Matches the exact CSS breakpoint ResponsiveText's own
+    // .rn-desktop-only/.rn-mobile-only toggle uses (globals.css,
+    // max-width: 640px) — this iframe's width never changes during its
+    // life (MobilePreview is a fixed 390px frame, the main canvas is a
+    // fixed 1440px one), so this only needs computing once.
+    const isMobileViewport = window.innerWidth <= 640;
 
     // Tells every dynamic/self-animating component (RotatingWord,
     // PhotoSlideshow, CompositionDrift, Preloader, ScrollReveal) to hold
@@ -101,10 +112,13 @@ export default function EditorBridgeListener() {
       if (el.dataset.editing === "1") return;
       // A field with a mobile override renders two children
       // (.rn-desktop-only / .rn-mobile-only, only one visible via CSS) —
-      // this iframe is always the desktop-width canvas, so edit the
-      // desktop span specifically. A field with no override has no such
-      // split; edit the element itself.
-      const target = (el.querySelector(":scope > .rn-desktop-only") as HTMLElement | null) ?? el;
+      // edit whichever one this iframe's own viewport actually shows. A
+      // field with no override yet has no such split; edit the element
+      // itself, seeded with the (shared) desktop text — same starting
+      // point ResponsiveField's own "use different text on mobile" button
+      // uses when creating a new override.
+      const target =
+        (el.querySelector(isMobileViewport ? ":scope > .rn-mobile-only" : ":scope > .rn-desktop-only") as HTMLElement | null) ?? el;
       const currentText = extractText(target);
       const path = el.dataset.fieldPath ?? "";
 
