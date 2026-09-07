@@ -91,12 +91,6 @@ export default async function OurExpertisePage() {
                   <ResponsiveText desktop={p.text ?? ""} mobile={getOverride(mo, `areas.${a.id ?? i}.paragraphs.${p.id ?? pi}.text`)} path={`areas.${a.id ?? i}.paragraphs.${p.id ?? pi}.text`} />
                 </p>
               ))}
-              {i === 0 && (
-                <div className="prose-mask-photo align-right">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/img/masked/masked-7.png" alt="" />
-                </div>
-              )}
               <div className="key-services">
                 {(a.services || []).map((s, si) => (
                   <span key={si}>

@@ -107,10 +107,6 @@ export default async function AboutPage() {
                 path="whatWeBelieve.intro"
               />
             </p>
-            <div className="prose-mask-photo align-right">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/masked/masked-13.png" alt="" />
-            </div>
             <div className="principles-list">
               {(page.whatWeBelieve?.principles || []).map((p, i) => {
                 const leadPath = `whatWeBelieve.principles.${p.id ?? i}.lead`;
@@ -150,10 +146,6 @@ export default async function AboutPage() {
                 </p>
               );
             })}
-            <div className="prose-mask-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/masked/masked-3.png" alt="" />
-            </div>
           </div>
 
           <div className="prose-block" style={{ position: "relative" }}>

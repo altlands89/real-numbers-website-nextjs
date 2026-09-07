@@ -1181,14 +1181,6 @@ p { margin: 0; }
   .prose-block--story .prose-block-media { position: static; }
 }
 
-.prose-mask-photo {
-  width: 220px;
-  aspect-ratio: 1/1;
-  margin: var(--space-600) 0;
-}
-.prose-mask-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.prose-mask-photo.align-right { margin-left: auto; }
-
 /* Leadership (About) */
 .leadership-grid {
   display: grid;
