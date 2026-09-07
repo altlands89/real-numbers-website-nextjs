@@ -51,6 +51,21 @@ export default function HeaderV2Client({ logoSrc, logoAlt }: Props) {
             priority
           />
         </a>
+        {/* Desktop-only: every destination visible up front, not just after
+            opening the hamburger — the hamburger below stays the only way
+            in on narrower screens, where there's no room for this. */}
+        <nav className="v2-header-nav-inline" aria-label="Primary">
+          <a href="/about">About</a>
+          <a href="/team">Our Team</a>
+          <a href="/why-real-numbers">Why Real Numbers</a>
+          <a href="/our-expertise">Our Expertise</a>
+          <a href="/use-cases">Use Cases</a>
+          <a href="/questions-founders-ask">Q&amp;A</a>
+          <a href="/contact">Contact</a>
+          <a href="/contact" className="btn btn-primary v2-header-nav-inline-cta">
+            Let&apos;s Talk
+          </a>
+        </nav>
         <button
           className="v2-nav-toggle"
           aria-label="Toggle menu"
@@ -67,7 +82,9 @@ export default function HeaderV2Client({ logoSrc, logoAlt }: Props) {
           <a href="/team" onClick={() => setOpen(false)}>Our Team</a>
           <a href="/why-real-numbers" onClick={() => setOpen(false)}>Why Real Numbers</a>
           <a href="/our-expertise" onClick={() => setOpen(false)}>Our Expertise</a>
+          <a href="/how-we-work" onClick={() => setOpen(false)}>How We Work</a>
           <a href="/use-cases" onClick={() => setOpen(false)}>Use Cases</a>
+          <a href="/case-studies" onClick={() => setOpen(false)}>Case Studies</a>
           <a href="/questions-founders-ask" onClick={() => setOpen(false)}>Q&amp;A</a>
           <a href="/contact" onClick={() => setOpen(false)}>Contact</a>
         </nav>

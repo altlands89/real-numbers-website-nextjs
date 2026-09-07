@@ -112,6 +112,8 @@ export interface Config {
     'our-expertise-page': OurExpertisePage;
     'use-cases-page': UseCasesPage;
     'questions-founders-ask-page': QuestionsFoundersAskPage;
+    'how-we-work-page': HowWeWorkPage;
+    'case-studies-page': CaseStudiesPage;
     'ai-integrations': AiIntegration;
     'account-handoff': AccountHandoff;
   };
@@ -130,6 +132,8 @@ export interface Config {
     'our-expertise-page': OurExpertisePageSelect<false> | OurExpertisePageSelect<true>;
     'use-cases-page': UseCasesPageSelect<false> | UseCasesPageSelect<true>;
     'questions-founders-ask-page': QuestionsFoundersAskPageSelect<false> | QuestionsFoundersAskPageSelect<true>;
+    'how-we-work-page': HowWeWorkPageSelect<false> | HowWeWorkPageSelect<true>;
+    'case-studies-page': CaseStudiesPageSelect<false> | CaseStudiesPageSelect<true>;
     'ai-integrations': AiIntegrationsSelect<false> | AiIntegrationsSelect<true>;
     'account-handoff': AccountHandoffSelect<false> | AccountHandoffSelect<true>;
   };
@@ -242,6 +246,14 @@ export interface Testimonial {
    * e.g. "CEO, Compete". Leave blank if none.
    */
   role?: string | null;
+  /**
+   * Headshot of the person quoted. Optional — the card works without one.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Logo of the person's company. Optional — the card works without one.
+   */
+  logo?: (number | null) | Media;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -464,6 +476,8 @@ export interface TestimonialsSelect<T extends boolean = true> {
   quote?: T;
   name?: T;
   role?: T;
+  photo?: T;
+  logo?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1481,6 +1495,108 @@ export interface QuestionsFoundersAskPage {
   createdAt?: string | null;
 }
 /**
+ * PLACEHOLDER CONTENT — replace the process steps below once Uzi sends the real engagement-process description.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "how-we-work-page".
+ */
+export interface HowWeWorkPage {
+  id: number;
+  hero: {
+    eyebrow?: string | null;
+    heading: string;
+    lede?: string | null;
+  };
+  stepsIntro?: string | null;
+  steps?:
+    | {
+        title: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  closingCta: {
+    heading: string;
+    buttonLabel?: string | null;
+  };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * PLACEHOLDER CONTENT — replace the case studies below with real, client-approved cases and numbers once Uzi sends them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies-page".
+ */
+export interface CaseStudiesPage {
+  id: number;
+  hero: {
+    eyebrow?: string | null;
+    heading: string;
+    lede?: string | null;
+  };
+  caseStudies?:
+    | {
+        /**
+         * e.g. "Series A SaaS Company" — use an approved real name once available.
+         */
+        clientLabel: string;
+        /**
+         * The one measurable takeaway, e.g. "6 weeks to close-ready books".
+         */
+        metric: string;
+        description: string;
+        /**
+         * Only add once the client has approved being named/shown.
+         */
+        logo?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  closingCta: {
+    heading: string;
+    buttonLabel?: string | null;
+  };
+  /**
+   * Optional — controls what shows in the browser tab, search results, and when this page is shared on social media. Leave blank to use the site default.
+   */
+  seo?: {
+    /**
+     * Shown in the browser tab and as the search-result headline.
+     */
+    title?: string | null;
+    /**
+     * The snippet shown under the title in search results.
+     */
+    description?: string | null;
+    /**
+     * Shown when this page is shared on social media. Falls back to the site default in Site Settings.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Connect an AI provider using your own API key — configure this from Settings → AI Integrations, not here.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2161,6 +2277,83 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "how-we-work-page_select".
+ */
+export interface HowWeWorkPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?: T;
+        lede?: T;
+      };
+  stepsIntro?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        id?: T;
+      };
+  closingCta?:
+    | T
+    | {
+        heading?: T;
+        buttonLabel?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies-page_select".
+ */
+export interface CaseStudiesPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?: T;
+        lede?: T;
+      };
+  caseStudies?:
+    | T
+    | {
+        clientLabel?: T;
+        metric?: T;
+        description?: T;
+        logo?: T;
+        id?: T;
+      };
+  closingCta?:
+    | T
+    | {
+        heading?: T;
+        buttonLabel?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;

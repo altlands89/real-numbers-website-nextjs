@@ -143,13 +143,15 @@ section { position: relative; }
   .rn-mobile-only { display: inline; }
 }
 
-/* ---- Label / Upper — 12/16, +14% tracking, 700, in-color (not
-   dimmed) — a confident technical label, not a muted caption ---- */
+/* ---- Label / Upper — 10.5/14, +14% tracking, 700, in-color (not
+   dimmed) — a confident technical label, not a muted caption. Sized down
+   from 12px per client feedback ("the Eyebrow is too big") — the weight,
+   tracking and uppercase already carry plenty of presence at this size. ---- */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: calc(0.75rem * var(--type-eyebrow-scale, 1));
+  font-size: calc(0.656rem * var(--type-eyebrow-scale, 1));
   line-height: var(--type-eyebrow-line-height, 1.333);
   font-weight: var(--type-eyebrow-weight, 700);
   letter-spacing: var(--type-eyebrow-letter-spacing, 0.14em);
@@ -159,8 +161,8 @@ section { position: relative; }
 }
 .eyebrow::before {
   content: "";
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background: var(--red);
   display: inline-block;
   transform: rotate(45deg);
@@ -924,7 +926,10 @@ p { margin: 0; }
 .story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
 .quote-mark--close { align-self: flex-end; transform: rotate(180deg); }
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
-.story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; }
+.story-attribution-row { display: flex; align-items: center; gap: var(--space-300); }
+.story-card .attribution { font-size: 0.82rem; font-weight: 600; opacity: 0.5; flex: 1; }
+.story-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.story-logo { max-height: 22px; max-width: 90px; width: auto; object-fit: contain; flex-shrink: 0; opacity: 0.8; }
 @media (max-width: 1024px) {
   .stories-grid { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
 }
@@ -1222,7 +1227,10 @@ p { margin: 0; }
 .principle p { opacity: 0.75; font-size: 0.95rem; line-height: 1.6; }
 
 /* Expertise page detail blocks */
-.expertise-block { padding: var(--space-800) 0; border-bottom: 1px solid var(--line-dark); }
+/* scroll-margin-top: these are jump targets (from the Home page's Service
+   Areas cards) — without it, the fixed header (.v2-header) would land
+   directly over the top of whichever section was jumped to. */
+.expertise-block { padding: var(--space-800) 0; border-bottom: 1px solid var(--line-dark); scroll-margin-top: 110px; }
 .expertise-block:last-of-type { border-bottom: none; }
 .expertise-block .tagline { font-weight: 700; font-size: 1.2rem; margin: var(--space-400) 0 var(--space-400); }
 .key-services { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-500); }
@@ -1253,6 +1261,41 @@ p { margin: 0; }
 }
 .usecase-item .q { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
 .usecase-item p { opacity: 0.75; font-size: 0.95rem; line-height: 1.6; }
+
+/* "How We Work" process steps — a vertical sequence (order matters here,
+   unlike the use-case grid above), each step numbered with the same
+   digit-badge motif used elsewhere on the brand (e.g. AudienceV2). */
+.process-steps { display: grid; gap: var(--space-600); margin-top: var(--space-700); max-width: 760px; }
+.process-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-500);
+  align-items: start;
+  padding-bottom: var(--space-600);
+  border-bottom: 1px solid var(--line-dark);
+}
+.process-step:last-child { border-bottom: none; padding-bottom: 0; }
+.process-step-number { width: 56px; height: 56px; flex-shrink: 0; }
+.process-step h3 { font-size: 1.15rem; margin-bottom: 8px; }
+.process-step p { opacity: 0.75; font-size: 0.95rem; line-height: 1.6; }
+
+/* Case study cards — a metric-first grid, since the ask was specifically
+   for measurable results to lead each card. */
+.case-study-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-500); margin-top: var(--space-700); }
+@media (max-width: 1024px) { .case-study-list { grid-template-columns: 1fr; } }
+.case-study-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-card);
+  padding: var(--space-600);
+  background: var(--offwhite);
+}
+.case-study-client { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.55; }
+.case-study-metric { font-family: var(--font-tasa), sans-serif; font-weight: 800; font-size: 1.35rem; color: var(--red); line-height: 1.25; }
+.case-study-card p.case-study-description { opacity: 0.75; font-size: 0.92rem; line-height: 1.6; }
+.case-study-logo { max-height: 26px; width: auto; margin-top: var(--space-300); opacity: 0.8; }
 
 /* FAQ accordion */
 .faq-list {
@@ -1748,6 +1791,35 @@ p { margin: 0; }
   box-shadow: 0 8px 30px -12px rgba(36, 30, 28, 0.25);
 }
 .v2-header-bar .logo img { height: 16px; width: auto; }
+/* Desktop-only inline nav — every destination visible in the bar itself,
+   not only after opening the hamburger overlay (client feedback: options
+   and their destinations should be clear before clicking, not just inside
+   the hamburger). Hidden below 1024px, where the hamburger overlay
+   (.v2-header-menu, unchanged) stays the only nav — there isn't room for
+   seven links plus a CTA in the bar at narrower widths. */
+.v2-header-nav-inline {
+  display: none;
+}
+@media (min-width: 1025px) {
+  .v2-header-nav-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-500);
+  }
+  .v2-header-nav-inline a:not(.v2-header-nav-inline-cta) {
+    color: var(--black);
+    opacity: 0.68;
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: opacity var(--fast) var(--ease);
+  }
+  .v2-header-nav-inline a:not(.v2-header-nav-inline-cta):hover { opacity: 1; }
+  .v2-header-nav-inline-cta {
+    padding: 8px 18px;
+    font-size: 0.85rem;
+  }
+}
 .v2-nav-toggle {
   display: flex;
   flex-direction: column;
@@ -1773,6 +1845,13 @@ p { margin: 0; }
 }
 .v2-header.open .v2-nav-toggle span:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
 .v2-header.open .v2-nav-toggle span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+/* Placed after the base .v2-nav-toggle rule (not inside the earlier
+   min-width block above) so it actually wins the cascade — same
+   specificity, later source order, since the base rule was declared
+   after that block. */
+@media (min-width: 1025px) {
+  .v2-nav-toggle { display: none; }
+}
 .v2-header-menu {
   display: none;
 }
@@ -2573,7 +2652,7 @@ p { margin: 0; }
    the mark sits directly under it and only the attribution is pushed to the
    bottom edge, keeping attributions aligned across cards. */
 .story-text { font-size: 0.92rem; line-height: 1.55; flex: 0 0 auto; }
-.story-card .attribution { margin-top: auto; }
+.story-attribution-row { margin-top: auto; }
 
 /* Below the desktop breakpoint the container is full-width with gutters, so
    the header bar has to match. This lives at the end of the file because

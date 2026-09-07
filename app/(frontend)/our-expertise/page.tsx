@@ -19,8 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-// Icon per area — decorative/structural, matched to the CMS-driven areas in order.
+// Icon and anchor id per area — decorative/structural, matched to the
+// CMS-driven areas in order. The ids are also the jump targets for the
+// four "Service Areas" cards on the Home page (components/AudienceV2.tsx),
+// which share this same order — fixed, not derived from the (editable)
+// title, so they never break when someone edits a heading's wording.
 const AREA_ICONS = ["/icons/finops.svg", "/icons/stratfin.svg", "/icons/fundraising.svg", "/icons/bizperf.svg"];
+const AREA_ANCHORS = ["financial-operations", "strategic-finance", "fundraising", "business-performance"];
 
 export default async function OurExpertisePage() {
   const payload = await getCMS();
@@ -66,6 +71,7 @@ export default async function OurExpertisePage() {
           {(page.areas || []).map((a, i) => (
             <div
               className="expertise-block"
+              id={AREA_ANCHORS[i]}
               key={a.title}
               style={i === 0 ? { paddingTop: 0 } : undefined}
             >

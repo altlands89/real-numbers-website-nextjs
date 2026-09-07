@@ -22,6 +22,8 @@ export const Testimonials: CollectionConfig = {
     { name: "quote", type: "textarea", label: "Quote", required: true },
     { name: "name", type: "text", label: "Name", required: true },
     { name: "role", type: "text", label: "Company / Title", admin: { description: "e.g. \"CEO, Compete\". Leave blank if none." } },
+    { name: "photo", type: "upload", label: "Photo", relationTo: "media", admin: { description: "Headshot of the person quoted. Optional — the card works without one." } },
+    { name: "logo", type: "upload", label: "Company Logo", relationTo: "media", admin: { description: "Logo of the person's company. Optional — the card works without one." } },
     { name: "order", type: "number", label: "Display Order", defaultValue: 0 },
   ],
   defaultSort: "order",

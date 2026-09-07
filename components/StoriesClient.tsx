@@ -1,11 +1,12 @@
 "use client";
 
 import { ReactNode, useRef } from "react";
+import Image from "next/image";
 import CompositionDrift from "./CompositionDrift";
 import ScrollDots from "./ScrollDots";
 import QuoteMark from "./QuoteMark";
 
-type Story = { quote: string; name: string; role: string };
+type Story = { quote: string; name: string; role: string; photoUrl?: string; logoUrl?: string };
 
 type Props = {
   eyebrow: ReactNode;
@@ -45,10 +46,25 @@ export default function StoriesClient({ eyebrow, heading, stories }: Props) {
                 {/* Closing mark sits bottom-right so the pair brackets the
                     quote, instead of trailing the last word like a typo. */}
                 <QuoteMark close />
-                <p className="attribution">
-                  {s.name}
-                  {s.role ? `, ${s.role}` : ""}
-                </p>
+                <div className="story-attribution-row">
+                  {s.photoUrl && (
+                    <Image
+                      src={s.photoUrl}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="story-avatar"
+                    />
+                  )}
+                  <p className="attribution">
+                    {s.name}
+                    {s.role ? `, ${s.role}` : ""}
+                  </p>
+                  {s.logoUrl && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={s.logoUrl} alt="" className="story-logo" />
+                  )}
+                </div>
               </div>
             ))}
           </div>

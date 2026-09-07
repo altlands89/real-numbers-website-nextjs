@@ -6,7 +6,9 @@ const LINKS = [
   { href: "/team", label: "Our Team" },
   { href: "/why-real-numbers", label: "Why Real Numbers" },
   { href: "/our-expertise", label: "Our Expertise" },
+  { href: "/how-we-work", label: "How We Work" },
   { href: "/use-cases", label: "Use Cases" },
+  { href: "/case-studies", label: "Case Studies" },
   { href: "/questions-founders-ask", label: "Q&A" },
   { href: "/contact", label: "Contact" },
 ];

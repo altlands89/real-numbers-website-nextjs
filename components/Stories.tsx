@@ -24,7 +24,13 @@ export default async function Stories() {
       heading={
         <ResponsiveText desktop={storiesSection?.heading || ""} mobile={getOverride(mo, `${sectionKey}.heading`)} path={`${sectionKey}.heading`} />
       }
-      stories={testimonials.docs.map((t) => ({ quote: t.quote, name: t.name, role: t.role || "" }))}
+      stories={testimonials.docs.map((t) => ({
+        quote: t.quote,
+        name: t.name,
+        role: t.role || "",
+        photoUrl: typeof t.photo === "object" && t.photo?.url ? t.photo.url : undefined,
+        logoUrl: typeof t.logo === "object" && t.logo?.url ? t.logo.url : undefined,
+      }))}
     />
   );
 }

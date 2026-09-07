@@ -28,6 +28,8 @@ import { LayoutMotionGlobal } from "./payload/globals/LayoutMotionGlobal";
 import { SiteSettingsGlobal } from "./payload/globals/SiteSettingsGlobal";
 import { AIIntegrationsGlobal } from "./payload/globals/AIIntegrationsGlobal";
 import { AccountHandoffGlobal } from "./payload/globals/AccountHandoffGlobal";
+import { HowWeWorkGlobal } from "./payload/globals/HowWeWorkGlobal";
+import { CaseStudiesGlobal } from "./payload/globals/CaseStudiesGlobal";
 import { getSiteUrl } from "./lib/site-url";
 
 // Maps each page Global's slug to the live route it renders, so Live
@@ -41,6 +43,8 @@ const PAGE_ROUTE_BY_GLOBAL_SLUG: Record<string, string> = {
   "our-expertise-page": "/our-expertise",
   "use-cases-page": "/use-cases",
   "questions-founders-ask-page": "/questions-founders-ask",
+  "how-we-work-page": "/how-we-work",
+  "case-studies-page": "/case-studies",
 };
 
 export default buildConfig({
@@ -160,6 +164,8 @@ export default buildConfig({
     OurExpertiseGlobal,
     UseCasesGlobal,
     QuestionsFoundersAskGlobal,
+    HowWeWorkGlobal,
+    CaseStudiesGlobal,
     AIIntegrationsGlobal,
     AccountHandoffGlobal,
   ],

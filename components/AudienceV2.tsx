@@ -6,10 +6,10 @@ import CompositionDrift from "./CompositionDrift";
 // an editor needs to change, so they stay hardcoded and are matched to the
 // CMS-driven title in order.
 const AREA_META = [
-  { icon: "/icons/finops.svg", bgDigit: "8", href: "/our-expertise" },
-  { icon: "/icons/stratfin.svg", href: "/our-expertise" },
-  { icon: "/icons/fundraising.svg", href: "/our-expertise" },
-  { icon: "/icons/bizperf.svg", href: "/our-expertise" },
+  { icon: "/icons/finops.svg", bgDigit: "8", href: "/our-expertise#financial-operations" },
+  { icon: "/icons/stratfin.svg", href: "/our-expertise#strategic-finance" },
+  { icon: "/icons/fundraising.svg", href: "/our-expertise#fundraising" },
+  { icon: "/icons/bizperf.svg", href: "/our-expertise#business-performance" },
 ];
 
 type Area = { id?: number | string | null; title: ReactNode; text: ReactNode };
