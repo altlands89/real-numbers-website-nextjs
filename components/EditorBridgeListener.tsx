@@ -176,6 +176,19 @@ export default function EditorBridgeListener() {
         if (commit) {
           const value = textarea.value;
           renderTextInto(target, value);
+          // Apply the new width to the real element right now, same-origin
+          // DOM write — without this, the canvas keeps showing the field at
+          // its old width until the page is fully republished and
+          // reloaded, which reads as "the resize didn't save" even though
+          // it did (the override is already in the parent's state, ready
+          // to publish). The saved override is what makes it durable
+          // across reloads; this line is what makes it *look* saved right
+          // away, in the one place — the canvas itself — a user actually
+          // looks to check.
+          if (widthChanged) {
+            el.style.display = "inline-block";
+            el.style.maxWidth = `${clampedWidth}px`;
+          }
           window.parent.postMessage(
             { type: "rn-editor-field-commit", path, value, width: widthChanged ? clampedWidth : undefined },
             "*",
