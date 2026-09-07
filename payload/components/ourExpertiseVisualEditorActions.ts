@@ -24,6 +24,8 @@ export type OurExpertiseEditorPayload = {
   };
   closingCta: { heading: string; closingLine?: string | null; buttonLabel?: string | null };
   mobileOverrides: Record<string, unknown>;
+  desktopWidthOverrides: Record<string, unknown>;
+  mobileWidthOverrides: Record<string, unknown>;
 };
 
 /**

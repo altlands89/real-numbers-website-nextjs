@@ -7,6 +7,7 @@ import CompositionDrift from "@/components/CompositionDrift";
 import HeroGlow from "@/components/HeroGlow";
 import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
+import { buildTextWidthCSS } from "@/lib/textWidthCSS";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,6 +39,7 @@ export default async function WhyRealNumbersPage() {
   return (
     <>
       <HeaderV2 />
+      <style>{buildTextWidthCSS(page.desktopWidthOverrides, page.mobileWidthOverrides)}</style>
 
       <section
         className="page-hero bg-photo"

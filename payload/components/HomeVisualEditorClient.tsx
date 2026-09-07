@@ -19,6 +19,7 @@ import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
+import { TextWidthOverridesPanel } from "./visual-editor/TextWidthOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -79,17 +80,46 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
     history.mark("overrides"),
   );
 
+  const {
+    overrides: desktopWidthOverrides,
+    setOverride: setDesktopWidth,
+    clearOverride: clearDesktopWidth,
+    dirty: desktopWidthDirty,
+    setDirty: setDesktopWidthDirty,
+    undo: undoDesktopWidth,
+    redo: redoDesktopWidth,
+    canUndo: canUndoDesktopWidth,
+    canRedo: canRedoDesktopWidth,
+  } = useMobileOverrides(initialData.desktopWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("desktopWidth"),
+  );
+  const {
+    overrides: mobileWidthOverrides,
+    setOverride: setMobileWidth,
+    clearOverride: clearMobileWidth,
+    dirty: mobileWidthDirty,
+    setDirty: setMobileWidthDirty,
+    undo: undoMobileWidth,
+    redo: redoMobileWidth,
+    canUndo: canUndoMobileWidth,
+    canRedo: canRedoMobileWidth,
+  } = useMobileOverrides(initialData.mobileWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("mobileWidth"),
+  );
+
   const historySlices = {
     data: { canUndo: canUndoData, canRedo: canRedoData, undo: undoData, redo: redoData },
     overrides: { canUndo: canUndoOverrides, canRedo: canRedoOverrides, undo: undoOverrides, redo: redoOverrides },
+    desktopWidth: { canUndo: canUndoDesktopWidth, canRedo: canRedoDesktopWidth, undo: undoDesktopWidth, redo: redoDesktopWidth },
+    mobileWidth: { canUndo: canUndoMobileWidth, canRedo: canRedoMobileWidth, undo: undoMobileWidth, redo: redoMobileWidth },
   };
-  const canUndo = canUndoData || canUndoOverrides;
-  const canRedo = canRedoData || canRedoOverrides;
+  const canUndo = canUndoData || canUndoOverrides || canUndoDesktopWidth || canUndoMobileWidth;
+  const canRedo = canRedoData || canRedoOverrides || canRedoDesktopWidth || canRedoMobileWidth;
   const handleUndo = () => history.undo(historySlices);
   const handleRedo = () => history.redo(historySlices);
 
   const sections = data.sections ?? [];
-  const overallDirty = dirty || overridesDirty;
+  const overallDirty = dirty || overridesDirty || desktopWidthDirty || mobileWidthDirty;
   useUnsavedChangesGuard(overallDirty);
 
   const save = async () => {
@@ -120,10 +150,12 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
         return section;
       });
 
-      const result = await saveHomeSections(normalized as Home["sections"], overrides);
+      const result = await saveHomeSections(normalized as Home["sections"], overrides, desktopWidthOverrides, mobileWidthOverrides);
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
       setOverridesDirty(false);
+      setDesktopWidthDirty(false);
+      setMobileWidthDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
       setPreviewKey((k) => k + 1);
@@ -141,7 +173,8 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
   // Explicit per-blockType dispatch, same discipline as every other
   // migrated page's handleFieldCommit — an unrecognized path logs and
   // no-ops instead of risking a write to the wrong block/field.
-  const handleFieldCommit = (path: string, value: string) => {
+  const handleFieldCommit = (path: string, value: string, width?: number) => {
+    if (width !== undefined) setDesktopWidth(path, width);
     const segs = path.split(".");
     const idx = findSectionIndex(segs[0]);
     if (idx < 0) {
@@ -194,7 +227,10 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
     });
   };
 
-  const handleMobileFieldCommit = (path: string, value: string) => setOverride(path, value);
+  const handleMobileFieldCommit = (path: string, value: string, width?: number) => {
+    setOverride(path, value);
+    if (width !== undefined) setMobileWidth(path, width);
+  };
 
   const handleImageClick = (path: string) => {
     const segs = path.split(".");
@@ -303,6 +339,12 @@ export function HomeVisualEditorClient({ initialData, mediaLibrary, pageUrl }: P
 
       <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
       <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
+      <TextWidthOverridesPanel
+        desktopOverrides={desktopWidthOverrides}
+        mobileOverrides={mobileWidthOverrides}
+        onClearDesktop={clearDesktopWidth}
+        onClearMobile={clearMobileWidth}
+      />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>

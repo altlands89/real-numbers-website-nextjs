@@ -40,8 +40,12 @@ export function MobilePreview({
   // place instead and never sends this message for a text field.
   onFieldSelect?: (path: string) => void;
   // Called with {path, value} once an in-place edit is committed — only
-  // fires when `inlineEditing` is set.
-  onFieldCommit?: (path: string, value: string) => void;
+  // fires when `inlineEditing` is set. `width` (px), when present, is a
+  // manual resize of the inline textarea — see the matching LiveCanvas.tsx
+  // prop comment. Here it always means a *mobile* width override, same
+  // "which iframe it came from decides desktop vs mobile" rule text edits
+  // already follow.
+  onFieldCommit?: (path: string, value: string, width?: number) => void;
   // Opt-in per caller (About only, for now — see the visual-editor-round-3
   // plan in cached-whistling-hopper.md): brings the same click-to-edit-in-
   // place behavior already shipped on the main desktop canvas to this
@@ -65,7 +69,11 @@ export function MobilePreview({
       if (e.data?.type === "rn-editor-field-click" && typeof e.data.path === "string") {
         onFieldSelect?.(e.data.path);
       } else if (e.data?.type === "rn-editor-field-commit" && typeof e.data.path === "string") {
-        onFieldCommit?.(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
+        onFieldCommit?.(
+          e.data.path,
+          typeof e.data.value === "string" ? e.data.value : "",
+          typeof e.data.width === "number" ? e.data.width : undefined,
+        );
       } else if (e.data?.type === "rn-editor-navigate" && typeof e.data.slug === "string") {
         // Same cross-page jump as the main canvas (LiveCanvas.tsx) — always
         // wired up here regardless of onFieldSelect/onFieldCommit, since a

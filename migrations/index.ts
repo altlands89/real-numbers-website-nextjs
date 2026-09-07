@@ -17,6 +17,7 @@ import * as migration_20260904_140327_add_mobile_overrides from './20260904_1403
 import * as migration_20260906_185525_add_team_member_linkedin from './20260906_185525_add_team_member_linkedin';
 import * as migration_20260906_190500_add_settings_globals from './20260906_190500_add_settings_globals';
 import * as migration_20260907_102819_add_how_we_work_and_case_studies from './20260907_102819_add_how_we_work_and_case_studies';
+import * as migration_20260907_113132_add_text_width_overrides from './20260907_113132_add_text_width_overrides';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20260907_102819_add_how_we_work_and_case_studies.up,
     down: migration_20260907_102819_add_how_we_work_and_case_studies.down,
-    name: '20260907_102819_add_how_we_work_and_case_studies'
+    name: '20260907_102819_add_how_we_work_and_case_studies',
+  },
+  {
+    up: migration_20260907_113132_add_text_width_overrides.up,
+    down: migration_20260907_113132_add_text_width_overrides.down,
+    name: '20260907_113132_add_text_width_overrides'
   },
 ];

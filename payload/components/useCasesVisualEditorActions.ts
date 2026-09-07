@@ -15,6 +15,8 @@ export type UseCasesEditorPayload = {
   situations: { id?: string | null; question: string; answer: string }[];
   closingCta: { heading: string; buttonLabel?: string | null };
   mobileOverrides: Record<string, unknown>;
+  desktopWidthOverrides: Record<string, unknown>;
+  mobileWidthOverrides: Record<string, unknown>;
 };
 
 /**

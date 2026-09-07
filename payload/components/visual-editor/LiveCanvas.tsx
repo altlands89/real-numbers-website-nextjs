@@ -43,7 +43,11 @@ export function LiveCanvas({
   // those edits with zero warning. See useUnsavedChangesGuard.ts for the
   // separate, broader tab-close/refresh guard.
   dirty: boolean;
-  onFieldCommit: (path: string, value: string) => void;
+  // `width` (px) is set only when the editor dragged the inline textarea's
+  // own resize handle to a genuinely different size than the field's
+  // natural width — see EditorBridgeListener.tsx's finish() for the
+  // before/after comparison. Absent on every ordinary text edit.
+  onFieldCommit: (path: string, value: string, width?: number) => void;
   onImageClick: (path: string) => void;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -57,7 +61,11 @@ export function LiveCanvas({
     const onMessage = (e: MessageEvent) => {
       if (e.source !== iframeRef.current?.contentWindow) return;
       if (e.data?.type === "rn-editor-field-commit" && typeof e.data.path === "string") {
-        onFieldCommit(e.data.path, typeof e.data.value === "string" ? e.data.value : "");
+        onFieldCommit(
+          e.data.path,
+          typeof e.data.value === "string" ? e.data.value : "",
+          typeof e.data.width === "number" ? e.data.width : undefined,
+        );
       } else if (e.data?.type === "rn-editor-field-click" && e.data.kind === "image" && typeof e.data.path === "string") {
         onImageClick(e.data.path);
       } else if (e.data?.type === "rn-editor-navigate" && typeof e.data.slug === "string") {

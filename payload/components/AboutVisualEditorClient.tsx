@@ -18,6 +18,7 @@ import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
+import { TextWidthOverridesPanel } from "./visual-editor/TextWidthOverridesPanel";
 import type { BrandColors } from "./visual-editor/serverData";
 import type { MediaItem } from "./visual-editor/shared";
 
@@ -63,16 +64,45 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
     history.mark("overrides"),
   );
 
+  const {
+    overrides: desktopWidthOverrides,
+    setOverride: setDesktopWidth,
+    clearOverride: clearDesktopWidth,
+    dirty: desktopWidthDirty,
+    setDirty: setDesktopWidthDirty,
+    undo: undoDesktopWidth,
+    redo: redoDesktopWidth,
+    canUndo: canUndoDesktopWidth,
+    canRedo: canRedoDesktopWidth,
+  } = useMobileOverrides(initialData.desktopWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("desktopWidth"),
+  );
+  const {
+    overrides: mobileWidthOverrides,
+    setOverride: setMobileWidth,
+    clearOverride: clearMobileWidth,
+    dirty: mobileWidthDirty,
+    setDirty: setMobileWidthDirty,
+    undo: undoMobileWidth,
+    redo: redoMobileWidth,
+    canUndo: canUndoMobileWidth,
+    canRedo: canRedoMobileWidth,
+  } = useMobileOverrides(initialData.mobileWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("mobileWidth"),
+  );
+
   const historySlices = {
     data: { canUndo: canUndoData, canRedo: canRedoData, undo: undoData, redo: redoData },
     overrides: { canUndo: canUndoOverrides, canRedo: canRedoOverrides, undo: undoOverrides, redo: redoOverrides },
+    desktopWidth: { canUndo: canUndoDesktopWidth, canRedo: canRedoDesktopWidth, undo: undoDesktopWidth, redo: redoDesktopWidth },
+    mobileWidth: { canUndo: canUndoMobileWidth, canRedo: canRedoMobileWidth, undo: undoMobileWidth, redo: redoMobileWidth },
   };
-  const canUndo = canUndoData || canUndoOverrides;
-  const canRedo = canRedoData || canRedoOverrides;
+  const canUndo = canUndoData || canUndoOverrides || canUndoDesktopWidth || canUndoMobileWidth;
+  const canRedo = canRedoData || canRedoOverrides || canRedoDesktopWidth || canRedoMobileWidth;
   const handleUndo = () => history.undo(historySlices);
   const handleRedo = () => history.redo(historySlices);
 
-  const overallDirty = dirty || overridesDirty;
+  const overallDirty = dirty || overridesDirty || desktopWidthDirty || mobileWidthDirty;
 
   useUnsavedChangesGuard(overallDirty);
 
@@ -113,10 +143,14 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
           teamLinkLabel: data.leadership?.teamLinkLabel ?? "",
         },
         mobileOverrides: overrides,
+        desktopWidthOverrides: desktopWidthOverrides,
+        mobileWidthOverrides: mobileWidthOverrides,
       });
       if (!result.ok) throw new Error(result.error);
       setDirty(false);
       setOverridesDirty(false);
+      setDesktopWidthDirty(false);
+      setMobileWidthDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       // Re-render the server component so what's on screen is what's
       // actually stored, rather than trusting local state to have stayed
@@ -138,15 +172,17 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
   // is a mobile-viewport edit by the iframe's own 390px width, and
   // mobileOverrides is already a flat {path: value} map, so no per-field
   // dispatch table is needed the way the desktop commit below needs one.
-  const handleMobileFieldCommit = (path: string, value: string) => {
+  const handleMobileFieldCommit = (path: string, value: string, width?: number) => {
     setOverride(path, value);
+    if (width !== undefined) setMobileWidth(path, width);
   };
 
   // The main canvas's live-iframe click → inline edit → commit lands here.
   // Explicit per-path dispatch (not a generic path-parser) so a stray/
   // unrecognized path can never silently write to the wrong field — it
   // just logs and no-ops instead.
-  const handleFieldCommit = (path: string, value: string) => {
+  const handleFieldCommit = (path: string, value: string, width?: number) => {
+    if (width !== undefined) setDesktopWidth(path, width);
     const segs = path.split(".");
     set((d) => {
       if (path === "hero.eyebrow") { d.hero.eyebrow = value; return; }
@@ -284,6 +320,12 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
 
       <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
       <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
+      <TextWidthOverridesPanel
+        desktopOverrides={desktopWidthOverrides}
+        mobileOverrides={mobileWidthOverrides}
+        onClearDesktop={clearDesktopWidth}
+        onClearMobile={clearMobileWidth}
+      />
 
       {/* ---- The real page, live, editable in place ---- */}
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>

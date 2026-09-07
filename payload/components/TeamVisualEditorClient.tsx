@@ -18,6 +18,7 @@ import { DeviceFrame } from "./visual-editor/DeviceFrame";
 import { LiveCanvas } from "./visual-editor/LiveCanvas";
 import { MobilePreview } from "./visual-editor/MobilePreview";
 import { MobileOverridesPanel } from "./visual-editor/MobileOverridesPanel";
+import { TextWidthOverridesPanel } from "./visual-editor/TextWidthOverridesPanel";
 import { photoBtn, type MediaItem } from "./visual-editor/shared";
 import type { BrandColors } from "./visual-editor/serverData";
 
@@ -92,17 +93,46 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
     history.mark("overrides"),
   );
 
+  const {
+    overrides: desktopWidthOverrides,
+    setOverride: setDesktopWidth,
+    clearOverride: clearDesktopWidth,
+    dirty: desktopWidthDirty,
+    setDirty: setDesktopWidthDirty,
+    undo: undoDesktopWidth,
+    redo: redoDesktopWidth,
+    canUndo: canUndoDesktopWidth,
+    canRedo: canRedoDesktopWidth,
+  } = useMobileOverrides(initialData.desktopWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("desktopWidth"),
+  );
+  const {
+    overrides: mobileWidthOverrides,
+    setOverride: setMobileWidth,
+    clearOverride: clearMobileWidth,
+    dirty: mobileWidthDirty,
+    setDirty: setMobileWidthDirty,
+    undo: undoMobileWidth,
+    redo: redoMobileWidth,
+    canUndo: canUndoMobileWidth,
+    canRedo: canRedoMobileWidth,
+  } = useMobileOverrides(initialData.mobileWidthOverrides as Record<string, unknown> | null | undefined, () =>
+    history.mark("mobileWidth"),
+  );
+
   const historySlices = {
     data: { canUndo: canUndoData, canRedo: canRedoData, undo: undoData, redo: redoData },
     roster: { canUndo: canUndoRoster, canRedo: canRedoRoster, undo: undoRoster, redo: redoRoster },
     overrides: { canUndo: canUndoOverrides, canRedo: canRedoOverrides, undo: undoOverrides, redo: redoOverrides },
+    desktopWidth: { canUndo: canUndoDesktopWidth, canRedo: canRedoDesktopWidth, undo: undoDesktopWidth, redo: redoDesktopWidth },
+    mobileWidth: { canUndo: canUndoMobileWidth, canRedo: canRedoMobileWidth, undo: undoMobileWidth, redo: redoMobileWidth },
   };
-  const canUndo = canUndoData || canUndoRoster || canUndoOverrides;
-  const canRedo = canRedoData || canRedoRoster || canRedoOverrides;
+  const canUndo = canUndoData || canUndoRoster || canUndoOverrides || canUndoDesktopWidth || canUndoMobileWidth;
+  const canRedo = canRedoData || canRedoRoster || canRedoOverrides || canRedoDesktopWidth || canRedoMobileWidth;
   const handleUndo = () => history.undo(historySlices);
   const handleRedo = () => history.redo(historySlices);
 
-  const overallDirty = dirty || rosterDirty || overridesDirty;
+  const overallDirty = dirty || rosterDirty || overridesDirty || desktopWidthDirty || mobileWidthDirty;
 
   useUnsavedChangesGuard(overallDirty);
 
@@ -123,6 +153,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
           buttonLabel: data.closingCta?.buttonLabel ?? "",
         },
         mobileOverrides: overrides,
+        desktopWidthOverrides: desktopWidthOverrides,
+        mobileWidthOverrides: mobileWidthOverrides,
       });
       if (!pageResult.ok) throw new Error(pageResult.error);
 
@@ -142,6 +174,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
       setDirty(false);
       setRosterDirty(false);
       setOverridesDirty(false);
+      setDesktopWidthDirty(false);
+      setMobileWidthDirty(false);
       setStatus({ kind: "ok", message: "Published — live on the site." });
       router.refresh();
       setPreviewKey((k) => k + 1);
@@ -154,7 +188,8 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
 
   const sessionExpired = status.kind === "error" && /not signed in/i.test(status.message ?? "");
 
-  const handleFieldCommit = (path: string, value: string) => {
+  const handleFieldCommit = (path: string, value: string, width?: number) => {
+    if (width !== undefined) setDesktopWidth(path, width);
     const segs = path.split(".");
     if (segs[0] === "roster") {
       const idx = roster.findIndex((m, i) => String(m.id ?? `new-${i}`) === segs[1]);
@@ -179,7 +214,10 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
     });
   };
 
-  const handleMobileFieldCommit = (path: string, value: string) => setOverride(path, value);
+  const handleMobileFieldCommit = (path: string, value: string, width?: number) => {
+    setOverride(path, value);
+    if (width !== undefined) setMobileWidth(path, width);
+  };
 
   // Roster photos aren't individually clickable on the live page (plain
   // next/image, no slideshow) — always managed from the roster panel below.
@@ -295,6 +333,12 @@ export function TeamVisualEditorClient({ initialData, initialRoster, mediaLibrar
 
       <MobilePreview pageUrl={pageUrl} refreshKey={previewKey} dirty={overallDirty} inlineEditing onFieldCommit={handleMobileFieldCommit} />
       <MobileOverridesPanel overrides={overrides} onClear={clearOverride} />
+      <TextWidthOverridesPanel
+        desktopOverrides={desktopWidthOverrides}
+        mobileOverrides={mobileWidthOverrides}
+        onClearDesktop={clearDesktopWidth}
+        onClearMobile={clearMobileWidth}
+      />
 
       <div style={{ marginTop: 14, border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-m, 8px)", overflow: "hidden", boxShadow: "0 12px 40px -20px rgba(36,30,28,0.4)" }}>
         <DeviceFrame>

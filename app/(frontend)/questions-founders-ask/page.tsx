@@ -8,6 +8,7 @@ import HeroGlow from "@/components/HeroGlow";
 import AtmospherePhoto from "@/components/AtmospherePhoto";
 import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
+import { buildTextWidthCSS } from "@/lib/textWidthCSS";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,6 +34,7 @@ export default async function QuestionsFoundersAskPage() {
   return (
     <>
       <HeaderV2 />
+      <style>{buildTextWidthCSS(page.desktopWidthOverrides, page.mobileWidthOverrides)}</style>
 
       <section className="page-hero hairline-grid">
         <CompositionDrift

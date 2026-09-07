@@ -29,6 +29,8 @@ export type AboutEditorPayload = {
     teamLinkLabel?: string | null;
   };
   mobileOverrides: Record<string, unknown>;
+  desktopWidthOverrides: Record<string, unknown>;
+  mobileWidthOverrides: Record<string, unknown>;
 };
 
 /**

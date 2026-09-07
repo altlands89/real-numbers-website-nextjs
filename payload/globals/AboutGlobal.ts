@@ -2,6 +2,7 @@ import type { GlobalConfig } from "payload";
 import { revalidateGlobalOnChange } from "../revalidate";
 import { seoFields } from "../fields/seoFields";
 import { mobileOverridesField } from "../fields/mobileOverridesField";
+import { textWidthOverridesFields } from "../fields/textWidthOverridesField";
 
 // All content on this page is owned by the visual editor
 // (/admin/visual-editor/about) — every group below is admin.hidden so the
@@ -148,5 +149,6 @@ export const AboutGlobal: GlobalConfig = {
       ],
     },
     mobileOverridesField(),
+    ...textWidthOverridesFields(),
   ],
 };

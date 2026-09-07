@@ -3,6 +3,7 @@ import { revalidateGlobalOnChange } from "../revalidate";
 import { HOME_BLOCKS } from "../blocks/HomeBlocks";
 import { seoFields } from "../fields/seoFields";
 import { mobileOverridesField } from "../fields/mobileOverridesField";
+import { textWidthOverridesFields } from "../fields/textWidthOverridesField";
 
 export const HomeGlobal: GlobalConfig = {
   slug: "home",
@@ -34,5 +35,6 @@ export const HomeGlobal: GlobalConfig = {
     },
     ...seoFields(),
     mobileOverridesField(),
+    ...textWidthOverridesFields(),
   ],
 };

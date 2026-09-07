@@ -7,6 +7,8 @@ export type QuestionsPageEditorPayload = {
   hero: { eyebrow?: string | null; heading: string };
   atmospherePhotos: { image: number }[];
   mobileOverrides: Record<string, unknown>;
+  desktopWidthOverrides: Record<string, unknown>;
+  mobileWidthOverrides: Record<string, unknown>;
 };
 
 /** Saves the Questions Founders Ask page's own Global fields — same shape

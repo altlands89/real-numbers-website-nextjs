@@ -864,6 +864,24 @@ export interface Home {
     | number
     | boolean
     | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1079,6 +1097,24 @@ export interface AboutPage {
     | number
     | boolean
     | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1120,6 +1156,24 @@ export interface TeamPage {
     ogImage?: (number | null) | Media;
   };
   mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
     | {
         [k: string]: unknown;
       }
@@ -1177,6 +1231,24 @@ export interface ContactPage {
     ogImage?: (number | null) | Media;
   };
   mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
     | {
         [k: string]: unknown;
       }
@@ -1268,6 +1340,24 @@ export interface WhyRealNumbersPage {
     ogImage?: (number | null) | Media;
   };
   mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
     | {
         [k: string]: unknown;
       }
@@ -1371,6 +1461,24 @@ export interface OurExpertisePage {
     | number
     | boolean
     | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1439,6 +1547,24 @@ export interface UseCasesPage {
     | number
     | boolean
     | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1482,6 +1608,24 @@ export interface QuestionsFoundersAskPage {
     ogImage?: (number | null) | Media;
   };
   mobileOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  desktopWidthOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mobileWidthOverrides?:
     | {
         [k: string]: unknown;
       }
@@ -1811,6 +1955,8 @@ export interface HomeSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1989,6 +2135,8 @@ export interface AboutPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2022,6 +2170,8 @@ export interface TeamPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2059,6 +2209,8 @@ export interface ContactPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2132,6 +2284,8 @@ export interface WhyRealNumbersPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2201,6 +2355,8 @@ export interface OurExpertisePageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2247,6 +2403,8 @@ export interface UseCasesPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2277,6 +2435,8 @@ export interface QuestionsFoundersAskPageSelect<T extends boolean = true> {
         ogImage?: T;
       };
   mobileOverrides?: T;
+  desktopWidthOverrides?: T;
+  mobileWidthOverrides?: T;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -8,6 +8,8 @@ export type ContactPageEditorPayload = {
   directContact: { label?: string | null; whatsappNumber?: string | null; email?: string | null };
   manifesto: { heading: string; text?: string | null };
   mobileOverrides: Record<string, unknown>;
+  desktopWidthOverrides: Record<string, unknown>;
+  mobileWidthOverrides: Record<string, unknown>;
 };
 
 /**

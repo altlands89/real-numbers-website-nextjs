@@ -10,6 +10,7 @@ import FooterV2 from "@/components/FooterV2";
 import AbstractPanel from "@/components/AbstractPanel";
 import { ResponsiveText, getOverride } from "@/components/ResponsiveText";
 import { getCMS } from "@/lib/payload";
+import { buildTextWidthCSS } from "@/lib/textWidthCSS";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,6 +43,7 @@ export default async function Home() {
   return (
     <>
       <HeaderV2 />
+      <style>{buildTextWidthCSS(home.desktopWidthOverrides, home.mobileWidthOverrides)}</style>
       {sections.map((section, si) => {
         const sectionKey = section.id ?? si;
         switch (section.blockType) {

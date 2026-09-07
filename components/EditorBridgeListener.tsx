@@ -157,13 +157,29 @@ export default function EditorBridgeListener() {
         if (finished) return;
         finished = true;
         textarea.removeEventListener("input", autoSize);
+        // Read the textarea's own final size before removing it — this is
+        // how a manual drag-resize (the textarea's native resize handle,
+        // now enabled) becomes a real, persisted width control rather than
+        // just a temporary editing convenience: whatever width the box
+        // ends up at is compared to its width *before* editing started
+        // (`rect`, captured above), and only sent up if it actually
+        // changed — untouched fields never write a width override.
+        const finalWidth = Math.round(textarea.getBoundingClientRect().width);
+        const originalWidth = Math.round(rect.width);
+        const widthChanged = Math.abs(finalWidth - originalWidth) > 4;
+        // Guard against a wild drag (collapsed to nothing, or dragged far
+        // past the viewport) turning into a broken live page.
+        const clampedWidth = Math.min(2000, Math.max(60, finalWidth));
         textarea.remove();
         el.style.visibility = "";
         delete el.dataset.editing;
         if (commit) {
           const value = textarea.value;
           renderTextInto(target, value);
-          window.parent.postMessage({ type: "rn-editor-field-commit", path, value }, "*");
+          window.parent.postMessage(
+            { type: "rn-editor-field-commit", path, value, width: widthChanged ? clampedWidth : undefined },
+            "*",
+          );
         }
       };
 
