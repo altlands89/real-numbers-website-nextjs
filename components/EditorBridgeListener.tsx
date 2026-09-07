@@ -118,8 +118,15 @@ export default function EditorBridgeListener() {
         border: "1px dashed #b85840",
         borderRadius: "2px",
         outline: "none",
-        resize: "none",
-        overflow: "hidden",
+        // Resizable (not "none") — an editor composing a heading often
+        // wants more room than the live box's own width to see where a
+        // manual line break (Enter) actually lands before committing.
+        // Auto-grow (autoSize, below) still runs on every keystroke, so a
+        // manual resize is "advisory" and can be overridden by typing —
+        // that's the simpler, still-correct-enough behavior next to
+        // tracking a separate "user resized it" state.
+        resize: "both",
+        overflow: "auto",
         boxSizing: "border-box",
         background: "rgba(184, 88, 64, 0.07)",
         color: cs.color,

@@ -27,7 +27,13 @@ export default function DecodeText() {
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    // Also hold still inside the visual editor's canvas (EditorBridgeListener
+    // sets this flag before React hydrates) — this component wasn't part of
+    // the original freeze list (RotatingWord/PhotoSlideshow/CompositionDrift/
+    // Preloader/ScrollReveal), so an editor selecting text nearby kept seeing
+    // it endlessly re-scramble mid-edit.
+    const frozen = document.documentElement.dataset.rnEditorFrozen === "1";
+    if (reduce || frozen) {
       setChars(FINAL.split("").map((c) => ({ char: c, color: SETTLED_COLOR })));
       return;
     }
