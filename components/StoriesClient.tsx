@@ -51,8 +51,8 @@ export default function StoriesClient({ eyebrow, heading, stories }: Props) {
                     <Image
                       src={s.photoUrl}
                       alt=""
-                      width={40}
-                      height={40}
+                      width={64}
+                      height={64}
                       className="story-avatar"
                     />
                   )}
