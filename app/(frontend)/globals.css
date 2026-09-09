@@ -1226,7 +1226,7 @@ p { margin: 0; }
 .expertise-block:last-of-type { border-bottom: none; }
 .expertise-block .tagline { font-weight: 700; font-size: 1.2rem; margin: var(--space-400) 0 var(--space-400); }
 .key-services { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-500); }
-.key-services span {
+.key-services > span {
   padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line-dark);
