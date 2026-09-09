@@ -24,7 +24,7 @@ export type AboutEditorPayload = {
   howWeWork: { heading?: string | null; paragraphs: { id?: string | null; text: string }[] };
   leadership: {
     heading?: string | null;
-    cards: { id?: string | null; name: string; role: string; bio: string }[];
+    cards: { id?: string | null; name: string; role: string; bio: string; photo?: number | null }[];
     note?: string | null;
     teamLinkLabel?: string | null;
   };

@@ -1065,6 +1065,7 @@ export interface AboutPage {
           name: string;
           role: string;
           bio: string;
+          photo?: (number | null) | Media;
           id?: string | null;
         }[]
       | null;
@@ -2122,6 +2123,7 @@ export interface AboutPageSelect<T extends boolean = true> {
               name?: T;
               role?: T;
               bio?: T;
+              photo?: T;
               id?: T;
             };
         note?: T;

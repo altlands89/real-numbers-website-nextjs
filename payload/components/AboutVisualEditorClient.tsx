@@ -50,6 +50,12 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
     history.mark("data");
   });
   const { library, mediaById, picking, setPicking, registerUpload } = useMediaPicker(mediaLibrary);
+  // Leadership avatars are a second, independent photo target — kept
+  // separate from `picking` (which addresses ourStory's photo *array* by
+  // index) since a leadership card has exactly one fixed photo slot, not
+  // an addable list. Both share the same underlying `library`/`mediaById`/
+  // `registerUpload` from useMediaPicker above.
+  const [pickingLeadershipIdx, setPickingLeadershipIdx] = useState<number | null>(null);
   const {
     overrides,
     setOverride,
@@ -138,7 +144,13 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
         },
         leadership: {
           heading: data.leadership?.heading ?? "",
-          cards: (data.leadership?.cards ?? []).map((c) => ({ id: c.id, name: c.name ?? "", role: c.role ?? "", bio: c.bio ?? "" })),
+          cards: (data.leadership?.cards ?? []).map((c) => ({
+            id: c.id,
+            name: c.name ?? "",
+            role: c.role ?? "",
+            bio: c.bio ?? "",
+            photo: typeof c.photo === "object" ? (c.photo?.id ?? null) : (c.photo ?? null),
+          })),
           note: data.leadership?.note ?? "",
           teamLinkLabel: data.leadership?.teamLinkLabel ?? "",
         },
@@ -225,7 +237,12 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
   // a photo slideshow — clicking it is a shortcut for "change photo 1",
   // same as the first row in the Photos panel below.
   const handleImageClick = (path: string) => {
-    if (path === "ourStory.photos") setPicking(0);
+    if (path === "ourStory.photos") { setPicking(0); return; }
+    const segs = path.split(".");
+    if (segs[0] === "leadership" && segs[1] === "cards" && segs[3] === "photo") {
+      const idx = (data.leadership?.cards ?? []).findIndex((c, i) => String(c.id ?? i) === segs[2]);
+      if (idx >= 0) setPickingLeadershipIdx(idx);
+    }
   };
 
   const rowLabel: React.CSSProperties = {
@@ -368,6 +385,40 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
           />
         </div>
 
+        <div style={{ padding: "10px 14px", border: "1px solid var(--theme-elevation-150)", borderRadius: "var(--style-radius-s, 6px)" }}>
+          <span style={{ ...rowLabel, display: "block", marginBottom: 8 }}>Leadership — photos</span>
+          <div style={{ display: "grid", gap: 8 }}>
+            {(data.leadership?.cards ?? []).map((c, i) => {
+              const photo = mediaById(c.photo);
+              return (
+                <div key={c.id ?? i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      background: "var(--theme-elevation-150)",
+                      backgroundImage: photo?.url ? `url(${photo.url})` : undefined,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  />
+                  <span style={{ fontSize: 13, flex: 1 }}>{c.name || `Card ${i + 1}`}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPickingLeadershipIdx(i)}
+                    style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, border: "1px solid var(--theme-elevation-200)", background: "transparent", cursor: "pointer" }}
+                  >
+                    Change photo
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <ListManager
           label="What We Believe — principles"
           itemLabel="principle"
@@ -406,6 +457,21 @@ export function AboutVisualEditorClient({ initialData, mediaLibrary, pageUrl }: 
               else d.ourStory.photos[picking] = { ...d.ourStory.photos[picking], image: id };
             });
             setPicking(null);
+          }}
+        />
+      )}
+
+      {pickingLeadershipIdx !== null && (
+        <MediaPicker
+          library={library}
+          onUpload={registerUpload}
+          onClose={() => setPickingLeadershipIdx(null)}
+          onSelect={(id) => {
+            set((d) => {
+              const idx = pickingLeadershipIdx;
+              if (d.leadership?.cards?.[idx]) d.leadership.cards[idx].photo = id;
+            });
+            setPickingLeadershipIdx(null);
           }}
         />
       )}

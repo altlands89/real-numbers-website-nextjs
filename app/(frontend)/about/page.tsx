@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import HeaderV2 from "@/components/HeaderV2";
 import FooterV2 from "@/components/FooterV2";
 import CompositionDrift from "@/components/CompositionDrift";
@@ -166,17 +167,32 @@ export default async function AboutPage() {
                 const namePath = `leadership.cards.${c.id ?? i}.name`;
                 const rolePath = `leadership.cards.${c.id ?? i}.role`;
                 const bioPath = `leadership.cards.${c.id ?? i}.bio`;
+                const photoPath = `leadership.cards.${c.id ?? i}.photo`;
+                const photo = c.photo && typeof c.photo === "object" ? c.photo : null;
                 return (
                   <div className="leadership-card" key={c.name}>
-                    <h3>
-                      <ResponsiveText desktop={c.name} mobile={getOverride(mo, namePath)} path={namePath} />
-                    </h3>
-                    <span className="role">
-                      <ResponsiveText desktop={c.role} mobile={getOverride(mo, rolePath)} path={rolePath} />
-                    </span>
-                    <p className="bio">
-                      <ResponsiveText desktop={c.bio} mobile={getOverride(mo, bioPath)} path={bioPath} />
-                    </p>
+                    <div
+                      className="leadership-photo"
+                      data-field-path={photoPath}
+                      data-field-kind="image"
+                    >
+                      {photo?.url ? (
+                        <Image src={photo.url} alt={c.name} fill style={{ objectFit: "cover" }} />
+                      ) : (
+                        <div className="leadership-photo-placeholder" aria-hidden="true" />
+                      )}
+                    </div>
+                    <div className="leadership-body">
+                      <h3>
+                        <ResponsiveText desktop={c.name} mobile={getOverride(mo, namePath)} path={namePath} />
+                      </h3>
+                      <span className="role">
+                        <ResponsiveText desktop={c.role} mobile={getOverride(mo, rolePath)} path={rolePath} />
+                      </span>
+                      <p className="bio">
+                        <ResponsiveText desktop={c.bio} mobile={getOverride(mo, bioPath)} path={bioPath} />
+                      </p>
+                    </div>
                   </div>
                 );
               })}

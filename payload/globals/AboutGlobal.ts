@@ -134,6 +134,7 @@ export const AboutGlobal: GlobalConfig = {
                     { name: "name", type: "text", label: "Name", required: true },
                     { name: "role", type: "text", label: "Job Title", required: true },
                     { name: "bio", type: "textarea", label: "Bio", required: true },
+                    { name: "photo", type: "upload", relationTo: "media", label: "Photo" },
                   ],
                 },
                 { name: "note", type: "textarea", label: "Closing Note" },
