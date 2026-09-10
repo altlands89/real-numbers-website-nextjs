@@ -2254,3 +2254,30 @@ p { margin: 0; }
     font-size: 1.35rem;
   }
 }
+
+/* --- Story attribution row: avatar, name, and client logo were competing
+   for one ~260px-wide row on a phone (84px avatar + up to 150px logo left
+   as little as ~80px for the name/role text), wrapping something like
+   "Gilad Uziely, Co-Founder & CEO at Hexagate" into three short, uneven
+   lines. Shrinking the avatar and dropping the logo onto its own line —
+   indented to align under the name rather than the photo — gives the text
+   almost the full card width back. */
+@media (max-width: 640px) {
+  .story-attribution-row {
+    flex-wrap: wrap;
+    row-gap: var(--space-200);
+  }
+  .story-avatar {
+    width: 48px;
+    height: 48px;
+  }
+  .story-card .attribution {
+    min-width: 0;
+  }
+  .story-logo {
+    flex-basis: 100%;
+    margin-left: calc(48px + var(--space-500));
+    max-height: 32px;
+    max-width: 110px;
+  }
+}
