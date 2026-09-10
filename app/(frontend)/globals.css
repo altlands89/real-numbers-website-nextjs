@@ -2259,25 +2259,28 @@ p { margin: 0; }
    for one ~260px-wide row on a phone (84px avatar + up to 150px logo left
    as little as ~80px for the name/role text), wrapping something like
    "Gilad Uziely, Co-Founder & CEO at Hexagate" into three short, uneven
-   lines. Shrinking the avatar and dropping the logo onto its own line —
-   indented to align under the name rather than the photo — gives the text
-   almost the full card width back. */
+   lines. An earlier pass shrunk the avatar and wrapped the logo onto its
+   own indented line, but client feedback wanted a cleaner look — a
+   centred stack (photo, then name/role, then client logo) reads better on
+   a narrow card than a left-aligned row ever did. */
 @media (max-width: 640px) {
   .story-attribution-row {
-    flex-wrap: wrap;
-    row-gap: var(--space-200);
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    row-gap: var(--space-300);
   }
   .story-avatar {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
   }
   .story-card .attribution {
+    flex: 0 0 auto;
     min-width: 0;
   }
   .story-logo {
-    flex-basis: 100%;
-    margin-left: calc(48px + var(--space-500));
-    max-height: 32px;
-    max-width: 110px;
+    margin-left: 0;
+    max-height: 36px;
+    max-width: 120px;
   }
 }
