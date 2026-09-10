@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { RefObject } from "react";
 
 interface ScrollDotsProps {
-  railRef: RefObject<HTMLDivElement>;
+  railRef: RefObject<HTMLDivElement | null>;
   count: number;
   className?: string;
 }

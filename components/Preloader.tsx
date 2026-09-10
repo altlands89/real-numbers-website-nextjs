@@ -12,6 +12,13 @@ export default function Preloader() {
   const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
+    // Wastes time on every reload inside the visual editor's live-preview
+    // iframe (set by EditorBridgeListener) — skip it there entirely.
+    if (document.documentElement.dataset.rnEditorFrozen === "1") {
+      setMounted(false);
+      return;
+    }
+
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setReduceMotion(true);
       setMounted(false);

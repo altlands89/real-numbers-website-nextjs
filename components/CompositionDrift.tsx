@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { subscribeToAnimationLoop } from "./sharedAnimationLoop";
 
 interface PathInfo {
   d: string;
@@ -19,6 +20,10 @@ interface CompositionDriftProps {
    *  composition (or different comps with the same path count) don't
    *  all drift/sway in lockstep — each section gets its own motion feel. */
   seed?: number;
+  /** Multiplier on the idle ambient sway (amplitude + speed). Default 1
+   *  keeps the usual gentle feel; raise it for sections that want the
+   *  background motion to read as more noticeable. */
+  swayScale?: number;
 }
 
 // Deterministic pseudo-random in [-1, 1], stable across renders.
@@ -33,6 +38,7 @@ export default function CompositionDrift({
   className,
   distance = 90,
   seed = 0,
+  swayScale = 1,
 }: CompositionDriftProps) {
   const [viewBox, setViewBox] = useState("0 0 1200 1200");
   const [aspect, setAspect] = useState(1);
@@ -42,7 +48,6 @@ export default function CompositionDrift({
   const target = useRef(0);
   const current = useRef(0);
   const active = useRef(true);
-  const rafId = useRef<number>();
   const startTime = useRef<number | null>(null);
 
   // Fetch and parse the composition once — each path becomes an independently
@@ -79,9 +84,23 @@ export default function CompositionDrift({
     const container = containerRef.current;
     if (!container || paths.length === 0) return;
 
+    // Purely decorative background motion — skip it entirely inside the
+    // visual editor's live-preview iframe (set by EditorBridgeListener) so
+    // it can't make a click target drift out from under the cursor.
+    if (document.documentElement.dataset.rnEditorFrozen === "1") return;
+
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    // The always-on idle sway (sin/cos per path, every frame, on top of the
+    // scroll-linked drift below) is the more expensive half of this
+    // component's per-frame math, for an effect that's already dimmed to a
+    // barely-visible 0.22 opacity background texture on phones (see the
+    // max-width:640px rule for .comp-drift). Skipping it there — the
+    // scroll-linked drift still runs — cuts real per-frame work on exactly
+    // the constrained mobile CPUs where six of these running at once is
+    // most likely to read as stutter, for motion nobody can see anyway.
+    const skipSway = window.innerWidth <= 640;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -127,11 +146,11 @@ export default function CompositionDrift({
           let swayX = 0;
           let swayY = 0;
           let scale = 1;
-          if (!reduce) {
-            const ampX = 6 + Math.abs(hash(i, 20 + seed)) * 10;
-            const ampY = 6 + Math.abs(hash(i, 21 + seed)) * 10;
-            const freqX = 0.035 + Math.abs(hash(i, 22 + seed)) * 0.045;
-            const freqY = 0.03 + Math.abs(hash(i, 24 + seed)) * 0.045;
+          if (!reduce && !skipSway) {
+            const ampX = (6 + Math.abs(hash(i, 20 + seed)) * 10) * swayScale;
+            const ampY = (6 + Math.abs(hash(i, 21 + seed)) * 10) * swayScale;
+            const freqX = (0.035 + Math.abs(hash(i, 22 + seed)) * 0.045) * Math.sqrt(swayScale);
+            const freqY = (0.03 + Math.abs(hash(i, 24 + seed)) * 0.045) * Math.sqrt(swayScale);
             const phase = hash(i, 23 + seed) * Math.PI * 2;
             swayX = Math.sin(elapsed * freqX * Math.PI * 2 + phase) * ampX;
             swayY = Math.cos(elapsed * freqY * Math.PI * 2 + phase * 1.3) * ampY;
@@ -139,7 +158,7 @@ export default function CompositionDrift({
             // Digits stay at their original angle (rotating a numeral can
             // read as a different digit) — vary size instead, a slow
             // per-path breathing scale so the piece still feels alive.
-            const scaleAmp = 0.02 + Math.abs(hash(i, 30 + seed)) * 0.035;
+            const scaleAmp = (0.02 + Math.abs(hash(i, 30 + seed)) * 0.035) * swayScale;
             const scaleFreq = 0.02 + Math.abs(hash(i, 31 + seed)) * 0.03;
             const scalePhase = hash(i, 32 + seed) * Math.PI * 2;
             scale = 1 + Math.sin(elapsed * scaleFreq * Math.PI * 2 + scalePhase) * scaleAmp;
@@ -152,21 +171,22 @@ export default function CompositionDrift({
           )}px) scale(${scale.toFixed(3)})`;
         });
       }
-      rafId.current = requestAnimationFrame(tick);
+      // No self-scheduling here — this only runs when the shared loop below
+      // calls it, instead of each instance requesting its own frame.
     }
 
     measure();
     window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
-    rafId.current = requestAnimationFrame(tick);
+    const unsubscribe = subscribeToAnimationLoop(tick);
 
     return () => {
       io.disconnect();
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      unsubscribe();
     };
-  }, [paths, distance, seed]);
+  }, [paths, distance, seed, swayScale]);
 
   return (
     <div
