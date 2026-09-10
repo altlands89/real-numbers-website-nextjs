@@ -2682,3 +2682,97 @@ p { margin: 0; }
 @media (max-width: 1024px) {
   .v2-header-bar { max-width: 100%; }
 }
+
+/* ======================= PRE-DELIVERY POLISH PASS =======================
+   Fixes from the full-site audit. Kept at the end of the file so each rule
+   wins the cascade over the base declaration it corrects. */
+
+/* --- Contact form: submit states + honeypot ---
+   The honeypot sits off-screen rather than under display:none, which some
+   bots know to skip. */
+.contact-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.contact-form-status {
+  margin-top: var(--space-400);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0.75;
+  min-height: 1.35em;
+}
+.contact-form-status .is-error {
+  color: var(--red);
+  opacity: 1;
+}
+.contact-form-status a {
+  text-decoration: underline;
+}
+.contact-form button[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* --- Touch targets ---
+   Both controls keep their drawn size (the toggle's 36px is what sets the
+   header bar's height; the LinkedIn badge is a deliberate 24px dot next to
+   a name) and gain a centred 44px hit area via a pseudo-element instead of
+   padding, so neither one's layout box moves. */
+.v2-nav-toggle,
+.team-linkedin {
+  position: relative;
+}
+.v2-nav-toggle::after,
+.team-linkedin::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+/* --- Headline line breaks ---
+   Hard breaks in the CMS copy are composed against the desktop measure. At
+   phone width every segment re-wraps anyway, so honouring them just adds a
+   second, arbitrary set of breaks (About's headline ended on a lone
+   "trust"; Our Expertise's lede broke mid-sentence after "the room,").
+   Dropping them lets the text wrap to the real measure. The authored copy
+   has no space around the newline, so each line also has to contribute one
+   back — otherwise the words either side collide ("growingcompany").
+   Scoped to .rn-line (ResponsiveText's per-line span) on purpose: the hero's
+   own literal <br> between "Real" and the rotating word is a fixed part of
+   that lockup and stays. */
+@media (max-width: 640px) {
+  h1 .rn-line br,
+  .lede .rn-line br {
+    display: none;
+  }
+  h1 .rn-line:not(:last-child)::after,
+  .lede .rn-line:not(:last-child)::after {
+    content: " ";
+    white-space: pre;
+  }
+}
+
+/* --- Mobile menu on short screens ---
+   The 200px top padding plus 48px gaps run the panel to ~793px of content,
+   which pushes the "Let's Talk" CTA off the bottom of a 667px phone. The
+   panel scrolls, but the primary action shouldn't need discovering — on
+   short viewports the rhythm tightens so everything fits. */
+@media (max-height: 720px) {
+  .v2-header.open .v2-header-menu {
+    padding-top: 110px;
+    gap: var(--space-500);
+  }
+  .v2-header.open .v2-header-menu nav {
+    gap: var(--space-400);
+  }
+  .v2-header.open .v2-header-menu nav a {
+    font-size: 1.35rem;
+  }
+}

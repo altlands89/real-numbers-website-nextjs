@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const payload = await getCMS();
   const home = await payload.findGlobal({ slug: "home" });
   return buildPageMetadata(home.seo, {
-    title: "[Design Concept] Real Numbers | Financial Clarity for Growing Companies",
+    title: "Real Numbers | Financial Clarity for Growing Companies",
     description:
       "Real Numbers helps startups and technology companies turn financial complexity into clear decisions, scalable planning and confident growth.",
   });

@@ -30,7 +30,14 @@ export default function ScrollReveal() {
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+      // threshold stays 0 on purpose: it measures a ratio of the *element's
+      // own* height, so anything taller than the viewport can never satisfy a
+      // non-zero value. The team roster (~6,500px on a phone) needed 12% —
+      // 782px — visible at once inside a ~747px effective viewport, so it
+      // stayed at opacity 0 forever. The negative bottom rootMargin is what
+      // delays the reveal until the element is meaningfully in view, and it
+      // works at any height.
+      { threshold: 0, rootMargin: "0px 0px -8% 0px" }
     );
 
     els.forEach((el) => observer.observe(el));

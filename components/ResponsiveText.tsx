@@ -9,9 +9,12 @@
 // Use inside an existing heading/paragraph tag, e.g.
 // `<h1><ResponsiveText desktop={hero.heading} mobile={getOverride(...)} /></h1>`
 // — this renders inline content, not the wrapping element itself.
+// Each authored line gets its own span so the hard breaks can be dropped at
+// phone width (globals.css, .rn-line) — the CMS copy has no space around the
+// newline, so hiding the <br> alone would run the words together.
 function renderLines(text: string) {
   return text.split("\n").map((line, i, arr) => (
-    <span key={i}>
+    <span className="rn-line" key={i}>
       {line}
       {i < arr.length - 1 && <br />}
     </span>

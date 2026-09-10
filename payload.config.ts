@@ -11,6 +11,7 @@ import { Testimonials } from "./payload/collections/Testimonials";
 import { FAQItems } from "./payload/collections/FAQItems";
 import { ClientLogos } from "./payload/collections/ClientLogos";
 import { BrandAssets } from "./payload/collections/BrandAssets";
+import { Leads } from "./payload/collections/Leads";
 
 import { HomeGlobal } from "./payload/globals/HomeGlobal";
 import { AboutGlobal } from "./payload/globals/AboutGlobal";
@@ -148,7 +149,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos, BrandAssets],
+  collections: [Users, Media, TeamMembers, Testimonials, FAQItems, ClientLogos, BrandAssets, Leads],
   globals: [
     BrandingGlobal,
     SiteSettingsGlobal,

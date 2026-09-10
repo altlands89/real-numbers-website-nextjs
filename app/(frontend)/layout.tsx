@@ -9,7 +9,7 @@ import { buildRootMetadata } from "@/lib/site-metadata";
 import "./globals.css";
 
 const FALLBACK_METADATA = {
-  title: "[Design Concept] Real Numbers | Financial Clarity for Growing Companies",
+  title: "Real Numbers | Financial Clarity for Growing Companies",
   description:
     "Real Numbers helps startups and technology companies turn financial complexity into clear decisions, scalable planning and confident growth.",
 };
