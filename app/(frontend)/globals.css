@@ -914,22 +914,35 @@ p { margin: 0; }
   display: flex; flex-direction: column; gap: var(--space-500);
   min-height: 260px;
   flex: 0 0 auto;
-  width: min(420px, 82vw);
+  width: min(460px, 82vw);
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-/* A single bold geometric comma-glyph (see QuoteMark.tsx), used as a pair:
-   the closing mark is the same SVG rotated 180°, aligned to the opposite
-   corner, so together they read as deliberate brackets around the quote
-   rather than a stray mark trailing the last word. */
-.quote-mark { color: var(--red); opacity: 0.75; display: block; }
+/* Real open/close curly-quote characters (see QuoteMark.tsx) set in the
+   brand typeface, in place of the earlier hand-drawn comma-glyph SVG —
+   distinct open/close shapes mean no rotation trick is needed to tell the
+   pair apart, they just anchor to opposite corners of the card. */
+.quote-mark {
+  color: var(--red);
+  opacity: 0.75;
+  display: block;
+  font-family: var(--font-tasa), sans-serif;
+  font-weight: 800;
+  font-size: 4.25rem;
+  line-height: 0.6;
+}
 .story-text { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; flex: 1; }
-.quote-mark--close { align-self: flex-end; transform: rotate(180deg); }
+.quote-mark--close { align-self: flex-end; }
 .story-card .placeholder-text { opacity: 0.45; font-size: 0.92rem; font-style: italic; flex: 1; }
-.story-attribution-row { display: flex; align-items: center; gap: var(--space-400); }
-.story-card .attribution { font-size: 0.85rem; font-weight: 600; opacity: 0.8; flex: 1; }
-.story-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.story-logo { max-height: 34px; max-width: 130px; width: auto; object-fit: contain; flex-shrink: 0; opacity: 1; }
+/* Second client-feedback pass on this row (see the "prominent, not tiny"
+   commit above this one) — avatar/logo bumped again, plus the card widened
+   (420px→460px) and the row's own gap opened up (space-400→500) so the
+   bigger elements still have breathing room around them instead of just
+   crowding the same box tighter. */
+.story-attribution-row { display: flex; align-items: center; gap: var(--space-500); }
+.story-card .attribution { font-size: 0.95rem; font-weight: 700; opacity: 0.85; flex: 1; }
+.story-avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.story-logo { max-height: 46px; max-width: 150px; width: auto; object-fit: contain; flex-shrink: 0; opacity: 1; }
 @media (max-width: 1024px) {
   .stories-grid { padding-left: var(--gutter-tablet); padding-right: var(--gutter-tablet); }
 }
