@@ -2073,9 +2073,21 @@ p { margin: 0; }
    ~44px minimum, so they were easy to miss on a phone. Padding grows the hit
    box and the matching negative margin keeps the layout identical, so none
    of them move or resize. */
+/* On mobile the inline nav (.v2-header-nav-inline) is hidden, so between
+   the logo and the hamburger the bar's own pill background reads as one
+   solid button — but only the tight text/mark was actually clickable,
+   leaving a dead zone across most of that visual pill. flex:1 lets the
+   link claim all of that free space up to whatever sits next to it (the
+   nav on desktop, the toggle on mobile), so tapping anywhere on the pill
+   left of the hamburger goes home. justify-content on the link keeps the
+   mark itself pinned left rather than stretching/centering inside its
+   new, much wider box. */
 .v2-header-bar .logo {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  min-width: 0;
   padding: 14px 10px;
   margin: -14px -10px;
 }
