@@ -2210,20 +2210,27 @@ p { margin: 0; }
 /* --- Headline line breaks ---
    Hard breaks in the CMS copy are composed against the desktop measure. At
    phone width every segment re-wraps anyway, so honouring them just adds a
-   second, arbitrary set of breaks (About's headline ended on a lone
-   "trust"; Our Expertise's lede broke mid-sentence after "the room,").
-   Dropping them lets the text wrap to the real measure. The authored copy
+   second, arbitrary set of breaks on top of the natural wrap (About's h1
+   ended on a lone "trust"; Our Expertise's lede broke mid-sentence after
+   "the room,"; the homepage's "The numbers that / make the / difference"
+   h2 wrapped to three uneven lines instead of two balanced ones). Dropping
+   them lets the text wrap to the real measure instead. The authored copy
    has no space around the newline, so each line also has to contribute one
    back — otherwise the words either side collide ("growingcompany").
-   Scoped to .rn-line (ResponsiveText's per-line span) on purpose: the hero's
-   own literal <br> between "Real" and the rotating word is a fixed part of
-   that lockup and stays. */
+   Scoped to .rn-line (ResponsiveText's per-line span), not to any specific
+   heading level — every one of h1/h2/.lede's authored breaks is the same
+   desktop-measured-line problem at this width. The hero's own literal
+   <br> between "Real" and the rotating word is a fixed part of that
+   lockup, not CMS-authored copy, and isn't wrapped in .rn-line at all —
+   this rule can't reach it regardless of how broad the heading list is. */
 @media (max-width: 640px) {
   h1 .rn-line br,
+  h2 .rn-line br,
   .lede .rn-line br {
     display: none;
   }
   h1 .rn-line:not(:last-child)::after,
+  h2 .rn-line:not(:last-child)::after,
   .lede .rn-line:not(:last-child)::after {
     content: " ";
     white-space: pre;
