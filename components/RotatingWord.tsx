@@ -31,7 +31,7 @@ interface RotatingWordProps {
  *  `key={index}` below — so a throttled or delayed tick just holds the
  *  current word up a little longer; it can never land the UI in a
  *  half-transitioned state. */
-export default function RotatingWord({ words, interval = 2200 }: RotatingWordProps) {
+export default function RotatingWord({ words, interval = 3200 }: RotatingWordProps) {
   const [index, setIndex] = useState(0);
   const [minWidth, setMinWidth] = useState<number | null>(null);
   const measureRef = useRef<HTMLSpanElement>(null);

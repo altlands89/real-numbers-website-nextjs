@@ -1398,7 +1398,7 @@ p { margin: 0; }
 .v2-rotating-word {
   display: inline-block;
   vertical-align: top;
-  animation: v2-rotating-word-in 350ms var(--ease);
+  animation: v2-rotating-word-in 550ms var(--ease);
 }
 @keyframes v2-rotating-word-in {
   from { opacity: 0; transform: translateY(0.12em); }
