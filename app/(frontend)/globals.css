@@ -2588,15 +2588,12 @@ p { margin: 0; }
 
 /* =========================== RESPONSIVE FIXES =========================== */
 
-/* Team cards go horizontal on phones. Two square-photo columns squeezed the
-   bios down to two or three words a line; one row-wise card per person gives
-   the text a readable measure without turning the page into a column of
-   giant portraits. */
+/* Team cards stack on phones: square photo on top, bio content below —
+   same vertical layout as desktop/tablet, just one card per row instead of
+   a horizontal photo+text split. */
 @media (max-width: 560px) {
   .team-grid { grid-template-columns: 1fr; gap: var(--space-400); }
-  .team-card { display: grid; grid-template-columns: 38% 1fr; align-items: stretch; }
-  .team-photo { height: 100%; aspect-ratio: auto; min-height: 100%; }
-  .team-body { padding: var(--space-400); align-self: center; }
+  .team-body { padding: var(--space-400); }
   .team-body p { font-size: 0.82rem; }
 }
 
