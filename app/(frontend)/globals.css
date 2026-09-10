@@ -957,15 +957,6 @@ p { margin: 0; }
    neighboring sections. */
 .comp-drift svg { overflow: visible; }
 
-.comp-interactive {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-  z-index: 1;
-}
-.comp-interactive svg path { will-change: transform; transform-box: fill-box; transform-origin: center; }
-.comp-interactive svg { overflow: visible; }
-
 /* Team page */
 .team-grid {
   display: grid;
@@ -1397,17 +1388,24 @@ p { margin: 0; }
 
 /* Rotating word — a single text node that fades + rises in on each
    swap. No stacking/clipping, so there's nothing for font metrics to
-   misalign. */
+   misalign.
+   Driven entirely by this `animation` (RotatingWord.tsx forces a remount
+   on every word change via `key={index}`, which restarts it) rather than
+   a JS-toggled class + `transition` — the whole fade sequence is owned by
+   the browser's compositor once it starts, so a JS tick that lands late
+   (iOS Safari throttles timers during scroll/backgrounding) just delays
+   *when* the next word's animation begins, never catches it mid-fade. */
 .v2-rotating-word {
   display: inline-block;
   vertical-align: top;
-  opacity: 0;
-  transform: translateY(0.12em);
-  transition: opacity 350ms var(--ease), transform 350ms var(--ease);
+  animation: v2-rotating-word-in 350ms var(--ease);
 }
-.v2-rotating-word.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes v2-rotating-word-in {
+  from { opacity: 0; transform: translateY(0.12em); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-rotating-word { animation: none; }
 }
 .v2-hero-foot {
   margin-top: var(--space-500);
@@ -1478,6 +1476,11 @@ p { margin: 0; }
   flex-wrap: wrap;
 }
 .v2-logos-row { display: flex; align-items: center; flex: 1; }
+/* Track holds both copies of the set side by side. On desktop this is a
+   no-op wrapper (the dup copy is hidden, nothing to scroll); on mobile it
+   becomes the thing that actually translates — see the marquee rules
+   below. */
+.v2-logos-track { display: flex; align-items: center; flex: 1; }
 .v2-logos-set {
   display: flex;
   align-items: center;
@@ -1486,9 +1489,8 @@ p { margin: 0; }
   flex: 1;
   justify-content: flex-start;
 }
-/* Second copy of the logo set — only rendered/used for the mobile
-   auto-scrolling loop (see LogoMarquee.tsx); desktop never scrolls so
-   it stays hidden there. */
+/* Second copy of the logo set — only visible for the mobile marquee loop
+   (see the keyframe below); desktop never scrolls so it stays hidden. */
 .v2-logos-set--dup { display: none; }
 /* Each chip is a fixed bounding box (not just a fixed height) so logos
    with very different proportions — a compact icon+wordmark vs. a long,
@@ -1797,14 +1799,41 @@ p { margin: 0; }
   /* Pill buttons were ~36px tall (10px padding + small type) — under the
      ~44px comfortable touch-target minimum. Desktop is unaffected. */
   .v2-pill-link { padding: 14px 20px; }
-  /* Row scrolls edge-to-edge without wrapping, auto-advancing via
-     LogoMarquee.tsx; the "Why Real Numbers" pill moves below it instead
-     of sitting inline (there's no room for both side by side here). */
+  /* Row becomes a continuous marquee instead of wrapping; the "Why Real
+     Numbers" pill moves below it instead of sitting inline (there's no
+     room for both side by side here). */
   .v2-logos-strip { flex-direction: column; align-items: flex-start; }
   .v2-logos-strip > .v2-pill-link { margin-top: var(--space-500); }
-  .v2-logos-row { flex-wrap: nowrap; overflow-x: hidden; width: 100%; scroll-behavior: smooth; }
+  .v2-logos-row { flex-wrap: nowrap; overflow: hidden; width: 100%; }
+  /* An earlier version drove this by calling scrollTo({behavior:"smooth"})
+     on a setInterval, then resetting scrollLeft after a hardcoded 500ms —
+     assuming the native smooth-scroll always finished in exactly that
+     time. It doesn't (duration is browser/OS-determined, and iOS Safari's
+     is neither fixed nor consistent for a given distance), so the reset
+     regularly fired mid-scroll: a visible snap instead of the continuous
+     motion a marquee is supposed to have — "not like a normal slider".
+     A plain CSS animation has no such race: the browser's compositor owns
+     the whole loop, there's no JS timer to fall out of sync with it, and
+     it keeps running smoothly under the same iOS timer throttling that
+     was stalling the old interval-driven version. */
+  .v2-logos-track {
+    width: max-content;
+    animation: v2-logos-scroll 24s linear infinite;
+  }
   .v2-logos-set { flex-wrap: nowrap; gap: var(--space-500); justify-content: flex-start; flex: 0 0 auto; }
   .v2-logos-set--dup { display: flex; }
+}
+@keyframes v2-logos-scroll {
+  /* The two sets are identical, so translating by exactly one set's width
+     (50% of the track, since it holds two copies) loops seamlessly back
+     to the starting frame with no visible seam or reset. */
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .v2-logos-track { animation: none; }
+}
+@media (max-width: 640px) {
   .v2-stat-number { height: clamp(48px, 14vw, 80px); }
   .v2-footer-bottom { flex-direction: column; gap: var(--space-300); text-align: center; }
 

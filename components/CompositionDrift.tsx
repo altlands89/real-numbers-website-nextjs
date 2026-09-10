@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { subscribeToAnimationLoop } from "./sharedAnimationLoop";
 
 interface PathInfo {
   d: string;
@@ -47,7 +48,6 @@ export default function CompositionDrift({
   const target = useRef(0);
   const current = useRef(0);
   const active = useRef(true);
-  const rafId = useRef<number | undefined>(undefined);
   const startTime = useRef<number | null>(null);
 
   // Fetch and parse the composition once — each path becomes an independently
@@ -92,6 +92,15 @@ export default function CompositionDrift({
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    // The always-on idle sway (sin/cos per path, every frame, on top of the
+    // scroll-linked drift below) is the more expensive half of this
+    // component's per-frame math, for an effect that's already dimmed to a
+    // barely-visible 0.22 opacity background texture on phones (see the
+    // max-width:640px rule for .comp-drift). Skipping it there — the
+    // scroll-linked drift still runs — cuts real per-frame work on exactly
+    // the constrained mobile CPUs where six of these running at once is
+    // most likely to read as stutter, for motion nobody can see anyway.
+    const skipSway = window.innerWidth <= 640;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -137,7 +146,7 @@ export default function CompositionDrift({
           let swayX = 0;
           let swayY = 0;
           let scale = 1;
-          if (!reduce) {
+          if (!reduce && !skipSway) {
             const ampX = (6 + Math.abs(hash(i, 20 + seed)) * 10) * swayScale;
             const ampY = (6 + Math.abs(hash(i, 21 + seed)) * 10) * swayScale;
             const freqX = (0.035 + Math.abs(hash(i, 22 + seed)) * 0.045) * Math.sqrt(swayScale);
@@ -162,19 +171,20 @@ export default function CompositionDrift({
           )}px) scale(${scale.toFixed(3)})`;
         });
       }
-      rafId.current = requestAnimationFrame(tick);
+      // No self-scheduling here — this only runs when the shared loop below
+      // calls it, instead of each instance requesting its own frame.
     }
 
     measure();
     window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
-    rafId.current = requestAnimationFrame(tick);
+    const unsubscribe = subscribeToAnimationLoop(tick);
 
     return () => {
       io.disconnect();
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      unsubscribe();
     };
   }, [paths, distance, seed, swayScale]);
 
